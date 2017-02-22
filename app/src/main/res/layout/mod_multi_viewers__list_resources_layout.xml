@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:background="@color/white">
+
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/map_videos_list"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="menu_Opciones"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+
+    <ListView
+        android:id="@+id/listaRoutes"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/map_videos_list"
+        android:cacheColorHint="#00000000"
+        android:divider="@color/blue_route_value"
+        android:dividerHeight="2dp"
+        android:scrollbars="none" >
+    </ListView>
+	<TextView 
+        android:id="@android:id/empty" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/mod_global__sin_contenido"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textSize="18dp"
+        android:visibility="gone"
+        android:textColor="@color/color_amarillo_verdoso"/>
+    
+</RelativeLayout>

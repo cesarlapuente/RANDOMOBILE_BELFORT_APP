@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:background="@color/white" >
+
+     <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+     android:id="@+id/menuRegistro"
+     android:layout_width="fill_parent"
+     android:layout_height="100dp"
+     alborgis:fitImageToScreen="false"
+     alborgis:map="mapa_Registro"
+     alborgis:maxSizeFactor="1.5"
+     alborgis:scaleFromOriginal="true" />
+
+    <ScrollView
+        android:id="@+id/cuerpo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/menuRegistro"
+        android:layout_above="@+id/footer"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|left"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/lblGUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/blue_categories"
+                    android:text="@string/mod_register__datos_de_usuario"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lblEmail"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__email"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <EditText
+                android:id="@+id/tbEmail"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/mod_register__introduce_email"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/input_text9"
+                android:textColorHint="@color/color_azul"
+                android:textColor="@color/color_azul" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblPassword"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__contrasena"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <EditText
+                android:id="@+id/tbPassword"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/mod_register__introduce_contrasena"
+                android:inputType="textPassword"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/input_text9"
+                android:textColorHint="@color/color_azul"
+                android:textColor="@color/color_azul" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblPasswordRepeat"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__repite_contrasena"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <EditText
+                android:id="@+id/tbPasswordRepeat"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/mod_register__repite_contrasena"
+                android:inputType="textPassword"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/input_text9"
+                android:textColorHint="@color/color_azul"
+                android:textColor="@color/color_azul" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblGPersonales"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/mod_register__datos_personales"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/blue_categories" />
+
+            <TextView
+                android:id="@+id/lblNombre"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__nombre"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories"/>
+
+            <EditText
+                android:id="@+id/tbNombre"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/mod_register__introduce_nombre"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/input_text9"
+                android:textColorHint="@color/color_azul"
+                android:textColor="@color/color_azul" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblApellidos"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__apellidos"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <EditText
+                android:id="@+id/tbApellidos"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/mod_register__introduce_apellidos"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/input_text9"
+                android:textColorHint="@color/color_azul"
+                android:textColor="@color/color_azul" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblPaises"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__pais"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <Spinner
+                android:id="@+id/spinnerPaises"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/combo" />
+
+            <TextView
+                android:id="@+id/lblCCAA"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_register__ccaa"
+                android:textSize="16sp"
+                android:textColor="@color/blue_categories" />
+
+            <Spinner
+                android:id="@+id/spinnerComunidades"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/combo" />
+
+            
+        </LinearLayout>
+    </ScrollView>
+    
+    
+    
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center_vertical"
+        android:layout_alignParentBottom="true" >
+        
+        <LinearLayout
+                android:id="@+id/panelBotones"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btnRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/btn_registro" />
+
+                <Button
+                    android:id="@+id/btnCancelar"
+                    android:layout_width="120dp"
+                    android:layout_height="45dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/mod_register__cancelar"
+                    android:textSize="18dp"
+                    android:textStyle="normal"
+                    android:visibility="gone"
+                    android:background="@drawable/btn_verde"
+                	android:textColor="@color/color_verde_oscuro" />
+            </LinearLayout>
+
+    </RelativeLayout>
+    
+    
+    
+    
+
+    <RelativeLayout
+        android:id="@+id/panelCargando"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/header"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progressBarCargando"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+</RelativeLayout>

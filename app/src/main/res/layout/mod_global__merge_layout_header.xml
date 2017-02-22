@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout 
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+    	android:layout_height="45dp"
+    	android:layout_marginRight="20dp"
+    	android:layout_alignParentTop="true"
+    	android:background="@drawable/general_franja_cabecera" >
+        
+        <Button 
+            android:id="@+id/btnVolver"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_state_atras"/>
+
+        <TextView 
+		    android:id="@+id/txtNombre"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_toRightOf="@+id/btnVolver"
+		    android:layout_toLeftOf="@+id/btnHome"
+		    android:layout_centerVertical="true"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:text="Title text"
+		    android:textSize="22dp"
+		    android:maxLines="1"
+		    android:textColor="@color/color_verde_oscuro"/>
+        
+        <Button 
+            android:id="@+id/btnHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_state_home"/>
+        
+    </RelativeLayout>
+    
+</merge>

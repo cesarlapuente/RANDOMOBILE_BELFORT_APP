@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@drawable/general_fondo">
+	
+	
+    
+    <RelativeLayout 
+        android:id="@+id/marcoImagenDestacada"
+        android:layout_width="fill_parent"
+    	android:layout_height="180dp" >
+    
+	    <ImageView
+		    	android:id="@+id/imagenDestacada"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:background="#FFFFFF"
+		        android:scaleType="centerCrop">
+	   	</ImageView>
+    </RelativeLayout>
+    
+    <include layout="@layout/mod_global__merge_layout_header" />
+    
+    <ScrollView
+		android:id="@+id/scrollDescripcion"
+		android:layout_below="@+id/marcoImagenDestacada"
+		android:layout_alignParentBottom="true"
+		android:layout_width="350dp"
+		android:layout_height="wrap_content"
+		android:background="#DDFFFFFF" >
+        
+        <LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			
+            <TextView
+		        android:id="@+id/lblTitulo"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginLeft="20dp"
+		        android:layout_marginRight="20dp"
+		        android:layout_marginTop="25dp"
+		        android:maxLines="2"
+		        android:text="Título"
+		        android:textSize="16dp"
+		        android:textStyle="bold"
+		        android:textColor="@color/color_azul_oscuro" >
+		    </TextView>
+    
+		    <TextView 
+				android:id="@+id/txtDescripcion"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:layout_marginLeft="20dp"
+		        android:layout_marginRight="20dp"
+				android:layout_centerVertical="true"
+				android:text="Descripcion de la informacion"
+				android:textSize="16dp"
+				android:textColor="#000" />
+    
+    	</LinearLayout>
+    </ScrollView>
+    
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+   	android:layout_above="@+id/footer"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+		
+</RelativeLayout>

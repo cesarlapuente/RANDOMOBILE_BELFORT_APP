@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="texto_intro_guia">
+<![CDATA[
+<html
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<style>
+.fit {
+  max-width: 100%;
+}
+</style>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=blue vlink=purple bgcolor="#ecf3f9">
+
+<div style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><IMG SRC=\"guia1.png\"
+WIDTH=125 HEIGHT=145 align=\"middle\"><br/><br/>Descripcion de la <b>guia</b> de naturaleza</p>
+
+</div>
+
+</body>
+
+</html>
+		]]>
+    </string>
+</resources>

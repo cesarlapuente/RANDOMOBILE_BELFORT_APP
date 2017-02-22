@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/white">
+	
+	
+
+    <RelativeLayout
+        android:id="@+id/r_menuPoisList"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true" >
+    	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
+	    	android:id="@+id/menuPoisList"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="275dp"
+    		alborgis:map="lista_pois"
+        	alborgis:maxSizeFactor="1.5"
+        	alborgis:scaleFromOriginal="true"
+        	alborgis:fitImageToScreen="false"/>   
+	</RelativeLayout>
+
+    
+    <ListView
+   		android:id="@+id/listaPois"
+   		android:layout_width="fill_parent"
+   		android:layout_height="wrap_content"
+   		android:layout_below="@+id/r_menuPoisList"
+   		android:layout_above="@+id/footer"
+   		android:scrollbars="none"
+   		android:cacheColorHint="#00000000"
+   		android:divider="@color/blue_route_value"
+        android:dividerHeight="2dp">
+   </ListView>
+   
+        
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+    
+</RelativeLayout>

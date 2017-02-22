@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="texto_balisage">
+        <![CDATA[
+<html
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<style>
+.fit {
+  max-width: 100%;
+}
+</style>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=blue vlink=purple bgcolor="#ecf3f9">
+
+<div style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><b>Les types de balisage:</b><br />
+<br/><b>Le balisage des itin&eacute;raires</b> de 
+randonn&eacute;e est un syst&egrave;me de signalisation pour 
+pouvoir suivre les chemins du d&eacute;part, jusqu&rsquo;
+&agrave; l&rsquo;arriv&eacute;e. Il consiste en <b>marques de 
+peinture</b> sur <b>les rochers, les arbres, les murs, les 
+poteaux.</b> Leur fr&eacute;quence est fonction du terrain.<br />Conna&icirc;tre la signalisation et savoir lire les panneaux 
+que vous rencontrez en randonn&eacute;e est la base pour <b>bien 
+s&rsquo;orienter et ne pas se perdre.</b><br /><br/><IMG SRC=\"bloc_balisage.jpg\" WIDTH=250 HEIGHT=162></p>
+
+</div>
+
+</body>
+
+</html>
+		]]>      
+    </string>
+    <string name="texto_sac_a_dos" >
+        <![CDATA[
+        <html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=navy vlink=purple style=\'background:#ecf3f9\'>
+
+<div class=WordSection1 style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><b>Bien pr&eacute;parer son sac 
+&agrave; dos</b><br /><br />Quelle que soit la longueur du 
+sentier que vous empruntez, <b>ne partez pas sans sac &agrave; 
+dos !</b><br /><br />Tout d&rsquo;abord, placez votre sac de 
+mani&egrave;re &agrave; ce que le centre de gravit&eacute; du 
+sac soit le plus pr&egrave;s possible du corps, ni trop bas, ni 
+trop haut, <b>au niveau du dos.</b><br /><br /><IMG SRC=\"en_montagne.jpg\" WIDTH=137 HEIGHT=207><br/><br/>Voici quelques 
+conseils pour bien <b>r&eacute;partir la charge de votre sac 
+&agrave; dos :</b><br /><br />- Placez votre sac de couchage et 
+vos <b>v&ecirc;tements de rechange au fond du sac</b><br />- 
+Laissez accessible <b>la gourde, les vivres de course</b>, le 
+chapeau et la cr&egrave;me solaire <br />- Mettez vos <b>
+v&ecirc;tements de protection en haut du sac</b> <br />- 
+Prot&eacute;gez vos objets pr&eacute;cieux, tels que <b>papiers 
+et argent, dans une pochette plastique zipp&eacute;e</b><br />- 
+Rangez vos v&ecirc;tements et affaires personnelles dans <b>
+diff&eacute;rents sacs plastiques</b>.<br /><br/><a href=\"http://www.ffrandonnee.fr/_394/conseils-rando.aspx\">
+http://www.ffrandonnee.fr/_394/conseils-rando.aspx</a></p>
+
+</div>
+
+</body>
+
+</html>
+        ]]>      
+    </string>
+    <string name="texto_check_list">
+        <![CDATA[
+        <html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=navy vlink=purple style=\'background:#ecf3f9\'>
+
+<div class=WordSection1 style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><b>Check-list du randonneur</b><br />
+<br />Pour quelques heures de balade ou une journ&eacute;e, il 
+faut toujours emporter avec soi <b>quelques objets</b> afin de 
+profiter pleinement de votre randonn&eacute;e :<br /><br /><IMG 
+SRC=\"lacage.jpg\" WIDTH=150 HEIGHT=100><br/><br/>- Des <b>
+lunettes de soleil,</b><br />- Un tube de <b>cr&egrave;me 
+solaire,</b><br />- Une <b>casquette</b> ou un chapeau,<br />- 
+Un <b>v&ecirc;tement de protection</b> contre la pluie,<br />- 
+Un pull ou une <b>veste en fibres polaires,</b> fine ou 
+&eacute;paisse<br />- Des <b>b&acirc;tons de marche</b> le cas 
+&eacute;ch&eacute;ant,<br />- Des <b>vivres de course</b> (pain 
+d&rsquo;&eacute;pices, barres, fruits secs&#8230;),<br />- De 
+l&rsquo;eau, minimum <b>1,5 l,</b><br />- Une couverture de 
+survie,<br />- Un <b>sifflet,</b><br />- Du <b>papier 
+hygi&eacute;nique,</b><br />- Une paire de <b>lacets de 
+chaussures.</b><br /><br /><a href=\"http://www.ffrandonnee.fr/_394/conseils-rando.aspx\">http://www.ffrandonnee.fr/_394/conseils-rando.aspx</a></p>;
+
+</div>
+
+</body>
+
+</html>
+        
+		]]>      
+    </string>
+    <string name="texto_trousse_de_secours">
+        <![CDATA[
+        <html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=navy vlink=purple style=\'background:#ecf3f9\'>
+
+<div class=WordSection1 style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><b>Une trousse de secours id&eacute;ale
+</b><br /><br />Gliss&eacute;e dans le sac &agrave; dos, la 
+trousse de secours est l&agrave; pour <b>faire face aux petits 
+p&eacute;pins du quotidien</b> de la marche ou attendre les 
+secours en cas de blessure s&eacute;rieuse. Voici une liste qui 
+vous permettra de rassembler quelques &eacute;l&eacute;ments 
+pour partir serein, dans les <b>meilleures conditions de 
+s&eacute;curit&eacute; :</b><br /><br />- <b>D&eacute;sinfectant 
+incolore</b> pour nettoyer une plaie souill&eacute;e,<br />- <b>
+S&eacute;rum physiologique</b> en dosette pour laver les yeux,
+<br />- <b>Lot de pansements pr&eacute;d&eacute;coup&eacute;s
+</b> de taille et de formes diverses, dont certains 
+imperm&eacute;ables,<br />- <b>5 compresses st&eacute;riles</b> 
+de petit et 5 compresses st&eacute;riles de grand format,<br />- 
+<b>Du sparadrap,</b><br />- <b>Pansements</b> contre les 
+ampoules et protections de type &laquo; deuxi&egrave;me peau 
+&raquo;,<br />- De la <b>bande collante &eacute;lastique</b> 
+(type &Eacute;lastoplast&reg;), de 6 cm de large, qui servira 
+&agrave; tout : prot&eacute;ger un pansement, r&eacute;parer la 
+bretelle d&rsquo;un sac &agrave; dos&#8230;<br />- Une <b>bande 
+de type Velpeau&reg;</b> normale,<br />- Une <b>paire de petits 
+ciseaux</b> bien coupants,<br />- Des <b>&eacute;pingles 
+&agrave; nourrice,</b><br />- Une <b>aiguille et une pince</b> 
+pour enlever des &eacute;chardes,<br />- Une <b>cr&egrave;me 
+&agrave; l&rsquo;arnica en cas de coups,</b> un tube de 
+granul&eacute;s d&rsquo;arnica,<br />- Quelques <b>bonbons ou 
+morceaux de sucre</b> envelopp&eacute;s individuellement<br />
+<br/><a href=\"http://www.ffrandonnee.fr/_394/conseils-rando.aspx\">http://www.ffrandonnee.fr/_394/conseils-rando.aspx</a></p>
+
+</div>
+
+</body>
+
+</html>
+		]]>      
+    </string>
+        
+</resources>

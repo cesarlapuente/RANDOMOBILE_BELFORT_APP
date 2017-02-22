@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/white">
+	
+	 <!-- Introducir menu imagen de cabecera -->
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/menu_valorar"
+        android:layout_width="fill_parent"
+        android:layout_height="130dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="calificar"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+    
+    <RelativeLayout
+		android:id="@+id/scrollContenido"
+		android:layout_below="@+id/menu_valorar"
+		android:layout_above="@+id/footer"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" >
+		
+        <TextView 
+            android:id="@+id/txtTituloItem"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Item Title"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/blue_route_title"
+            android:textSize="30sp"/>
+        
+        <TextView 
+            android:id="@+id/txtSeccionValoracionActual"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/txtTituloItem"
+            android:text="Actual AVG Vote"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/blue_route_value"
+            android:textSize="22sp"/>
+        
+        <TextView 
+            android:id="@+id/txtValoracionActual"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/txtSeccionValoracionActual"
+            android:layout_marginTop="10dp"
+            android:text="0"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/blue_route_value"
+            android:textSize="22sp"/>
+        
+        <TextView 
+            android:id="@+id/txtNumVotos"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/txtValoracionActual"
+            android:layout_marginTop="10dp"
+            android:text="0"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/blue_route_value"
+            android:textSize="22sp"/>
+
+        
+        
+    </RelativeLayout>
+    
+    
+    <RelativeLayout 
+		android:id="@+id/footer"    
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true">
+	    
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            style="@style/CustomRatingBar"
+            android:numStars="5"
+            android:stepSize="1" />
+
+	    <Button 
+	        android:id="@+id/btnVotar"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/ratingBar"
+	        android:layout_centerHorizontal="true"
+	        android:background="@drawable/btn_votar"/>
+	    
+	</RelativeLayout>
+    
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+   	android:layout_above="@+id/footer"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+		
+</RelativeLayout>

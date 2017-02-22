@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff">
+
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/menu_naturaleza_intro"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="mapa_naturaleza_intro"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+
+    <ListView
+        android:id="@+id/listaEspacios"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:divider="@color/blue_route_value"
+        android:dividerHeight="2dp"
+        android:layout_below="@+id/menu_naturaleza_intro"
+        android:layout_alignParentBottom="true">
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/panelCargando"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/header"
+        android:visibility="gone"  >
+
+        <ProgressBar
+            android:id="@+id/progressBarCargando"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+</RelativeLayout>

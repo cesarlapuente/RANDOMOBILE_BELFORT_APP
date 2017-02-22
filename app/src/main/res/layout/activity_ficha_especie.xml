@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white">
+    <RelativeLayout
+        android:id="@+id/contenedorMapa"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+        <!-- Introducir mapa -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_main_image_especie"
+            android:id="@+id/ivMain"
+            android:src="@drawable/ejemplo_cabra"
+            android:scaleType="centerCrop"
+            android:clickable="true"/>
+
+    </RelativeLayout>
+
+    <!-- Introducir imagen de cabecera -->
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/map_especie"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="lista_item_especie"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+
+    <LinearLayout
+        android:id="@+id/headerTitle"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_weight="252"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="45dp">
+
+        <TextView
+            android:id="@+id/lblTitleHeader"
+            android:layout_width="0dp"
+            android:layout_height="53dp"
+            android:layout_gravity="top|start"
+            android:layout_weight="91"
+            android:lines="3"
+            android:maxLines="3"
+            android:textColor="@color/white"
+            android:text="Cabra de Costa"
+            android:textStyle="bold"
+            android:textSize="22dp">
+
+        </TextView>
+    </LinearLayout>
+
+    <!-- Border -->
+
+    <!-- Botones Menu Mas -->
+
+    <!--  Pie con categoria/desnivel/distancia/valoración + Descripción -->
+    <!-- footer -->
+
+    <!-- Boton de Mapa -->
+
+    <!-- Botonera de recursos multimedia -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/contenedorMapa"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/contenedorBotones"
+        android:id="@+id/contenedorContenido"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lblCategory"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:layout_below="@+id/lblTitulo"
+                    android:text="@string/categoria"
+                    android:textStyle="bold"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:id="@+id/lblTypeEspecie"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/blue_route_value"
+                    android:layout_below="@+id/lblTitulo"
+                    android:text="Texto"
+                    android:textAllCaps="true"
+                    android:textIsSelectable="false"
+                    android:layout_marginTop="2dp" />
+
+                <TextView
+                    android:id="@+id/lblDesc"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:layout_below="@+id/lblTitulo"
+                    android:text="@string/descripcion"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:layout_marginTop="5dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|right"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="190dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/layout_Btn_EspaciosRelacionados"
+                    android:background="@drawable/boton_generico_azul"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:clickable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_related_routes"
+                        android:id="@+id/textView3"
+                        android:textColor="@color/color_blanco"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:layout_width="190dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/btn_EspaciosRelacionados"
+                    android:background="@drawable/boton_espacios_relacionados"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="false"
+                    android:layout_weight="0.15"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/horizontalScrollView"
+            android:layout_marginTop="2dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,"
+                    android:id="@+id/lblDescripctionEspecie"
+                    android:singleLine="false"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_botonera_especies"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/contenedorBotones"
+        android:visibility="gone">
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_galeria"
+            android:src="@drawable/boton_galeria_selector"
+            android:background="#00ffffff"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:padding="5dp" />
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_audio"
+            android:src="@drawable/boton_audio_selector"
+            android:background="#00ffffff"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:padding="5dp" />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_puntuar"
+            android:src="@drawable/boton_puntuar_selector"
+            android:background="#00ffffff"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:padding="5dp" />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_video"
+            android:src="@drawable/boton_video_selector"
+            android:background="#00ffffff"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:padding="5dp" />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_mapa"
+            android:src="@drawable/boton_mapa_selector"
+            android:background="#00ffffff"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:padding="5dp" />
+    </LinearLayout>
+</RelativeLayout>

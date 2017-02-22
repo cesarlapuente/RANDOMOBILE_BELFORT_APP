@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:background="@drawable/general_fondo">
+   
+    <include layout="@layout/mod_global__merge_layout_header" />
+    
+    <ListView
+   		android:id="@+id/listaInfos"
+   		android:layout_width="fill_parent"
+   		android:layout_height="fill_parent"
+   		android:layout_below="@+id/header"
+   		android:layout_above="@+id/footer"
+   		android:scrollbars="none"
+   		android:cacheColorHint="#00000000"
+        android:dividerHeight="2dp">
+   </ListView>
+   
+    
+    
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentBottom="true" >
+        
+        <LinearLayout 
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true">
+
+            <Button 
+	            android:id="@+id/btnEventos"
+	            android:layout_width="150dp"
+	            android:layout_height="45dp"
+	            android:layout_centerVertical="true"
+	            android:textSize="20dp"
+	            android:text="@string/mod_events__ultimos_eventos"
+	            android:textColor="@color/color_verde_oscuro"
+	            android:background="@drawable/btn_state_verde"/>
+        	
+        	
+        	
+        </LinearLayout>
+        	
+            
+
+        </RelativeLayout>
+   
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+   	android:layout_above="@+id/footer"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+    
+</RelativeLayout>

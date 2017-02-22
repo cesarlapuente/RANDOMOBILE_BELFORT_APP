@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFondo"
+    android:layout_width="fill_parent"
+    android:layout_height="160dp"
+    android:paddingLeft="5dp"
+	android:paddingRight="5dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="@color/white">
+    
+    
+    <RelativeLayout 
+        android:id="@+id/contenedorImgView"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_centerVertical="true">
+        
+        <ImageView 
+	        android:id="@+id/imgView"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentStart="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"/>
+        <ImageView 
+	        android:id="@+id/imgViewFrame"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"/>
+	</RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/textos"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/contenedorImgView" >
+
+		<LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+			<TextView
+                android:id="@+id/lblTitulo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="21dp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="Title"
+                android:textColor="@color/blue_route_title">
+
+            </TextView>
+
+			<TextView
+                android:id="@+id/lblDetalle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12dp"
+                android:maxLines="1"
+                android:textColor="#000"
+                android:layout_below="@+id/lblTitulo"
+                android:text="@string/descripcion"
+				android:textStyle="bold"
+				android:textAllCaps="true"
+				android:layout_marginTop="20dp">
+            </TextView>
+
+			<TextView
+				android:id="@+id/lbldescripcionespecie"
+				android:layout_width="fill_parent"
+				android:layout_height="50dp"
+				android:textSize="12dp"
+				android:maxLines="3"
+				android:textColor="#000"
+				android:layout_below="@+id/lblTitulo"
+				android:text="Texto"
+				 />
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<LinearLayout
+					android:orientation="vertical"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="1">
+
+					<TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="12dp"
+                        android:maxLines="1"
+                        android:textColor="#000"
+                        android:layout_below="@+id/lblTitulo"
+                        android:text="@string/categoria"
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
+
+					<TextView
+                        android:id="@+id/lbltypeespecie"
+                        android:layout_width="fill_parent"
+                        android:layout_height="20dp"
+                        android:textSize="12dp"
+                        android:maxLines="1"
+                        android:textColor="@color/blue_route_title"
+                        android:layout_below="@+id/lblTitulo"
+                        android:text="TExto"
+                        android:textAllCaps="true" />
+				</LinearLayout>
+
+				<LinearLayout
+					android:orientation="vertical"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+                    android:paddingBottom="5dp">
+
+					<ImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:id="@+id/imageViewType"
+                        android:src="@drawable/icono_vegetal" />
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</RelativeLayout>
+
+
+</RelativeLayout>

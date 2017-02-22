@@ -1,0 +1,9 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="width_main_image_especie">300dp</dimen>
+    <dimen name="height_main_image_especie">300dp</dimen>
+    <dimen name="margin_main_image_especie">20dp</dimen>
+    <dimen name="height_botonera_especies">70dp</dimen>
+</resources>

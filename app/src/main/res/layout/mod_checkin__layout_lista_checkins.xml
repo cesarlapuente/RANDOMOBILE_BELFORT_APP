@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:background="@color/white">
+	
+	
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+     android:id="@+id/map_menuCheckinList"
+     android:layout_width="fill_parent"
+     android:layout_height="100dp"
+     alborgis:fitImageToScreen="false"
+     alborgis:map="menu_Checkin"
+     alborgis:maxSizeFactor="1.5"
+     alborgis:scaleFromOriginal="true" />
+
+    
+    <ListView
+   		android:id="@+id/listaCheckins"
+   		android:layout_width="fill_parent"
+   		android:layout_height="fill_parent"
+   		android:layout_below="@+id/map_menuCheckinList"
+   		android:scrollbars="none"
+   		android:cacheColorHint="#00000000"
+        android:dividerHeight="2dp">
+   </ListView>
+   
+        
+    
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+    
+</RelativeLayout>

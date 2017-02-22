@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+	<LinearLayout
+        android:id="@+id/firstColumn"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<LinearLayout
+                android:id="@+id/firstRow"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center_vertical|center_horizontal">
+                    <TextView
+						android:id="@+id/lblDuracion"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/duracion_item_route"
+						android:textColor="#000"
+						android:paddingRight="5dp"
+						android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/lblValDuracion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+					android:paddingRight = "3dp"
+                    android:paddingLeft = "3dp"
+                    android:text="0H0"
+                    android:textColor="@color/blue_route_value" />
+
+            </LinearLayout>
+
+			<LinearLayout
+                android:id="@+id/secondRow"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+					android:id="@+id/lblDistancia"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/distancia_item_route"
+					android:textColor="#000"
+					android:textIsSelectable="false"
+					android:paddingRight="5dp"
+					android:textStyle="bold"/>
+
+                <TextView
+                        android:id="@+id/lblValDistancia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0,0 km"
+                        android:textColor="@color/blue_route_value"
+					/>
+
+            </LinearLayout>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/thirdRow"
+			android:orientation="horizontal"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:gravity="center_vertical|center_horizontal">
+
+        	   	<ImageView
+        	   	    android:id="@+id/imgDificultad"
+        	   	    android:layout_width="110dp"
+        	   	    android:layout_height="10dp"
+        	   	    android:layout_marginRight="3dp"/>
+
+    	</LinearLayout>    
+    </LinearLayout> <!-- first column -->
+	<!-- second column -->
+	<LinearLayout
+		android:id="@+id/secondColumn"
+		android:orientation="vertical"
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:gravity="center_vertical|center_horizontal">
+    	  <TextView
+                android:id="@+id/lblValoracion"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+				android:text="@string/mod_discover__nota"
+		        android:textColor="#000" />
+    	  	<ImageView 
+		    	android:id="@+id/imgViewValoracion"
+		    	android:layout_width="45dp"
+		    	android:layout_height="20dp"/>
+    </LinearLayout>
+</LinearLayout>
+
+</merge>

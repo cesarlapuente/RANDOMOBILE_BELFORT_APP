@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white">
+    
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/menu_gripImages"
+        android:layout_width="fill_parent"
+        android:layout_height="130dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="images"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+			
+	<GridView android:id="@+id/gridView"
+	    android:layout_below="@+id/menu_gripImages"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:numColumns="auto_fit" 
+		android:verticalSpacing="10dp"
+		android:horizontalSpacing="10dp" 
+		android:columnWidth="90dp"
+		android:stretchMode="spacingWidthUniform"
+		android:gravity="center"/>
+	
+	<TextView 
+        android:id="@android:id/empty" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/mod_global__sin_contenido"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textSize="18dp"
+        android:textColor="@color/color_amarillo_verdoso"/>
+
+</RelativeLayout>

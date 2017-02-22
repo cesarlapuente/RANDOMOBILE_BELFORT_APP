@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/general_fondo"
+    android:orientation="vertical" >
+
+    <com.esri.android.map.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mapa"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    </com.esri.android.map.MapView>
+
+    <include layout="@layout/mod_global__merge_layout_header" />
+
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnListado"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/btn_state_verde"
+                android:text="@string/mod_discover__listado"
+                android:textColor="@color/color_verde_oscuro"
+                android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/btnRA"
+                android:layout_width="50dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/btnListado"
+                android:background="@drawable/btn_state_verde"
+                android:text="@string/mod_discover__camara"
+                android:textColor="@color/color_verde_oscuro"
+                android:textSize="20dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnAbrirCapas"
+        android:layout_width="80dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/header"
+        android:layout_marginTop="10dp"
+        android:text="@string/mod_global__capas"
+        android:textColor="@color/color_verde_oscuro"
+        android:background="@drawable/btn_state_right"/>
+
+    <RelativeLayout
+        android:id="@+id/panelCargando"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/header">
+
+        <ProgressBar
+            android:id="@+id/ruedaCargandoMapa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

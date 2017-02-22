@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="90dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="15dp"
+    android:background="@drawable/general_franja_item_listado" >
+
+    <RelativeLayout
+        android:id="@+id/contenedorImgView"
+        android:layout_width="90dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true" >
+
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_width="80dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:background="#FFF"
+            android:scaleType="centerCrop" >
+        </ImageView>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/lblTitulo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/contenedorImgView"
+        android:maxLines="2"
+        android:text="Título"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/color_azul_oscuro" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/lblDetalle"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/lblTitulo"
+        android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/accesory"
+        android:layout_toRightOf="@+id/contenedorImgView"
+        android:maxLines="2"
+        android:text="Texto de ejemplo de descripción"
+        android:textColor="#000"
+        android:textSize="13dp" >
+    </TextView>
+
+    <ImageView 
+	    android:id="@+id/accesory"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="5dp"
+	        android:layout_centerVertical="true"
+	        android:src="@drawable/flecha_azuloscuro1"/>
+    
+    
+
+</RelativeLayout>

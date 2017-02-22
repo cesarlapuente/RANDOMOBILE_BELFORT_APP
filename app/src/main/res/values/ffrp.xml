@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ffrp_text">
+        <![CDATA[
+
+<html
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<style>
+.fit {
+  max-width: 100%;
+}
+</style>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<link href="css/roboto.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body lang=ES link=blue vlink=purple bgcolor="#ecf3f9">
+
+<div style=\'background:#ecf3f9\'>
+
+<p style=\"font-family:\'Roboto\'; 
+font-size:11pt; font-style:\">Les missions de la 
+FFRandonn&eacute;e :<br /> - <b>Cr&eacute;er</b> et <b>entretenir
+</b> les itin&eacute;raires <b>GR&reg;, GRP&reg; et PR&reg;</b>
+<br /> - <b>Contribuer &agrave; la sauvegarde de 
+l&rsquo;environnement</b><br /> - <b>Former</b> des animateurs, 
+des baliseurs, des dirigeants<br /> - Valoriser le <b>tourisme 
+vert</b> et les loisirs<br /> - <b>Repr&eacute;senter les 
+randonneurs</b> et leurs associations<br /><br /><IMG SRC=\"baliseur.jpg\" WIDTH=300 
+HEIGHT=200><br/></p><p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\">La 
+FFRandonn&eacute;e en chiffres :<br /> - <b>225000 
+adh&eacute;rents</b> <br /> - 20 000 b&eacute;n&eacute;voles dont
+ 7 800 baliseurs et 8 200 animateurs brevet&eacute;s<br /> - <b>
+3340 associations</b><br /> - 116 Comit&eacute;s R&eacute;gionaux 
+et D&eacute;partementaux<br /> - <b>180000 km 
+d&rsquo;itin&eacute;raires balis&eacute;s</b> <br /> - Une 
+collection de <b>240 titres de topos guide</b><br /> - <b>Un 
+magazine trimestriel</b> &laquo; Passion rando &raquo;</p><p 
+style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\">Le 
+comit&eacute; r&eacute;gional de la Randonn&eacute;e 
+P&eacute;destre de Lorraine :<br /> - <b>6600</b> 
+licenci&eacute;s adh&eacute;rents<br /> - Plus de <b>500 km de 
+chemins</b> sont balis&eacute;s qui s&rsquo;offrent aux pas des 
+marcheurs<br /></p><p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\"><a href=\"http://www.ffrandonnee.fr\">En 
+savoir plus</a></p>
+
+</div>
+
+</body>
+
+</html>
+		]]>    
+    </string>
+</resources>

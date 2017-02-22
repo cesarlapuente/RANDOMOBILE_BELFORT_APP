@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content">
+	
+    <Button
+			android:id="@+id/btnVerFichaPunto"
+			android:layout_width="50dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:text="@string/mod_global__ver"
+			android:textColor="@color/color_azul_muy_claro"
+			android:paddingLeft="10dp"
+			android:paddingRight="10dp"
+			android:textSize="14sp"
+			android:textAllCaps="false"
+			android:background="@drawable/btn_state_azul">
+	</Button>
+	
+    <TextView
+		    android:id="@+id/lblNombrePunto"
+	    	android:layout_width="150dp"
+	    	android:layout_height="wrap_content"
+	    	android:layout_toRightOf="@+id/btnVerFichaPunto"
+	    	android:layout_alignParentTop="true"
+	    	android:textSize="14dp"
+	    	android:textStyle="bold"
+	    	android:textColor="@color/color_azul_oscuro"
+	    	android:text="Title"
+	    	android:maxLines="2">
+	</TextView>
+	
+    <TextView
+		    android:id="@+id/lblCategoriaPunto"
+	    	android:layout_width="150dp"
+	    	android:layout_height="wrap_content"
+	    	android:layout_toRightOf="@+id/btnVerFichaPunto"
+	    	android:layout_below="@+id/lblNombrePunto"
+	    	android:textSize="12dp"
+	    	android:textStyle="normal"
+	    	android:textColor="@color/color_azul_oscuro"
+	    	android:text="Subtitle detail"
+	    	android:maxLines="1"
+		android:layout_marginLeft="5dp">
+	    </TextView>
+	    
+    
+    
+    
+</RelativeLayout>

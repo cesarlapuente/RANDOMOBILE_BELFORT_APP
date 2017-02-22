@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFondo"
+    android:layout_width="fill_parent"
+    android:layout_height="70dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="@drawable/general_franja_item_listado">
+    
+    
+    <RelativeLayout 
+        android:id="@+id/contenedorImgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+        
+        <ImageView 
+	        android:id="@+id/imgView"
+	        android:layout_width="80dp"
+	        android:layout_height="55dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"/>
+        
+        
+    </RelativeLayout>
+    
+    
+    <RelativeLayout 
+        android:id="@+id/textos"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@+id/contenedorImgView"
+        android:layout_toLeftOf="@+id/accesory"
+        android:layout_marginLeft="15dp"
+	    android:layout_marginRight="5dp">
+        
+        <TextView
+	    	android:id="@+id/lblTitulo"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:textSize="15dp"
+	    	android:textStyle="bold"
+	    	android:maxLines="1"
+	    	android:ellipsize="end"
+	    	android:text="Título"
+	    	android:textColor="@color/color_azul_oscuro">
+	    </TextView>
+	    
+		<TextView
+	    	android:id="@+id/lblDetalle"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent"
+	    	android:textSize="15dp"
+	    	android:maxLines="2"
+	    	android:textColor="#000"
+	    	android:layout_below="@+id/lblTitulo"
+	    	android:text="Texto detalle" >
+	    </TextView>
+        
+        
+    </RelativeLayout>
+    
+	
+	
+	<ImageView 
+	    android:id="@+id/accesory"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true"
+	        android:layout_marginRight="5dp"
+	        android:src="@drawable/flecha_azuloscuro1"/>
+    
+</RelativeLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+   	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <com.esri.android.map.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mapa"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="130dp">
+    </com.esri.android.map.MapView>
+
+    <LinearLayout 
+        android:id="@+id/border"
+        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:layout_width="match_parent">
+		<ImageView
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="2"
+	        android:background="@color/white"/>
+        <View
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="96"
+	        android:background="@color/white"
+	        android:visibility="invisible"/>
+        <ImageView
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="2"
+	        android:background="@color/white"/>
+    </LinearLayout>	
+    
+	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/map_routesGeneral"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="mapa_rutas"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+    
+  <LinearLayout 
+        android:id="@+id/borderFooter"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:layout_width="match_parent">
+        <View
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="98"
+	        android:background="@color/white"
+	        android:visibility="invisible"/>
+		<ImageView
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="2"
+	        android:background="@color/white"/>
+    </LinearLayout>
+
+
+	<include layout="@layout/merge_button_layers" />
+
+
+    <RelativeLayout
+        android:id="@+id/panelCargando"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/header">
+
+        <ProgressBar
+            android:id="@+id/ruedaCargandoMapa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

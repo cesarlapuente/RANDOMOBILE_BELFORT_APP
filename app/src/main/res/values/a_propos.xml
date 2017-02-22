@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="texto_a_propos">
+        <![CDATA[
+
+<html
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head></head>
+<body bgcolor="#ecf3f9">
+
+<div style=\'background:#ecf3f9\'>
+<p style=\"font-family:\'Roboto\'; font-size:11pt; font-style:\">
+Application éditée par la <a href=\"http://www.ffrandonnee.fr/\">FFRandonnée</a> en partenariat avec 
+<a href=\"http://www.grtgaz.com/\">GRTgaz</a> pour le <a href=\"http://www.pnr-lorraine.com/\">PNR Lorraine</a>. <br> <br>
+
+Carte pyramide plan fournie par l&#39;IGN, tous droits r&eacute;serv&eacute;s. <br>
+Mapping API provided by Esri ArcGIS Runtime SDK. <br>
+Copyright Randomobile 2014. Développée par <a href=\"http://www.44screens.com/fr/\">44screens</a>.</p>
+</div>
+</body>
+
+</html>
+		]]>    
+    </string>
+</resources>

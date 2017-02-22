@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFondo"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:paddingLeft="5dp"
+	android:paddingRight="5dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="@color/white">
+    
+    
+    <RelativeLayout 
+        android:id="@+id/contenedorImgView"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_centerVertical="true">
+        
+        <ImageView 
+	        android:id="@+id/imgView"
+	        android:layout_width="95dp"
+	        android:layout_height="75dp"
+	        android:layout_alignParentStart="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"/>
+        <ImageView 
+	        android:id="@+id/imgViewFrame"
+	        android:layout_width="90dp"
+	        android:layout_height="70dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"/>
+        <ImageView 
+	        android:id="@+id/imgViewCategory"
+	        android:layout_width="20dp"
+	        android:layout_height="20dp"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/textos"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/contenedorImgView" >
+        
+        <TextView
+	    	android:id="@+id/lblTitulo"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:textSize="15dp"
+	    	android:textStyle="bold"
+	    	android:maxLines="2"
+	    	android:ellipsize="end"
+	    	android:text="Title"
+	    	android:textColor="@color/blue_route_title">
+
+	    </TextView>
+	    
+		<TextView
+	    	android:id="@+id/lblDetalle"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="25dp"
+	    	android:textSize="15dp"
+	    	android:maxLines="1"
+	    	android:textColor="#000"
+	    	android:layout_below="@+id/lblTitulo"
+	    	android:text="Category" >
+	    </TextView>      
+    </RelativeLayout>
+
+
+    
+      <LinearLayout 
+         android:id="@+id/contentLabelsProperties"
+         android:orientation="horizontal"
+         android:layout_height="wrap_content"
+         android:layout_width="fill_parent"
+         android:background="@color/white"
+         android:layout_toRightOf="@+id/contenedorImgView"
+         android:layout_below="@+id/textos"
+         android:layout_marginLeft="15dp"
+         android:layout_centerHorizontal="true">
+                     
+	        <!-- Distancia -->
+	        <LinearLayout 
+	          android:id="@+id/firstColumnProperties"
+	          android:orientation="vertical"
+	          android:layout_height="wrap_content"
+	          android:layout_width="wrap_content">
+	                  	
+	          <TextView
+	           	android:id="@+id/lblDist"
+	           	android:layout_width="wrap_content"
+	           	android:layout_height="wrap_content"
+	           	android:text="@string/mod_discover__distancia"
+	        	android:textSize="12dp"
+	        	android:textColor="#000" />
+	          		    
+	          <TextView
+	            android:id="@+id/lblDistNum"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:text="Dureé:"
+	        	android:textSize="12dp"
+	        	android:textColor="@color/blue_route_value" />
+			</LinearLayout>
+          
+	        <!-- Desnivel -->
+	        <LinearLayout 
+	          android:id="@+id/secondColumnProperties"
+	          android:orientation="vertical"
+	          android:layout_marginLeft="3dp"
+	          android:layout_height="wrap_content"
+	          android:visibility ="gone"
+	          android:layout_width="wrap_content">
+	                  	
+	          <TextView
+	           android:id="@+id/lblDesnivel"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:textSize="12dp"
+	           android:text="@string/mod_discover__desnivel"
+	           android:textColor="#000" />
+	          		    
+	          <TextView
+	           android:id="@+id/lblDesnivelNum"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:text="Dénivelé:"
+	           android:textSize="12dp"
+	           android:textColor="@color/blue_route_value" />
+			</LinearLayout>
+
+			<!-- Valoracion -->
+			<LinearLayout 
+			          android:id="@+id/thirdColumnProperties"
+			          android:orientation="vertical"
+			          android:layout_marginLeft="3dp"
+			          android:layout_height="wrap_content"
+			          android:layout_width="wrap_content">	
+			    <TextView
+			        android:id="@+id/lblValoracion"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="@string/mod_discover__nota"
+			        android:textSize="12dp"
+			        android:textColor="#000" />
+			 	 <ImageView 
+				   	android:id="@+id/imgViewValoracion"
+				   	android:layout_width="45dp"
+				   	android:layout_height="20dp"/>
+			 </LinearLayout>          
+     </LinearLayout>
+    
+</RelativeLayout>

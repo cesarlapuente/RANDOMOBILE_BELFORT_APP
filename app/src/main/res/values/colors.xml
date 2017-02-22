@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="red">#ffff0000</color>
+    <color name="green">#ff00ff00</color>
+    <color name="white">#ffffffff</color>
+    <color name="blue">#ff0000ff</color>
+    <color name="yellow">#fffffc00</color>
+    <color name="pink">#ffff00f4</color>
+    <color name="orange">#ffffa200</color>
+    <color name= "black">#000000</color>
+    <color name= "grey">#ff777777</color>
+    
+    <color name="blue_search">#ffecf3f9</color>
+    <color name="text_search">#ff27455b</color>
+    <color name="values_search">#ff6a6a6a</color>
+    <color name="blue_categories">#ff396991</color>
+    <color name="grey_search">#ffa4a7a5</color>
+    <color name="brown_search">#ff834e02</color>
+    <color name="blue_route_title">#ff297fac</color>
+    <color name="blue_route_value">#ff08a0e1</color>
+	<color name="progress_bar_ini">#ff297fac</color>
+	<color name="progress_bar_end">#ffaab1ae</color>
+	<color name="red_routes">#ffe2001a</color>
+	<color name="blue_routes">#ff004494</color>
+	<color name="gr1_route">#ff004494</color>
+	<color name="gr2_route">#ffe2001a</color>
+	<color name="pr1_route">#fff5883d</color>
+	<color name="pr2_route">#ffddaabb</color>
+	<color name="pr3_route">#fff8ef63</color>
+	<color name="cr1_route">#ff99c7ff</color>
+    <color name="green_routes">#016e01</color>
+    <color name="btn_pressed">#fffbc711</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="listViewText">#FF282828</color>
+    <color name="listViewBackground">#FFECECEC</color>
+    <color name="tableViewBackground">#FFC2C2C2</color>
+    <color name="toastBackground">#EE444444</color>
+    <color name="toastBorder">#EE777777</color>
+    <color name="toastText">#FFF</color>
+    <color name="screenTitle">#FFFFFFFF</color>
+    <color name="sponsoredBackground">#E6FFFF99</color>
+    <color name="poiDetailBackground">#CC000000</color>
+    <color name="metaiocolor">#FF0654A5</color>
+    <color name="button_pressed_background">#33000000</color>
+</resources>

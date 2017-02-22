@@ -1,0 +1,184 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    tools:context=".LoginActivity"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white" >
+    
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+     android:id="@+id/menuRecoverPassword"
+     android:layout_width="fill_parent"
+     android:layout_height="100dp"
+     alborgis:fitImageToScreen="false"
+     alborgis:map="mapa_RecoverPassword"
+     alborgis:maxSizeFactor="1.5"
+     alborgis:scaleFromOriginal="true" />
+    
+    
+
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/menuRecoverPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:padding="20dp"
+            android:layout_gravity="center_horizontal" >
+            
+            <TextView 
+                android:id="@+id/lblMensaje1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="@string/mod_recover_pass__al_pulsar_enviar_te_enviaremos_codigo"/>
+
+            <EditText
+                android:id="@+id/tbEmail"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:hint="@string/mod_recover_pass__correo_electronico"
+                android:textColorHint="@color/color_blanco"
+                android:textColor="@color/color_blanco"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:gravity="center"
+                android:background="@drawable/input_text9" />
+            
+            <Button
+                android:id="@+id/btnEnviarMail"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="15dp"
+                android:background="@drawable/btn_enviar" />
+            
+            
+            <TextView 
+                android:id="@+id/lblMensaje2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="@string/mod_recover_pass__en_breves_momentos_recibiras_un_correo_con_codigo"/>
+            
+
+            <EditText
+                android:id="@+id/tbCodigo"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:hint="@string/mod_recover_pass__introduce_codigo"
+                android:textColorHint="@color/color_blanco"
+                android:textColor="@color/color_blanco"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:inputType="text"
+                android:gravity="center"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:background="@drawable/input_text9" />
+            
+            <TextView 
+                android:id="@+id/lblMensaje3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="@string/mod_recover_pass__introduce_nueva_contrasena"/>
+            
+            <EditText
+                android:id="@+id/tbNewPassword"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                
+                android:hint="@string/mod_recover_pass__introduce_nueva_contrasena"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="Login"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:textColorHint="@color/color_blanco"
+                android:textColor="@color/color_blanco"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:maxLines="1"
+                android:gravity="center"
+                android:singleLine="true"
+                android:background="@drawable/input_text9" />
+            
+            <EditText
+                android:id="@+id/tbNewPasswordRepeat"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:hint="@string/mod_recover_pass__repite_nueva_contrasena"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="Login"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:textColorHint="@color/color_blanco"
+                android:textColor="@color/color_blanco"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:maxLines="1"
+                android:gravity="center"
+                android:singleLine="true"
+                android:background="@drawable/input_text9" />
+            
+            <Button
+                android:id="@+id/btnReestablecerPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/mod_recover_pass__reestablecer_contrasena"
+                android:textSize="15dp"
+                android:background="@drawable/btn_verde"
+                android:textColor="@color/color_verde_oscuro" />
+
+        </LinearLayout>
+    </ScrollView>
+    
+    
+    <RelativeLayout
+        android:id="@+id/panelCargando"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/header"
+        android:background="#000"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progressBarCargando"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+        
+        <TextView 
+            android:id="@+id/lblCargando"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/progressBarCargando"
+            android:layout_centerHorizontal="true"
+            android:textColor="#FFF"
+            android:text="Cargando..."/>
+        
+    </RelativeLayout>
+    
+    
+
+</RelativeLayout>

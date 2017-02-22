@@ -1,0 +1,55 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
+    -->
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+	</style>
+	
+    <style 
+        name="CustomRatingBar" 
+        parent="@android:style/Widget.RatingBar">
+		<item name="android:progressDrawable">@drawable/custom_ratingbar</item>
+
+	</style>
+
+    <!-- Colores de la app de Haro -->
+    <color name="fondo_pantalla">#E8E8E8</color>
+    <color name="fondo_fila">#E8E8E8</color>
+    <color name="color_separador_celda_oscuro">#d7d7d7</color>
+    <color name="color_separador_celda_claro">#FFF</color>
+    <color name="color_burdeos">#882345</color>
+    <color name="color_burdeos_alpha">#CC882345</color>
+    <color name="color_naranja">#ffd182</color>
+    <color name="color_naranja_alpha">#CCffd182</color>
+    <color name="color_gris_muy_oscuro">#535353</color>
+    <color name="color_gris_muy_oscuro_alpha">#cc535353</color>
+    <color name="color_gris_oscuro_alpha">#CC8B8B8B</color>
+    <color name="color_gris_claro_alpha">#60E8E8E8</color>
+    <color name="color_verde_alpha">#CC667140</color>
+    <color name="color_verde_oscuro_alpha">#CC3D4426</color>
+    <!-- Fin Colores de la app de Haro -->
+
+    <color name="color_amarillo_verdoso">#ffd458</color>
+    <color name="color_verde">#7c9c94</color>
+    <color name="color_verde_oscuro">#2a665a</color>
+    <color name="color_azul_muy_claro">#D9EBF9</color>
+    <color name="color_azul_claro">#72A5DA</color>
+    <color name="color_azul">#2b6db7</color>
+    <color name="color_azul_oscuro">#2a665a</color>
+    
+    <color name="color_blanco">#ffffff</color>
+</resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/white">
+	
+<RelativeLayout
+        android:id="@+id/r_map_routelist"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true" >
+    	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
+	    	android:id="@+id/map_routeList"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="275dp"
+    		alborgis:map="lista_rutas"
+        	alborgis:maxSizeFactor="1.5"
+        	alborgis:scaleFromOriginal="true"
+        	alborgis:fitImageToScreen="false"/>   
+</RelativeLayout>    
+    <ListView
+   		android:id="@+id/listaRoutes"
+   		android:layout_width="fill_parent"
+   		android:layout_height="wrap_content"
+   		android:layout_below="@+id/r_map_routelist"
+   		android:layout_above="@+id/footer"
+   		android:scrollbars="none"
+   		android:cacheColorHint="#00000000"
+   		android:divider="@color/blue_route_value"
+        android:dividerHeight="2dp">
+   </ListView>
+   
+    
+<!--     <RelativeLayout -->
+<!--         android:id="@+id/footer" -->
+<!--         android:layout_width="wrap_content" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:layout_centerHorizontal="true" -->
+<!--         android:paddingTop="10dp" -->
+<!--         android:paddingBottom="5dp" -->
+<!--         android:layout_alignParentBottom="true" > -->
+        
+<!--         <LinearLayout  -->
+<!--             android:orientation="horizontal" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_centerHorizontal="true"> -->
+
+<!--             <Button  -->
+<!-- 	            android:id="@+id/btnMapa" -->
+<!-- 	            android:layout_width="80dp" -->
+<!-- 	            android:layout_height="45dp" -->
+<!-- 	            android:layout_centerVertical="true" -->
+<!-- 	            android:textSize="20dp" -->
+<!-- 	            android:text="@string/mod_discover__mapa" -->
+<!-- 	            android:textColor="@color/color_verde_oscuro" -->
+<!-- 	            android:background="@drawable/btn_state_verde"/> -->
+        	
+<!--         </LinearLayout> -->
+        	
+            
+
+<!--         </RelativeLayout> -->
+        
+    
+    <RelativeLayout 
+	android:id="@+id/panelCargando"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@+id/header"
+    android:visibility="gone"  >
+
+       <ProgressBar
+           android:id="@+id/progressBarCargando"
+           style="?android:attr/progressBarStyleLarge"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true" />
+    
+   </RelativeLayout>
+    
+</RelativeLayout>

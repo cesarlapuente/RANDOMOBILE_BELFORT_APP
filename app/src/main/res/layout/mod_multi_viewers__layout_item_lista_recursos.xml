@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fondo_list_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/general_franja_item_listado" >
+        
+	        <ImageView
+	    		android:id="@+id/imageView"
+	        	android:layout_width="70dp"
+	        	android:layout_height="60dp"
+	        	android:layout_alignParentLeft="true"
+	        	android:layout_centerVertical="true"
+	        	android:layout_margin="10dp">
+	    	</ImageView>
+
+	        <LinearLayout 
+	            android:id="@+id/textos"
+	            android:orientation="vertical"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_centerVertical="true"
+	            android:layout_marginLeft="10dp"
+	            android:layout_toRightOf="@+id/imageView"
+	            android:layout_toLeftOf="@+id/accesoryIcon">
+	            
+	            <TextView
+		            android:id="@+id/lblTitulo"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:maxLines="1"
+		            android:text="Vídeo sin título"
+		            android:ellipsize="end"
+		            android:textColor="#000"
+		            android:textSize="17dp"
+		            android:textStyle="bold" />
+	            
+	        </LinearLayout>
+
+	        
+    	
+  
+		  <ImageView
+		    	android:id="@+id/accesoryIcon"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:scaleType="center"
+		        android:layout_alignParentRight="true"
+		        android:layout_centerVertical="true"
+		        android:layout_marginLeft="10dp"
+		        android:layout_marginRight="10dp">
+		  </ImageView>
+
+
+ </RelativeLayout>

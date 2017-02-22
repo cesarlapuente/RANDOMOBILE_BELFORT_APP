@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="balisage">
+        <![CDATA[
+    	<strong><u>Les types de balisage :</u></strong><br>
+		Le balisage des itinéraires de randonnée est un système de signalisation 
+		pour pouvoir suivre les chemins du départ, jusqu’à l’arrivée. 
+		Il consiste en marques de peinture sur les rochers, les arbres, les murs, les 
+		poteaux. Leur fréquence est fonction du terrain.<br>
+		Connaître la signalisation et savoir lire les panneaux que vous 
+		rencontrez en randonnée est la base pour <strong> bien s’orienter et ne pas se 
+		perdre.</strong>
+		]]>    
+    </string>
+    <string name="sacados">
+        <![CDATA[
+        <strong><u>Bien préparer son sac à dos</u></strong><br>
+        Quelle que soit la longueur du sentier que vous empruntez, 
+        ne partez pas sans sac à dos ! <br> <br>
+		Tout d’abord, placez votre sac de manière à<br> ce 
+		que le centre de gravité du sac soit le plus près possible du corps, ni trop bas,
+		ni trop haut, au niveau du dos. <br>
+		Voici quelques conseils pour bien répartir la charge de votre sac à dos : <br>
+		&#10004;	Placez votre sac de couchage et vos vêtements de rechange au fond du sac <br>
+		&#10004;	Laissez  accessible la gourde, les vivres de course, le chapeau et la crème solaire <br>
+		&#10004;	Mettez vos vêtements de protection en haut du sac <br>
+		&#10004;	Protégez vos objets précieux, tels que papiers et argent, dans une pochette plastique zippée <br>
+		&#10004;	Rangez vos vêtements et affaires personnelles dans différents sacs plastiques ou en toile légère, 
+		ce qui facilite les manipulations. <br>
+		]]>
+    </string>
+    <string name="checklist">
+        <![CDATA[
+        <strong><u>Check-list du randonneur</u></strong><br>
+        Pour quelques heures de balade ou une journée, il faut toujours emporter avec soi 
+        quelques objets afin de profiter pleinement de votre randonnée : <br>
+		&#10004;	Des lunettes de soleil,<br>
+		&#10004;	Un tube de crème solaire, <br>
+		&#10004;	Une casquette ou un chapeau, <br>
+		&#10004;	Un vêtement de protection contre la pluie, <br>
+		&#10004;	Un pull ou une veste en fibres polaires, fine ou épaisse <br>
+		&#10004;	Des bâtons de marche le cas échéant, <br>
+		&#10004;	Des vivres de course (pain d’épices, barres, fruits secs…), <br>
+		&#10004;	De l’eau, minimum 1,5 l, <br>
+		&#10004;	Une couverture de survie, <br>
+		&#10004;	Un sifflet, <br>
+		&#10004;	Du papier hygiénique, <br>
+		&#10004;	Une paire de lacets de chaussures. <br>
+		]]>    
+    </string> 
+    <string name="trousse">
+        <![CDATA[
+        <strong><u>Une trousse de secours idéale</u></strong><br>
+        Glissée dans le sac à dos, la trousse de secours est là pour faire face aux petits
+        pépins du quotidien de la marche ou attendre les secours en cas de blessure sérieuse. 
+        Voici une liste qui vous permettra de rassembler quelques éléments pour partir 
+        serein, dans les meilleures conditions de sécurité : <br>
+		&#10004;	Désinfectant incolore pour nettoyer une plaie souillée, <br>
+		&#10004;	Sérum physiologique en dosette pour laver les yeux, <br>
+		&#10004;	Lot de pansements prédécoupés de taille et de formes diverses, dont certains imperméables, <br>
+		&#10004;	5 compresses stériles de petit et 5 compresses stériles de grand format, <br>
+		&#10004;	Du sparadrap, <br>
+		&#10004;	Pansements contre les ampoules et protections de type « deuxième peau », <br>
+		&#10004;	De la bande collante élastique (type Élastoplast®), de 6 cm de large, qui servira à tout : 
+			protéger un pansement, réparer la bretelle d’un sac à dos… <br>
+		&#10004;	Une bande de type Velpeau® normale, <br>
+		&#10004;	Une paire de petits ciseaux bien coupants, <br>
+		&#10004;	Des épingles à nourrice, <br>
+		&#10004;	Une aiguille et une pince pour enlever des échardes, <br>
+		&#10004;	Une crème à l’arnica en cas de coups, un tube de granulés d’arnica, <br>
+		&#10004;	Quelques bonbons ou morceaux de sucre enveloppés individuellement <br>
+		]]>      
+    </string>
+</resources>
