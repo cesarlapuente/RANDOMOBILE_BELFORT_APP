@@ -25,7 +25,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     // <---------->__LOCAL_DATABASE_CONFIGURATION_<---------->
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "pajaramain.db";
+    private static final String DATABASE_NAME = "belfortmain.db";
     // <---------->__TABLE_ROUTES_CONFIGURATION____<---------->
     private static final String TABLE_ROUTES = "routes";
     public static final String COLUMN_ROUTE_NID = "id";

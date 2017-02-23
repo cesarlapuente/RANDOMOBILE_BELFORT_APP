@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
                     cargaActivityMaps();
 
                 } else if (mImageMap.getAreaAttribute(id, "name").equals("PNRL")) {
-                    // Abrir la pantalla de info de pajara
+                    // Abrir la pantalla de info de belfort
                     Intent intent = new Intent(MainActivity.this, PNRActivity.class);
                     startActivity(intent);
 
@@ -262,10 +262,12 @@ public class MainActivity extends Activity {
             Log.d("MainActivity sais:", " Updating local database.");
             Toast.makeText(getApplicationContext(), "ACTUALIZANDO DATOS", Toast.LENGTH_LONG);
 
+
+
             // <-------------------->_ESPECIES_SERVER_DOWNLOAD_<-------------------->
 
             AsyncHttpClient client_especies = new AsyncHttpClient();
-            client_especies.get(MainActivity.this, "http://pajara.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
+            client_especies.get(MainActivity.this, "http://belfort.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(String s) {
                     super.onSuccess(s);
@@ -298,7 +300,7 @@ public class MainActivity extends Activity {
             // <-------------------->_PAGES_SERVER_DOWNLOAD_<-------------------->
 
             AsyncHttpClient client_pages = new AsyncHttpClient();
-            client_pages.get(MainActivity.this, "http://pajara.randomobile.eu/api/routedata/pages/retrieve.json", new AsyncHttpResponseHandler() {
+            client_pages.get(MainActivity.this, "http://belfort.randomobile.eu/api/routedata/pages/retrieve.json", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(String string) {
                     super.onSuccess(string);

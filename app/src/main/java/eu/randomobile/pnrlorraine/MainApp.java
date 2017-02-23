@@ -149,7 +149,7 @@ public class MainApp extends Application {
 	// Nombres de dominios y urls de servicios
 	//public String URL_SERVIDOR = "http://185.18.198.182/"; // Altoagueda (por defecto)
 	//public String URL_SERVIDOR = "http://dns198182.phdns.es/"; //Altoagueda (nuevo -ha habido redireccion ips-)
-	public String URL_SERVIDOR = "http://pajara.randomobile.eu/";
+	public String URL_SERVIDOR = "http://belfort.randomobile.eu/";
 	
 	public String ENDPOINT = "api";
 

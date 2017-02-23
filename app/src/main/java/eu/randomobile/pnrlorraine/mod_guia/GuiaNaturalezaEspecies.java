@@ -29,7 +29,7 @@ public class GuiaNaturalezaEspecies extends Activity {
     // Request JSON
     AsyncHttpClient client;
     Gson gson;
-    private final String URL_SERVICE = "http://pajara.randomobile.eu/api/routedata/route/retrieve.json";
+    private final String URL_SERVICE = "http://belfort.randomobile.eu/api/routedata/route/retrieve.json";
     ArrayList<Especie> especies = new ArrayList<Especie>();
     ListView lvEspecies;
     MainApp app;

@@ -142,7 +142,7 @@
             android:name=".mod_discover.detail.PoiDetailActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".mod_discover.map.ConcreteMapActivity"
             android:label="@string/app_name"
@@ -215,7 +215,7 @@
         <activity android:name=".mod_guia.GuiaNaturalezaEspecies" />
         <activity android:name=".mod_guia.GuiaNaturalezaEspacios" />
         <activity android:name=".mod_guia.FichaEspecie"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

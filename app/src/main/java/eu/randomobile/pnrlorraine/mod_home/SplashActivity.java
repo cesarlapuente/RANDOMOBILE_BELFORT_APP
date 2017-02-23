@@ -911,7 +911,7 @@ public class SplashActivity extends Activity {
     private void updateLocalDatabase_Especies() {
         if (app.getNetStatus() != 0) {
             AsyncHttpClient client_especies = new AsyncHttpClient();
-            client_especies.get(SplashActivity.this, "http://pajara.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
+            client_especies.get(SplashActivity.this, "http://belfort.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(String s) {
                     super.onSuccess(s);
@@ -958,7 +958,7 @@ public class SplashActivity extends Activity {
     private void updateLocalDatabase_Pages() {
         try {
             AsyncHttpClient client_pages = new AsyncHttpClient();
-            client_pages.get(SplashActivity.this, "http://pajara.randomobile.eu/api/routedata/pages/retrieve.json", new AsyncHttpResponseHandler() {
+            client_pages.get(SplashActivity.this, "http://belfort.randomobile.eu/api/routedata/pages/retrieve.json", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(String string) {
                     super.onSuccess(string);
