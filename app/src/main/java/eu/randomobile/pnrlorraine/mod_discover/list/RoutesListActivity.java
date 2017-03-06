@@ -480,7 +480,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             if (item.getCategory().getName().equals("GR")) {
                 holder.imgViewCategory.setBackgroundResource(R.drawable.categoria_gr);
                 //holder.imgViewFrame.setBackgroundResource(R.drawable.frame_gr);
-            } else {
+            } else if (item.getCategory().getName().equals("PR")){
                 holder.imgViewCategory.setBackgroundResource(R.drawable.categoria_pr);
                 //holder.imgViewFrame.setBackgroundResource(R.drawable.frame_pr);
             }
