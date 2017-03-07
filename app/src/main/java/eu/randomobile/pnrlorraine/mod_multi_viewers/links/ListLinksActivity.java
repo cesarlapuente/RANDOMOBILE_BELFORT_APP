@@ -209,7 +209,7 @@ public class ListLinksActivity extends Activity {
 	        
 	        // Ponemos nombre
 	        if(rec.getTitle() == null || rec.getTitle().equals("")){
-	        	holder.lblTitulo.setText("(V’deo sin nombre)");
+	        	holder.lblTitulo.setText("(Video sans titre)");
 	        }else{
 	        	holder.lblTitulo.setText(rec.getTitle());
 	        }

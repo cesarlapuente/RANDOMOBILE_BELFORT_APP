@@ -232,6 +232,7 @@
 						android:layout_height="wrap_content"
 						android:layout_width="wrap_content"
 						android:layout_marginLeft="25dp">
+
 						<TextView
 							android:id="@+id/lblValoracion"
 							android:layout_width="wrap_content"
@@ -239,6 +240,7 @@
 							android:text="@string/mod_discover__valoracion"
 							android:textSize="13dp"
 							android:textColor="@color/black" />
+
 						<ImageView
 							android:id="@+id/imgViewValoracion"
 							android:layout_width="45dp"
@@ -279,7 +281,7 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:background="@android:color/transparent"
-				android:text="Descripción:"
+				android:text="@string/descripcion"
 				android:textColor="@color/black"
 				android:textStyle="bold" />
 

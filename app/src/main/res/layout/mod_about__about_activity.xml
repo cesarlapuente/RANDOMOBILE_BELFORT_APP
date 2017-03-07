@@ -39,7 +39,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:text="Descripcion de la informacion"
+                android:text="@string/descripcion"
                 android:textColor="#000"
                 android:textSize="16dp" />
         </LinearLayout>

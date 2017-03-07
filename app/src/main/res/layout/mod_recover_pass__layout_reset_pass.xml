@@ -133,7 +133,6 @@
                 android:paddingRight="10dp"
                 android:maxLines="1"
                 android:gravity="center"
-                android:singleLine="true"
                 android:background="@drawable/input_text9" />
             
             <Button
@@ -175,7 +174,7 @@
             android:layout_below="@+id/progressBarCargando"
             android:layout_centerHorizontal="true"
             android:textColor="#FFF"
-            android:text="Cargando..."/>
+            android:text="@string/mod_global__cargando"/>
         
     </RelativeLayout>
     

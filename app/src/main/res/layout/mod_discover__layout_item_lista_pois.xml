@@ -37,43 +37,9 @@
 	        android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
-    
-    <RelativeLayout
-        android:id="@+id/textos"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="5dp"
-        android:layout_toRightOf="@+id/contenedorImgView" >
-        
-        <TextView
-	    	android:id="@+id/lblTitulo"
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content"
-	    	android:textSize="15dp"
-	    	android:textStyle="bold"
-	    	android:maxLines="2"
-	    	android:ellipsize="end"
-	    	android:text="Title"
-	    	android:textColor="@color/blue_route_title">
-
-	    </TextView>
-	    
-		<TextView
-	    	android:id="@+id/lblDetalle"
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="25dp"
-	    	android:textSize="15dp"
-	    	android:maxLines="1"
-	    	android:textColor="#000"
-	    	android:layout_below="@+id/lblTitulo"
-	    	android:text="Category" >
-	    </TextView>      
-    </RelativeLayout>
 
 
-    
-      <LinearLayout 
+	<LinearLayout
          android:id="@+id/contentLabelsProperties"
          android:orientation="horizontal"
          android:layout_height="wrap_content"
@@ -103,7 +69,7 @@
 	            android:id="@+id/lblDistNum"
 	        	android:layout_width="wrap_content"
 	        	android:layout_height="wrap_content"
-	        	android:text="Dureé:"
+	        	android:text="@string/mod_discover__duracion"
 	        	android:textSize="12dp"
 	        	android:textColor="@color/blue_route_value" />
 			</LinearLayout>
@@ -154,5 +120,38 @@
 				   	android:layout_height="20dp"/>
 			 </LinearLayout>          
      </LinearLayout>
-    
+
+	<RelativeLayout
+        android:id="@+id/textos"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:layout_alignLeft="@+id/contentLabelsProperties"
+		android:layout_alignStart="@+id/contentLabelsProperties">
+
+        <TextView
+            android:id="@+id/lblTitulo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Title"
+            android:textColor="@color/blue_route_title">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/lblDetalle"
+            android:layout_width="fill_parent"
+            android:layout_height="25dp"
+            android:textSize="15dp"
+            android:maxLines="1"
+            android:textColor="#000"
+            android:layout_below="@+id/lblTitulo"
+            android:text="@string/categoria" >
+        </TextView>
+    </RelativeLayout>
+
 </RelativeLayout>

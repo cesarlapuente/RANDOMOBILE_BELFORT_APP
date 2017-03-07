@@ -166,7 +166,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="DESNIVEL:"
+                                    android:text="@string/mod_discover__desnivel"
                                     android:id="@+id/textView"
                                     android:textColor="@color/black"/>
 
@@ -190,7 +190,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="DURACIÓN:"
+                                    android:text="@string/mod_discover__duracion"
                                     android:id="@+id/textView6"
                                     android:textColor="@color/black"/>
 
@@ -212,7 +212,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="DISTANCIA:"
+                                    android:text="@string/mod_discover__distancia"
                                     android:id="@+id/textView7"
                                     android:textColor="@color/black"/>
 
@@ -246,7 +246,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="DIFICULTAD:"
+                                    android:text="@string/mod_discover__dificultad"
                                     android:id="@+id/textView8"
                                     android:textColor="@color/black"/>
 
@@ -269,7 +269,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="NOTA: (215 avis)"
+                                    android:text="NOTE : (215 avis)"
                                     android:id="@+id/txt_note"
                                     android:textColor="@color/black"
                                     />
@@ -382,7 +382,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="DESCRIPCIÓN:"
+                        android:text="@string/mod_puntuacion__descripcion"
                         android:id="@+id/textView4"
                         android:textStyle="bold"
                         android:textIsSelectable="false"
@@ -393,11 +393,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,"
+                        android:text="Lorem ipsum dolor sit amet"
                         android:id="@+id/txt_description_body"
-                        android:singleLine="false"
                         android:textColor="@color/black"
-                        android:textSize="16dp"/>
+                        android:textSize="16sp"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

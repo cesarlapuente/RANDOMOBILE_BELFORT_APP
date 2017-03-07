@@ -20,16 +20,16 @@
     <string name="mod_home__iniciar_sesion">Se connecter</string>
     <string name="mod_home__cerrar_sesion">Se déconnecter</string>
 
-    <string name="mod_home__descubrir">Descubrir</string>
-    <string name="mod_home__pois">Puntos de interés</string>
-    <string name="mod_home__rutas">Rutas</string>
-    <string name="mod_home__informacion">Información</string>
-    <string name="mod_home__jugar">Jugar</string>
-    <string name="mod_home__juego_de_pistas">Pistas del juego</string>
+    <string name="mod_home__descubrir">Découvrir</string>
+    <string name="mod_home__pois">Points d\'intérêt</string>
+    <string name="mod_home__rutas">Parcours</string>
+    <string name="mod_home__informacion">Information</string>
+    <string name="mod_home__jugar">Jouer</string>
+    <string name="mod_home__juego_de_pistas">Indices</string>
     <string name="mod_home__photohide">Photohide</string>
     <string name="mod_home__geocaching">Randocaching</string>
-    <string name="mod_home__premios">Premios</string>
-    <string name="mod_home__pasaporte">Pasaporte</string>
+    <string name="mod_home__premios">Prix</string>
+    <string name="mod_home__pasaporte">Passport</string>
 
     <string name="mod_config__activar_avisos">Activer Avertissements</string>
     <string name="mod_config__configuracion">Paramètres</string>
@@ -304,6 +304,7 @@ Choisissez votre étape de randonnée ou votre point d'intérêt et télécharge
     <string name="votos">votes</string>
     <string name="descripcion">Description :</string>
     <string name="categoria">Catégorie :</string>
+    <string name="video_sans_titre">Vidéo sans titre</string>
 
     <!-- EspecieDetailActivity (.java and .xml) -->
     <string name="txt_function_disabled">Cette fonctionnalité n\'est pas disponible pour le moment</string>

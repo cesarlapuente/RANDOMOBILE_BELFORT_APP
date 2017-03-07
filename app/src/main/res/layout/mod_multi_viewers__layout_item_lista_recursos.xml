@@ -14,7 +14,7 @@
 	        	android:layout_margin="10dp">
 	    	</ImageView>
 
-	        <LinearLayout 
+	        <LinearLayout
 	            android:id="@+id/textos"
 	            android:orientation="vertical"
 	            android:layout_width="fill_parent"
@@ -23,23 +23,23 @@
 	            android:layout_marginLeft="10dp"
 	            android:layout_toRightOf="@+id/imageView"
 	            android:layout_toLeftOf="@+id/accesoryIcon">
-	            
+
 	            <TextView
 		            android:id="@+id/lblTitulo"
 		            android:layout_width="fill_parent"
 		            android:layout_height="wrap_content"
 		            android:maxLines="1"
-		            android:text="Vídeo sin título"
+		            android:text="@string/video_sans_titre"
 		            android:ellipsize="end"
 		            android:textColor="#000"
 		            android:textSize="17dp"
 		            android:textStyle="bold" />
-	            
+
 	        </LinearLayout>
 
-	        
-    	
-  
+
+
+
 		  <ImageView
 		    	android:id="@+id/accesoryIcon"
 		        android:layout_width="wrap_content"
