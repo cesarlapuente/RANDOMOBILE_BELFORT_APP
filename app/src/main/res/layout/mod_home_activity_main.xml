@@ -1,40 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 
- <LinearLayout
-      android:id="@+id/main_menu"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="vertical">
-      
-    <View
-    	android:id="@+id/img_invisible"
+	<LinearLayout
+		android:id="@+id/main_menu"
 		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="43"
-		android:visibility="invisible"/>
-    <ImageView 
-    	android:id="@+id/img_menu"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="57"
-		android:background="@drawable/main_foto1"
-		android:visibility="visible"/>
- </LinearLayout>
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 
-<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
-	    android:id="@+id/map"
-    	android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent"
-    	alborgis:map="menu_lorraine"
-        alborgis:maxSizeFactor="1.5"
-        alborgis:scaleFromOriginal="true"
-        alborgis:fitImageToScreen="true"/>
+		<View
+			android:id="@+id/img_invisible"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="43"
+			android:visibility="invisible"/>
+		<ImageView
+			android:id="@+id/img_menu"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="57"
+			android:background="@drawable/main_foto1"
+			android:visibility="visible"/>
+	</LinearLayout>
+
+	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+		android:id="@+id/map"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		alborgis:map="menu_lorraine"
+		alborgis:maxSizeFactor="1.5"
+		alborgis:scaleFromOriginal="true"
+		alborgis:fitImageToScreen="true"/>
+	<LinearLayout
+		android:id="@+id/main_patrocinador"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical" >
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="90"
+			android:background="@color/white"
+			android:visibility="invisible" />
+
+		<LinearLayout
+			android:id="@+id/main_inner_patrocinador"
+			android:layout_width="match_parent"
+			android:layout_height="107dp"
+			android:orientation="horizontal"
+            android:paddingBottom="15dp">
+
+			<ImageView
+				android:id="@+id/imgBaliza1"
+				android:layout_width="150dp"
+				android:layout_height="104dp"
+				android:layout_marginLeft="2dp"
+				android:layout_marginStart="2dp"
+				android:background="@drawable/patrocinador" />
+		</LinearLayout>
+	</LinearLayout>
 
 
 </RelativeLayout>

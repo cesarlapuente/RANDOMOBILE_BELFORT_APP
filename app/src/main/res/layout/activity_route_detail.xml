@@ -415,15 +415,15 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="150dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="45dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="18sp"
             android:text="Titulo"
             android:id="@+id/txt_routeTitle"
             android:textColor="@color/color_blanco"

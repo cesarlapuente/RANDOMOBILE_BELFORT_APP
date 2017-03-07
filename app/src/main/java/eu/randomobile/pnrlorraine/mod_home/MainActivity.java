@@ -53,6 +53,7 @@ import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.data_access.DBHandler;
 import eu.randomobile.pnrlorraine.mod_global.model.Especie;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
+import eu.randomobile.pnrlorraine.mod_grtgaz.GRTGazActivity;
 import eu.randomobile.pnrlorraine.mod_guia.GuiaNaturaleza;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_notification.Cache;
@@ -65,6 +66,7 @@ public class MainActivity extends Activity {
     MainApp app;
     ImageView imgMainPhoto;
     static private boolean firstTime = true;
+    ImageView imgBaliza1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,8 @@ public class MainActivity extends Activity {
         // app.setRoutesList(app.getDBHandler().getRouteList());
         // app.setPoisList();  -- Not implemented yet.
         app.setEspecies(app.getDBHandler().getEspeciesList());
+
+        imgBaliza1 = (ImageView) findViewById(R.id.imgBaliza1);
 
         // find the image map in the view
         mImageMap = (ImageMap) findViewById(R.id.map);
@@ -132,7 +136,7 @@ public class MainActivity extends Activity {
 
                 } else if (mImageMap.getAreaAttribute(id, "name").equals("FFRP")) {
                     // Abrir la pantalla de Guia de Naturaleza
-                    Intent intent = new Intent(MainActivity.this, GuiaNaturaleza.class);
+                    Intent intent = new Intent(MainActivity.this, FFRPActivity.class);
                     startActivity(intent);
 
                 } else {
@@ -149,12 +153,22 @@ public class MainActivity extends Activity {
             }
         });
 
+        // GRT Gaz
+        imgBaliza1.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GRTGazActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // Internet acces checking.
         if (isInternetAvailable()) { AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-            builder.setTitle("Sin conexión");
-            builder.setMessage("Es posible que algunas caracteristicas no se encuentren disponibles sin conexión a internet.");
-            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            builder.setTitle(getString(R.string.txt_sin_conexion));
+            builder.setMessage(getString(R.string.txt_caracteristicas_no_disponibles));
+            builder.setPositiveButton(R.string.mod_global__ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Dismis
@@ -175,7 +189,7 @@ public class MainActivity extends Activity {
 
             builder.setTitle(R.string.txt_sin_conexion);
             builder.setMessage(R.string.txt_funcion_no_disponible);
-            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.mod_global__ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Dismis
@@ -205,7 +219,7 @@ public class MainActivity extends Activity {
         // Creating alert Dialog with one Button
         dialogPoi = new Dialog(this);
         dialogPoi.setContentView(R.layout.mod_discover_dialog_poi_route);
-        dialogPoi.setTitle("Info " + "T�l�chargement");
+        dialogPoi.setTitle("Info " + "Téléchargement");
         dialogPoi.setCancelable(true);
         //there are a lot of settings, for dialog, check them all out!
 
