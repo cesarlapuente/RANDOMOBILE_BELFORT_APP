@@ -51,10 +51,8 @@ import eu.randomobile.pnrlorraine.mod_discover.list.RoutesListActivity;
 import eu.randomobile.pnrlorraine.mod_discover.map.RoutesGeneralMapActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.data_access.DBHandler;
-import eu.randomobile.pnrlorraine.mod_global.model.Especie;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
 import eu.randomobile.pnrlorraine.mod_grtgaz.GRTGazActivity;
-import eu.randomobile.pnrlorraine.mod_guia.GuiaNaturaleza;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_notification.Cache;
 import eu.randomobile.pnrlorraine.mod_notification.NotificationService;
@@ -76,7 +74,6 @@ public class MainActivity extends Activity {
 
         // app.setRoutesList(app.getDBHandler().getRouteList());
         // app.setPoisList();  -- Not implemented yet.
-        app.setEspecies(app.getDBHandler().getEspeciesList());
 
         imgBaliza1 = (ImageView) findViewById(R.id.imgBaliza1);
 
@@ -135,7 +132,7 @@ public class MainActivity extends Activity {
                     startActivity(intent);
 
                 } else if (mImageMap.getAreaAttribute(id, "name").equals("FFRP")) {
-                    // Abrir la pantalla de Guia de Naturaleza
+                    // Abrir la pantalla de FFRP
                     Intent intent = new Intent(MainActivity.this, FFRPActivity.class);
                     startActivity(intent);
 
@@ -278,39 +275,6 @@ public class MainActivity extends Activity {
 
 
 
-            // <-------------------->_ESPECIES_SERVER_DOWNLOAD_<-------------------->
-
-            AsyncHttpClient client_especies = new AsyncHttpClient();
-            client_especies.get(MainActivity.this, "http://belfort.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(String s) {
-                    super.onSuccess(s);
-
-                    Gson gson = new Gson();
-                    Especie[] especiesArray = gson.fromJson(s, Especie[].class);
-
-                    ArrayList<Especie> especies = new ArrayList<Especie>(Arrays.asList(especiesArray));
-
-                    for (Especie especie : especies) {
-                        Log.d("updateLocalDatabase():", " Especie Nid: " + especie.getNid());
-                        Log.d("updateLocalDatabase():", " Especie Title: " + especie.getTitle());
-                        Log.d("updateLocalDatabase():", " Especie Body: " + especie.getBody());
-
-                        app.getDBHandler().addOrReplaceEspecie(especie);
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable throwable, String s) {
-                    super.onFailure(throwable, s);
-                }
-
-                @Override
-                public void onFinish() {
-                    super.onFinish();
-                }
-            });
-
             // <-------------------->_PAGES_SERVER_DOWNLOAD_<-------------------->
 
             AsyncHttpClient client_pages = new AsyncHttpClient();
@@ -353,7 +317,6 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(), "NO SE HAN PODIDO ACTUALIZAR LOS DATOS", Toast.LENGTH_LONG);
         }
 
-        app.setEspecies(app.getDBHandler().getEspeciesList());
     }
 
     public boolean isInternetAvailable() {

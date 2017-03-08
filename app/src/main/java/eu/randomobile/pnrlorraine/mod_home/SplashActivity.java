@@ -5,7 +5,6 @@ import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.list.RoutesListActivity;
 import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
 import eu.randomobile.pnrlorraine.mod_global.environment.GPS;
-import eu.randomobile.pnrlorraine.mod_global.model.Especie;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
@@ -99,7 +98,6 @@ public class SplashActivity extends Activity {
 
         if (app.getNetStatus() != 0) {
             updateLocalDatabase_Routes();
-            //updateLocalDatabase_Especies();
             //loadMainActivity();
 
         } else {
@@ -108,14 +106,6 @@ public class SplashActivity extends Activity {
 
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "Se ha producido un error al actualizar las rutas", Toast.LENGTH_LONG).show();
-            }
-
-            // app.setPOIsList(app.getDBHandler().getPOIsList());
-            try {
-                app.setEspecies(app.getDBHandler().getEspeciesList());
-
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Se ha producido un error al actualizar las especies", Toast.LENGTH_LONG).show();
             }
 
             loadedComponents = 4;
@@ -728,11 +718,9 @@ public class SplashActivity extends Activity {
                 null // Texto a buscar
         );
 
-        app.setEspecies(app.getDBHandler().getEspeciesList());
 
         progressBar.incrementProgressBy(25);
-
-        updateLocalDatabase_Especies();
+        updateLocalDatabase_Pages();
     }
 
     private static void cargarListaPoisOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt) {
@@ -904,53 +892,6 @@ public class SplashActivity extends Activity {
         }
 
         return listaPois;
-    }
-
-    //
-
-    private void updateLocalDatabase_Especies() {
-        if (app.getNetStatus() != 0) {
-            AsyncHttpClient client_especies = new AsyncHttpClient();
-            client_especies.get(SplashActivity.this, "http://belfort.randomobile.eu/api/routedata/route/retrieve.json", new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(String s) {
-                    super.onSuccess(s);
-
-                    Gson gson = new Gson();
-                    Especie[] especiesArray = gson.fromJson(s, Especie[].class);
-
-                    ArrayList<Especie> especies = new ArrayList<Especie>(Arrays.asList(especiesArray));
-
-                    for (Especie especie : especies) {
-                        Log.d("updateLocalDatabase():", " Especie Nid: " + especie.getNid());
-                        Log.d("updateLocalDatabase():", " Especie Title: " + especie.getTitle());
-                        Log.d("updateLocalDatabase():", " Especie Description: " + especie.getDescription());
-                        Log.d("updateLocalDatabase():", " Especie Body: " + especie.getBody());
-
-                        app.getDBHandler().addOrReplaceEspecie(especie);
-                    }
-
-                    progressBar.incrementProgressBy(25);
-                    app.setEspecies(app.getDBHandler().getEspeciesList());
-                    loadedComponents++;
-                    loadMainActivity();
-                }
-
-                @Override
-                public void onFailure(Throwable throwable, String s) {
-                    super.onFailure(throwable, s);
-                }
-
-                @Override
-                public void onFinish() {
-                    super.onFinish();
-                }
-            });
-        }
-
-        app.setEspecies(app.getDBHandler().getEspeciesList());
-
-        updateLocalDatabase_Pages();
     }
 
     //

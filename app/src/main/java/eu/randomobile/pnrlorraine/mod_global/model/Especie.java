@@ -1,7 +1,7 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
 public class Especie {
-    private String nid;
+    /*private String nid;
     private String title;
     private String description;
     private String body;
@@ -115,5 +115,5 @@ public class Especie {
         }
 
         return result;
-    }
+    }*/
 }

@@ -80,7 +80,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
 import eu.randomobile.pnrlorraine.mod_global.model.Route.RoutesInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.User;
-import eu.randomobile.pnrlorraine.mod_guia.GuiaNaturalezaEspecies;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_login.LoginActivity;
@@ -113,7 +112,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     private ImageButton btn_Layers;
     private ImageButton btn_Download_Map;
     private ImageButton btn_Rate;
-    private ImageButton btn_Related;
+    //private ImageButton btn_Related;
     private ImageButton btn_Galery;
     private ImageButton btn_Vids;
 
@@ -486,42 +485,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 }
             }
         });
-        btn_Related = (ImageButton) findViewById(R.id.btn_Related);
-        btn_Related.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Especies relacionadas", Toast.LENGTH_SHORT).show();
 
-                if (resourcePois != null){
-                    for (ResourcePoi poi:resourcePois) {
-                        Log.d("Resource POI:", poi.getTitle());
-                    }
-                } else {
-                    Log.d("Resource POI:", " ----- NULL -----");
-                }
-
-                if (resourcePois != null) {
-                    int espaciosRuta[] = new int[resourcePois.size()];
-
-                    Intent intent = new Intent(RouteDetailActivity.this, GuiaNaturalezaEspecies.class);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("fromRouteDetail", "true");
-
-                    for (int i = 0; i < resourcePois.size(); i++) {
-                        espaciosRuta[i] = resourcePois.get(i).getNid();
-                    }
-
-                    app.setEspaciosRuta(espaciosRuta);
-                    intent.putExtras(bundle);
-
-                    startActivity(intent);
-
-                } else {
-                    Toast.makeText(RouteDetailActivity.this, "No se han encontrado espacios relacionados.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
         btn_Galery = (ImageButton) findViewById(R.id.btn_Galery);
         btn_Galery.setOnClickListener(new OnClickListener() {
             @Override

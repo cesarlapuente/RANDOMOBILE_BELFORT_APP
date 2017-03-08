@@ -12,7 +12,6 @@ import java.util.Arrays;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
-import eu.randomobile.pnrlorraine.mod_global.model.Especie;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
@@ -46,15 +45,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_ROUTE_MAP_DIRECTORY = "local_directory_map";
     public static final String COLUMN_ROUTE_POIS_LIST = "pois";
     public static final String COLUMN_ROUTE_TAGS_LIST = "tags";
-    // <---------->__TABLE_ESPECIES_CONFIGURATION_public static final String COLUMN_ROUTE_ = "";___<---------->
-    private static final String TABLE_ESPECIES = "especies";
-    public static final String COLUMN_ESPECIE_NID = "id";
-    public static final String COLUMN_ESPECIE_TITLE = "title";
-    public static final String COLUMN_ESPECIE_BODY = "body";
-    public static final String COLUMN_ESPECIE_MAIN_PICTURE = "main_picture";
-    public static final String COLUMN_ESPECIE_TYPE = "type";
-    public static final String COLUMN_ESPECIE_TYPE_NAME = "type_name";
-    public static final String COLUMN_ESPECIE_ESPACIOS = "espacios";
     // <---------->__TABLE_PAGES_CONFIGURATION____<---------->
     private static final String TABLE_PAGES = "pages";
     public static final String COLUMN_NID = "id";
@@ -96,18 +86,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 ");";
         db.execSQL(query_routes);
 
-        String query_especies = "CREATE TABLE " + TABLE_ESPECIES +
-                "(" +
-                COLUMN_ESPECIE_NID + " INTEGER PRIMARY KEY, " +
-                COLUMN_ESPECIE_TITLE + " TEXT, " +
-                COLUMN_ESPECIE_BODY + " TEXT, " +
-                COLUMN_ESPECIE_MAIN_PICTURE + " TEXT, " +
-                COLUMN_ESPECIE_TYPE + " TEXT, " +
-                COLUMN_ESPECIE_TYPE_NAME + " TEXT, " +
-                COLUMN_ESPECIE_ESPACIOS + " TEXT " +
-                ");";
-        db.execSQL(query_especies);
-
         String query_pages = "CREATE TABLE " + TABLE_PAGES +
                 "(" +
                 COLUMN_NID + " INTEGER PRIMARY KEY, " +
@@ -128,7 +106,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (app.getNetStatus() != 0) {
             db.execSQL("DROP_TABLE IF EXIST " + TABLE_ROUTES);
-            db.execSQL("DROP_TABLE IF EXIST " + TABLE_ESPECIES);
             db.execSQL("DROP_TABLE IF EXIST " + TABLE_PAGES);
             db.execSQL("DROP_TABLE IF EXIST " + TABLE_MAPS);
 
@@ -339,263 +316,6 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    /*
-
-    /**
-     * This method receives a Route identifier, find that identification in the local database and
-     * returns the Route object whose identifier matches the identifier received (if any).
-     *
-     * @param id (int) Route identifier
-     * @return (Route) Or null if not found
-     */
-    /*public Route getRouteById(int id) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        String selectQuery = "SELECT * FROM " + TABLE_ESPECIES + " WHERE " + COLUMN_NID + " = " + String.valueOf(id);
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        int iNid = c.getColumnIndex(COLUMN_ESPECIE_NID);
-        int iTitle = c.getColumnIndex(COLUMN_ESPECIE_TITLE);
-        int iBody = c.getColumnIndex(COLUMN_ESPECIE_BODY);
-        int iMain_picture = c.getColumnIndex(COLUMN_ESPECIE_MAIN_PICTURE);
-        int iType = c.getColumnIndex(COLUMN_ESPECIE_TYPE);
-        int iType_name = c.getColumnIndex(COLUMN_ESPECIE_TYPE_NAME);
-        int iEspacios = c.getColumnIndex(COLUMN_ESPECIE_ESPACIOS);
-
-        Especie result = null;
-
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            // We have to convert the String of Espacios to an array after taking it from the local database.
-            String temporal_string = c.getString(iEspacios);
-            String temporal_array[] = temporal_string.split("-");
-
-            int espacios[] = new int[temporal_array.length];
-
-            for (int i = 0; i < temporal_array.length; i++) {
-                try {
-                    if (!temporal_array[i].equals("")) {
-                        espacios[i] = Integer.parseInt(temporal_array[i]);
-                    } else {
-                        espacios[i] = 0;
-                    }
-                } catch (Exception e){
-                    espacios[i] = 0;
-                }
-            }
-
-            Especie especie = new Especie(c.getString(iNid), c.getString(iTitle), c.getString(iBody),
-                    c.getString(iMain_picture), Integer.parseInt(c.getString(iType)), c.getString(iType_name), espacios);
-
-            result = especie;
-        }
-
-        db.close();
-
-        return result;
-    }
-
-    */
-
-    // <-------------------->_ESPECIES_METHODS_<-------------------->
-
-    /**
-     * This method receives a Especie object and adds it to the local database if not exist or
-     * replaces it in the local database if it already exists.
-     *
-     * @param especie (Especie) Especie object
-     */
-    public void addOrReplaceEspecie(Especie especie) {
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_ESPECIE_NID, especie.getNid());
-        values.put(COLUMN_ESPECIE_TITLE, especie.getTitle());
-        values.put(COLUMN_ESPECIE_BODY, especie.getBody());
-        values.put(COLUMN_ESPECIE_MAIN_PICTURE, especie.getImage());
-        values.put(COLUMN_ESPECIE_TYPE, especie.getType());
-        values.put(COLUMN_ESPECIE_TYPE_NAME, especie.getTypeName());
-
-        // We have to convert the array of Espacios to a String before saving it in the database.
-        String temporal_array = "";
-        for (int i = 0; i < especie.getEspacios().length; i++) {
-            temporal_array += String.valueOf(especie.getEspacios()[i]);
-
-            if (i < especie.getEspacios().length) {
-                temporal_array += "-";
-            }
-        }
-
-        values.put(COLUMN_ESPECIE_ESPACIOS, temporal_array);
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        db.insertWithOnConflict(TABLE_ESPECIES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-
-        db.close();
-    }
-
-    /**
-     * This method receives a Especie identifier, find that identification in the local database and
-     * delete it from the local database (if any).
-     *
-     * @param id (int) Especie identifier
-     */
-    public void deleteEspecie(int id) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        db.execSQL("DELETE FROM " + TABLE_ESPECIES + " WHERE " + COLUMN_NID + "=\"" + id + "\";");
-
-        db.close();
-    }
-
-    /**
-     * This method take all Especie objects in the local database, put them in an Especies ArrayList
-     * and return it.
-     *
-     * @return (ArrayList<Especie>) List of Especie.
-     */
-    public ArrayList<Especie> getEspeciesList() {
-        SQLiteDatabase db = getWritableDatabase();
-
-        String[] columns = new String[]{COLUMN_ESPECIE_NID, COLUMN_ESPECIE_TITLE, COLUMN_ESPECIE_BODY,
-                COLUMN_ESPECIE_MAIN_PICTURE, COLUMN_ESPECIE_TYPE, COLUMN_ESPECIE_TYPE_NAME, COLUMN_ESPECIE_ESPACIOS};
-
-        Cursor c = db.query(TABLE_ESPECIES, columns, null, null, null, null, COLUMN_ESPECIE_TITLE);
-
-        int iNid = c.getColumnIndex(COLUMN_ESPECIE_NID);
-        int iTitle = c.getColumnIndex(COLUMN_ESPECIE_TITLE);
-        int iBody = c.getColumnIndex(COLUMN_ESPECIE_BODY);
-        int iMain_picture = c.getColumnIndex(COLUMN_ESPECIE_MAIN_PICTURE);
-        int iType = c.getColumnIndex(COLUMN_ESPECIE_TYPE);
-        int iType_name = c.getColumnIndex(COLUMN_ESPECIE_TYPE_NAME);
-        int iEspacios = c.getColumnIndex(COLUMN_ESPECIE_ESPACIOS);
-
-        ArrayList<Especie> result = new ArrayList<Especie>();
-
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            // We have to convert the String of Espacios to an array after taking it from the local database.
-            String temporal_string = c.getString(iEspacios);
-            String temporal_array[] = temporal_string.split("-");
-
-            int espacios[] = new int[temporal_array.length];
-
-            for (int i = 0; i < temporal_array.length; i++) {
-                try {
-                    if (!temporal_array[i].equals("")) {
-                        espacios[i] = Integer.parseInt(temporal_array[i]);
-                    } else {
-                        espacios[i] = 0;
-                    }
-                } catch (Exception e) {
-                    espacios[i] = 0;
-                }
-            }
-
-            Especie especie = new Especie(c.getString(iNid), c.getString(iTitle), c.getString(iBody),
-                    c.getString(iMain_picture), Integer.parseInt(c.getString(iType)), c.getString(iType_name), espacios);
-
-            result.add(especie);
-        }
-
-        db.close();
-
-        return result;
-    }
-
-    /**
-     * This method receives a Especie identifier, find that identification in the local database and
-     * returns the Especie object whose identifier matches the identifier received (if any).
-     *
-     * @param id (int) Especie identifier
-     * @return (Especie) Or null if not found
-     */
-    public Especie getEspecieById(int id) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        String selectQuery = "SELECT * FROM " + TABLE_ESPECIES + " WHERE " + COLUMN_NID + " = " + String.valueOf(id);
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        int iNid = c.getColumnIndex(COLUMN_ESPECIE_NID);
-        int iTitle = c.getColumnIndex(COLUMN_ESPECIE_TITLE);
-        int iBody = c.getColumnIndex(COLUMN_ESPECIE_BODY);
-        int iMain_picture = c.getColumnIndex(COLUMN_ESPECIE_MAIN_PICTURE);
-        int iType = c.getColumnIndex(COLUMN_ESPECIE_TYPE);
-        int iType_name = c.getColumnIndex(COLUMN_ESPECIE_TYPE_NAME);
-        int iEspacios = c.getColumnIndex(COLUMN_ESPECIE_ESPACIOS);
-
-        Especie result = null;
-
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            // We have to convert the String of Espacios to an array after taking it from the local database.
-            String temporal_string = c.getString(iEspacios);
-            String temporal_array[] = temporal_string.split("-");
-
-            int espacios[] = new int[temporal_array.length];
-
-            for (int i = 0; i < temporal_array.length; i++) {
-                try {
-                    if (!temporal_array[i].equals("")) {
-                        espacios[i] = Integer.parseInt(temporal_array[i]);
-                    } else {
-                        espacios[i] = 0;
-                    }
-                } catch (Exception e) {
-                    espacios[i] = 0;
-                }
-            }
-
-            Especie especie = new Especie(c.getString(iNid), c.getString(iTitle), c.getString(iBody),
-                    c.getString(iMain_picture), Integer.parseInt(c.getString(iType)), c.getString(iType_name), espacios);
-
-            result = especie;
-        }
-
-        db.close();
-
-        return result;
-    }
-
-    /**
-     * This method receives a Especie type, find that identification in the local database and
-     * returns the Especie object whose type matches the type received (if any).
-     *
-     * @param type_id (int) Especie type
-     * @return (Especie) Or null if not found
-     */
-    public Especie getEspecieByType(int type_id) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        String selectQuery = "SELECT * FROM " + TABLE_ESPECIES + " WHERE " + COLUMN_ESPECIE_TYPE + " = " + String.valueOf(type_id);
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        int iNid = c.getColumnIndex(COLUMN_ESPECIE_NID);
-        int iTitle = c.getColumnIndex(COLUMN_ESPECIE_TITLE);
-        int iBody = c.getColumnIndex(COLUMN_ESPECIE_BODY);
-        int iMain_picture = c.getColumnIndex(COLUMN_ESPECIE_MAIN_PICTURE);
-        int iType = c.getColumnIndex(COLUMN_ESPECIE_TYPE);
-        int iType_name = c.getColumnIndex(COLUMN_ESPECIE_TYPE_NAME);
-
-        // We have to convert the String of Espacios to an array after taking it from the local database.
-        String temporal_string = c.getString(c.getColumnIndex(COLUMN_ESPECIE_ESPACIOS));
-        String temporal_array[] = temporal_string.split("-");
-        int espacios[] = new int[temporal_array.length];
-
-        for (int i = 0; i < temporal_array.length; i++) {
-            espacios[i] = Integer.parseInt(temporal_array[i]);
-        }
-
-        Especie result = null;
-
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            Especie especie = new Especie(c.getString(iNid), c.getString(iTitle), c.getString(iBody),
-                    c.getString(iMain_picture), Integer.parseInt(c.getString(iType)), c.getString(iType_name), espacios);
-
-            result = especie;
-        }
-
-        db.close();
-
-        return result;
-    }
 
     // <-------------------->_PAGES_METHODS_<-------------------->
 

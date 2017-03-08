@@ -209,13 +209,6 @@
 
         <service android:name=".mod_notification.NotificationService" />
 
-        <activity
-            android:name=".mod_guia.GuiaNaturaleza"
-            android:label="@string/title_activity_guia_naturaleza" />
-        <activity android:name=".mod_guia.GuiaNaturalezaEspecies" />
-        <activity android:name=".mod_guia.GuiaNaturalezaEspacios" />
-        <activity android:name=".mod_guia.FichaEspecie"
-            android:screenOrientation="portrait"/>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
