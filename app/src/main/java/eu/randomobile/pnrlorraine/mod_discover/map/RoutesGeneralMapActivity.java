@@ -589,10 +589,10 @@ public class RoutesGeneralMapActivity extends Activity implements
 									sym = new PictureMarkerSymbol(urlIcon);
 								} catch (Exception e) {
 									Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
-									sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+									sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
 								}
 							}else{
-								sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+								sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
 							}
 							return 0;
 						}

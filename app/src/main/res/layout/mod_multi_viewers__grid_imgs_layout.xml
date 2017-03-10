@@ -9,7 +9,7 @@
     <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
         android:id="@+id/menu_gripImages"
         android:layout_width="fill_parent"
-        android:layout_height="130dp"
+        android:layout_height="110dp"
         alborgis:fitImageToScreen="false"
         alborgis:map="images"
         alborgis:maxSizeFactor="1.5"
@@ -31,10 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/mod_global__sin_contenido"
-        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textSize="18dp"
-        android:textColor="@color/color_amarillo_verdoso"/>
+        android:textSize="20sp"
+		android:layout_marginTop="130dp"/>
 
 </RelativeLayout>

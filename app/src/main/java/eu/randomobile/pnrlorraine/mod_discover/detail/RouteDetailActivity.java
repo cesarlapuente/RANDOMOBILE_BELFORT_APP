@@ -1107,6 +1107,39 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             String claseNombre = "";
             allPoisDescription += pois.get(j).getTitle() + "\n" + pois.get(j).getBody() + "\n\n";
             switch (clase) {
+                case 26:
+                case 47:
+                case 48:
+                case 49:
+                case 50:
+                case 51: // Hébergements
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_hotel));
+                    claseNombre = this.getResources().getString(R.string.alojamientos);
+                    firstPoint = puntoProyectado;
+                    break;
+                case 30: //Patrimoine naturel
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_naturaleza));
+                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
+                    break;
+                case 36:  //Monuments
+                case 28:
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_descubrir));
+                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
+                    break;
+                case 27: //Restauracion
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_restaurante));
+                    claseNombre = this.getResources().getString(R.string.restauracion);
+                    break;
+                case 25: //Offices de tourisme
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_info));
+                    claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
+                    break;
+                default:
+                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.poi_icono));
+                    claseNombre = this.getResources().getString(R.string.punto_de_interes);
+
+                /*
+
                 case 36: //Lugar de interes cultural
                     sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_descubrir));
                     firstPoint = puntoProyectado;
@@ -1139,7 +1172,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
                 default:
                     sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.ic_launcher));
-                    claseNombre = this.getResources().getString(R.string.punto_de_interes);
+                    claseNombre = this.getResources().getString(R.string.punto_de_interes);*/
             }
 
             final HashMap<String, Object> attrs = new HashMap<String, Object>();

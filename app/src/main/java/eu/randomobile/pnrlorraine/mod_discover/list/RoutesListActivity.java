@@ -458,7 +458,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
                 BitmapManager.INSTANCE.loadBitmap(item.getMainImage(),
                         holder.imgView, 80, 60);
             } else {
-                holder.imgView.setImageResource(R.drawable.ic_launcher);
+                holder.imgView.setImageResource(R.drawable.no_picture_2);
             }
 
             // Poner la imagen de dificultad

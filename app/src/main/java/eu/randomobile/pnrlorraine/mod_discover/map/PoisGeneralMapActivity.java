@@ -439,45 +439,16 @@ public class PoisGeneralMapActivity extends Activity implements
 
                 String cat = "poi";
                 if (poi.getCategory() != null) {
-                    //cat = poi.getCategory().getName();
-                    String clase = poi.getCategory().getTid();
-                    String claseNombre = "";
-                    switch (clase) {
-                        case "36": //Lugar de interes cultural
-                            claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
-                            break;
-                        case "30": //Lugar de interes natural
-                            claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
-                            break;
-                        case "33": //Servicios estaciones
-                            claseNombre = this.getResources().getString(R.string.servicios_estaciones);
-                            break;
-                        case "28": //Servicios sanidad
-                            claseNombre = this.getResources().getString(R.string.servicios_sanidad);
-                            break;
-                        case "26": //Alojamientos
-                            claseNombre = this.getResources().getString(R.string.alojamientos);
-                            break;
-                        case "27": //REstauracion
-                            claseNombre = this.getResources().getString(R.string.restauracion);
-                            break;
-                        case "25": //Servicios oficinas de turismo
-                            claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
-                            break;
-
-                        default:
-                            claseNombre = this.getResources().getString(R.string.punto_de_interes);
-                    }
-                    cat = claseNombre;
+                    cat = poi.getCategory().getTid();
                 }
 
                 String icon = null;
-                if (poi.getCategory() != null && poi.getCategory().getIcon() != null) {
+                if (poi.getCategory() != null && poi.getCategory().getTid() != null) {
                     icon = poi.getCategory().getIcon();
                 }
 
-                dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass()
-                        .getName(), poi.getNid(), cat, icon, Double.toString(poi.getDistanceMeters()));
+                dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(),
+                        poi.getNid(), cat, icon, Double.toString(poi.getDistanceMeters()));
             }
 
             centrarEnExtentCapa(capaGeometrias);
@@ -593,22 +564,28 @@ public class PoisGeneralMapActivity extends Activity implements
 
 
                     PictureMarkerSymbol sym = null;
-                    if (paramCat.equals(this.getResources().getString(R.string.lugar_de_interes_cultural))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.lugar_de_interes_natural))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_naturaleza));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.servicios_estaciones))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.servicios_sanidad))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_sanidad));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.alojamientos))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.restauracion))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurant));
-                    } else if (paramCat.equals(this.getResources().getString(R.string.servicios_oficinas_de_turismo))) {
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_info));
-                    } else
-                        sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+                    switch (paramCat) {
+                        case "26":
+                        case "47":
+                        case "48":
+                        case "49":
+                        case "50":
+                        case "51":
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
+                            break;
+                        case "36":
+                        case "28":
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
+                            break;
+                        case "27":
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurante));
+                            break;
+                        case "25":
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_info));
+                            break;
+                        default:
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
+                    }
 
                     Graphic gr = new Graphic(point, sym, attrs);
                     capaGeometrias.addGraphic(gr);

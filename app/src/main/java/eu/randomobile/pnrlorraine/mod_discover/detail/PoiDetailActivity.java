@@ -539,30 +539,31 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 				int clase =Integer.valueOf(miPoi.getCategory().getTid());
 
 				switch (clase) {
-					case 36: //Lugar de interes cultural
+					case 25: //Offices de tourisme
+						imgViewCategoria.setBackgroundResource(R.drawable.icono_info);
+						break;
+					case 36: //Monuments
 						imgViewCategoria.setBackgroundResource(R.drawable.icono_descubrir);
 						break;
-					case 30: //Lugar de interes natural
+					case 28: //Musées
+						imgViewCategoria.setBackgroundResource(R.drawable.icono_descubrir);
+						break;
+					case 30: //Patrimoine naturel
 						imgViewCategoria.setBackgroundResource(R.drawable.icono_naturaleza);
 						break;
-					case 33: //Servicios estaciones
-						imgViewCategoria.setBackgroundResource(R.drawable.poi_icono);
-						break;
-					case 28: //Servicios sanidad
-						imgViewCategoria.setBackgroundResource(R.drawable.icono_sanidad);
-						break;
-					case 26: //Alojamientos
+					case 26:
+					case 47:
+					case 48:
+					case 49:
+					case 50:
+					case 51: //Alojamientos
 						imgViewCategoria.setBackgroundResource(R.drawable.icono_hotel);
 						break;
 					case 27: //Restauracion
 						imgViewCategoria.setBackgroundResource(R.drawable.icono_restaurant);
 						break;
-					case 25: //Servicios oficinas de turismo
-						imgViewCategoria.setBackgroundResource(R.drawable.icono_info);
-						break;
 					default:
-						imgViewCategoria.setBackgroundResource(R.drawable.ic_launcher);
-
+						imgViewCategoria.setBackgroundResource(R.drawable.poi_icono);
 				}
 
 			} else {
@@ -676,7 +677,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 			icon = poi.getCategory().getIcon();
 		}
 
-		dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(), poi.getNid(), poi.getCategory().getName(), icon);
+		dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(), poi.getNid(), poi.getCategory().getTid(), icon);
 
 		Object geomObj = geometrias.get(0);
 		final Point punto = (Point) geomObj;
@@ -720,37 +721,31 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 
 					Log.d("ParamCat:", paramCat.toString());
 
-					if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.lugar_de_interes_cultural))) {
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.lugar_de_interes_natural))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_naturaleza));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.servicios_estaciones))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.servicios_sanidad))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_sanidad));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.alojamientos))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.restauracion))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurant));
-					}
-
-					else if (paramCat.equalsIgnoreCase(this.getResources().getString(R.string.servicios_oficinas_de_turismo))){
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_info));
-					}
-
-					else {
-						sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
-					}
+                    switch (paramCat) {
+                        case "25": //Offices de tourisme
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_info));
+                            break;
+                        case "36": //Monuments
+                        case "28": //Musées
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
+                            break;
+                        case "30": //Patrimoine naturel
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_naturaleza));
+                            break;
+                        case "26":
+                        case "47":
+                        case "48":
+                        case "49":
+                        case "50":
+                        case "51": //Alojamientos
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
+                            break;
+                        case "27": //Restauracion
+                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurant));
+                            break;
+                        default:
+                            imgViewCategoria.setBackgroundResource(R.drawable.poi_icono);
+                    }
 
 					Graphic gr = new Graphic(point, sym, attrs);
 					capaGeometrias.addGraphic(gr);
