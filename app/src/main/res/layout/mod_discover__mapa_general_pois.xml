@@ -12,7 +12,7 @@
         android:id="@+id/mapa"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginTop="130dp">
+        android:layout_marginTop="110dp">
     </com.esri.android.map.MapView>
 
     <LinearLayout 
@@ -42,7 +42,7 @@
 	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
         android:id="@+id/map_poisGeneral"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="130dp"
         alborgis:fitImageToScreen="false"
         alborgis:map="mapa_pois"
         alborgis:maxSizeFactor="1.5"

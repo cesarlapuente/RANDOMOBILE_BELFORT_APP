@@ -16,7 +16,7 @@
     	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
 	    	android:id="@+id/menuPoisList"
     		android:layout_width="fill_parent" 
-    		android:layout_height="275dp"
+    		android:layout_height="130dp"
     		alborgis:map="lista_pois"
         	alborgis:maxSizeFactor="1.5"
         	alborgis:scaleFromOriginal="true"
@@ -35,6 +35,19 @@
    		android:divider="@color/blue_route_value"
         android:dividerHeight="2dp">
    </ListView>
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<TextView
+			android:id="@+id/noresults"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:gravity="center_horizontal"
+			android:text="@string/mod_search__noresult"
+			android:visibility="gone"
+			android:textSize="24sp"
+			android:paddingTop="150dp"/>
+	</RelativeLayout>
    
         
     <RelativeLayout 

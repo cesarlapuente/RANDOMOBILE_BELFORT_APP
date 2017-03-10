@@ -9,12 +9,12 @@
 <RelativeLayout
         android:id="@+id/r_map_routelist"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="130dp"
         android:layout_alignParentTop="true" >
     	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
 	    	android:id="@+id/map_routeList"
     		android:layout_width="fill_parent" 
-    		android:layout_height="275dp"
+    		android:layout_height="130dp"
     		alborgis:map="lista_rutas"
         	alborgis:maxSizeFactor="1.5"
         	alborgis:scaleFromOriginal="true"

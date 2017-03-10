@@ -106,7 +106,7 @@ public class AdvicesActivity extends Activity {
         textView_2R = (TextView) findViewById(R.id.txt_2R);
 
         textView_web = (TextView) findViewById(R.id.txtWebAdvices);
-        textView_web.setBackgroundColor(ContextCompat.getColor(AdvicesActivity.this, R.color.blue_search));
+        //textView_web.setBackgroundColor(ContextCompat.getColor(AdvicesActivity.this, R.color.blue_search));
     }
 
     private void cargaActivityHome() {

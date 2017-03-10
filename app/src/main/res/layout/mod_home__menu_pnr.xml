@@ -12,8 +12,7 @@
         alborgis:fitImageToScreen="false"
         alborgis:map="mapa_creditos"
         alborgis:maxSizeFactor="1.5"
-        alborgis:scaleFromOriginal="true"
-        android:background="@color/blue_search"/>
+        alborgis:scaleFromOriginal="true"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +21,6 @@
         android:layout_below="@+id/menu_randonees"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@color/blue_search"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp">

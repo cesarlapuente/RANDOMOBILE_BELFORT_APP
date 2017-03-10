@@ -14,7 +14,7 @@
         <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
             android:id="@+id/menu_lista_eventos"
             android:layout_width="match_parent"
-            android:layout_height="275dp"
+            android:layout_height="110dp"
             alborgis:fitImageToScreen="false"
             alborgis:map="lista_pois"
             alborgis:maxSizeFactor="1.5"
@@ -37,12 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/mod_global__sin_contenido"
-        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textSize="18dp"
-        android:visibility="gone"
-        android:textColor="@color/color_amarillo_verdoso"/>
+        android:textSize="24sp"
+        android:paddingTop="290dp"
+        android:visibility="gone"/>
 	
     <RelativeLayout
         android:id="@+id/panelCargando"

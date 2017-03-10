@@ -82,6 +82,8 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
     private SimpleComboPOICategories comboCategoriasPOIS;
 
+    private TextView noresults;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_discover__layout_lista_pois);
@@ -177,6 +179,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
         listaPois = (ListView) findViewById(R.id.listaPois);
         txtTitulo = (TextView) findViewById(R.id.txtNombre);
         panelCargando = (RelativeLayout) findViewById(R.id.panelCargando);
+        noresults = (TextView) findViewById(R.id.noresults);
     }
 
     private void filterPois() {
@@ -205,7 +208,6 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
             if (arrayFilteredPois == null) {
                 arrayFilteredPois = new ArrayList<Poi>();
-
             } else {
                 arrayFilteredPois.clear();
             }
@@ -221,13 +223,19 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
                          Log.d("Categoria itroducida: ", arrayPois.get(j).getTitle());
                     }
                 }
+
             }
+
 
         } else {
             Log.d("filterPois() sais:", " filtroCategoriasPOIs == null");
-            filtroCategoriasPOIs = new int[] {25, 26, 27, 28, 30, 33, 36};
-
+            filtroCategoriasPOIs = new int[] {25, 36, 28, 30, 45, 20000, 30000, 48, 26, 47, 49, 50, 51, 27};
             filterPois();
+        }
+        if(arrayFilteredPois.size() == 0) {
+            noresults.setVisibility(View.VISIBLE);
+        } else{
+            noresults.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -378,22 +386,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
             this.recargarDatos();
         }
 
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
+
         Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
 
         arrayPois = app.getPoisList();

@@ -514,7 +514,6 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         txt_duration = (TextView) findViewById(R.id.txt_duration);
         txt_distance = (TextView) findViewById(R.id.txt_distance);
         txt_note = (TextView) findViewById(R.id.txt_note);
-        txt_note = (TextView) findViewById(R.id.txt_note);
         txt_description_body = (TextView) findViewById(R.id.txt_description_body);
 
         // <----------------->_IMAGEVIEWS_DECLARATIONS_<----------------->
@@ -535,9 +534,9 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         txt_duration.setText(Util.formatDuracion(route.getEstimatedTime()));
         txt_distance.setText(Util.formatDistanciaRoute(route.getRouteLengthMeters()));
         try {
-            txt_note.setText("NOTA: (" + String.valueOf(route.getVote().getNumVotes()) + " votos)");
+            txt_note.setText("NOTE: (" + String.valueOf(route.getVote().getNumVotes()) + " votes)");
         } catch (Exception e) {
-            txt_note.setText("NOTA: (No disponible)");
+            txt_note.setText("NOTE: (Pas disponible)");
         }
         txt_description_body.setText(Html.fromHtml(route.getBody()).toString().trim(), TextView.BufferType.SPANNABLE);
 
@@ -1058,7 +1057,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             // Poner las propiedades en el layout
             lblNombre.setText(nombre);
             if ((cat == null) || (cat.equals("")))
-                lblCategoria.setText("Punto de interés");
+                lblCategoria.setText(getString(R.string.mod_home__pois));
             else
                 lblCategoria.setText(cat);
 
@@ -1075,7 +1074,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         } else if (clase.equals(Route.class.getName())) {
             // Poner las propiedades en el layout
             lblNombre.setText(nombre);
-            lblCategoria.setText("Route");
+            lblCategoria.setText(getString(R.string.mod_home__rutas));
 
             // Escuchar el evento del click del bot�n
             btnCerrarDialogo.setOnClickListener(new OnClickListener() {

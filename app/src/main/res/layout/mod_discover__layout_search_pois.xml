@@ -1,5 +1,354 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/blue_search" >
+
+    <ScrollView
+        android:id="@+id/scrollCategorias"
+        android:layout_width="fill_parent"
+        android:layout_height="800dp"
+
+        android:layout_below="@+id/map_poisSearch"
+        android:layout_above="@+id/ctn_botones"
+        android:background="@drawable/ficha_fondo_descripcion_item" >
+        <LinearLayout
+            android:id="@+id/ctn_categorias"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@color/blue_search"
+            android:layout_marginLeft="20dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_ADescubrir"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_ADescubrir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:textSize="20dp"
+                    android:text="À découvrir" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_OTurismo"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_OTurismo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Offices de tourisme" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_SMonumentos"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_SMonumentos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Sites et monuments" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Museos"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Museos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Musées" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Patrimonio"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Patrimonio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Patrimonine naturel" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Parques"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Parques"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Sites de Loisirs" />
+            </LinearLayout>
+
+            <!-- Restaurantes -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background = "@color/white"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Restaurantes"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Restaurantes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textSize="20dp"
+                    android:textColor="@color/blue_categories"
+                    android:text="Restauration" />
+            </LinearLayout>
+
+            <!-- Hebergement -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Hebergement"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Hebergement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textSize="20dp"
+                    android:textColor="@color/blue_categories"
+                    android:text="Hébergement" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_HabitacionesHotel"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_HabitacionesHotel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Chambres d'hôtes" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Colectivos"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Colectivos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Hébergements collectifs" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Hostales"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Hostales"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Hôtellerie" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_HostalesAire"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_HostalesAire"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Hôtellerie de plein air" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Amueblado"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Amueblado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Meublés" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:orientation="horizontal" >
+                <CheckBox
+                    android:id="@+id/cb_Residencias"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/lb_Residencias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/blue_categories"
+                    android:text="Résidences" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <!-- Fin categorias -->
+
+    <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+        android:id="@+id/map_poisSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="175dp"
+        alborgis:fitImageToScreen="false"
+        alborgis:map="menu_busqueda"
+        alborgis:maxSizeFactor="1.5"
+        alborgis:scaleFromOriginal="true" />
+
+    <!-- Busqueda por palabra clave -->
+
+    <!-- Tabla para busquedas por duracion y distancia -->
+    <!-- TextView to display result -->
+    <!-- <TextView -->
+    <!-- android:id="@+id/tvResult" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:paddingTop="20dp" -->
+    <!-- android:paddingLeft="10dp" -->
+    <!-- android:paddingRight="10dp" -->
+    <!-- android:paddingStart="10dp" -->
+    <!-- android:text="Result" /> -->
+
+    <LinearLayout
+        android:id="@+id/ctn_botones"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <Button
+            android:id="@+id/btn_buscar"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_search" />
+        <Button
+            android:id="@+id/btn_eventos"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/btn_events" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+<!--
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -44,9 +393,9 @@
                 android:text="@string/lugar_de_interes_cultural" />
         </LinearLayout>
 
-        <!-- Restaurantes -->
+        &lt;!&ndash; Restaurantes &ndash;&gt;
 
-        <!-- Hebergement -->
+        &lt;!&ndash; Hebergement &ndash;&gt;
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,7 +481,7 @@
 
     </LinearLayout>
     </ScrollView>
- <!-- Fin categorias -->
+ &lt;!&ndash; Fin categorias &ndash;&gt;
 
     <eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
         android:id="@+id/map_poisSearch"
@@ -143,19 +492,19 @@
         alborgis:maxSizeFactor="1.5"
         alborgis:scaleFromOriginal="true" />
 
-    <!-- Busqueda por palabra clave -->
+    &lt;!&ndash; Busqueda por palabra clave &ndash;&gt;
 
-    <!-- Tabla para busquedas por duracion y distancia -->
-    <!-- TextView to display result -->
-    <!-- <TextView -->
-    <!-- android:id="@+id/tvResult" -->
-    <!-- android:layout_width="wrap_content" -->
-    <!-- android:layout_height="wrap_content" -->
-    <!-- android:paddingTop="20dp" -->
-    <!-- android:paddingLeft="10dp" -->
-    <!-- android:paddingRight="10dp" -->
-    <!-- android:paddingStart="10dp" -->
-    <!-- android:text="Result" /> -->
+    &lt;!&ndash; Tabla para busquedas por duracion y distancia &ndash;&gt;
+    &lt;!&ndash; TextView to display result &ndash;&gt;
+    &lt;!&ndash; <TextView &ndash;&gt;
+    &lt;!&ndash; android:id="@+id/tvResult" &ndash;&gt;
+    &lt;!&ndash; android:layout_width="wrap_content" &ndash;&gt;
+    &lt;!&ndash; android:layout_height="wrap_content" &ndash;&gt;
+    &lt;!&ndash; android:paddingTop="20dp" &ndash;&gt;
+    &lt;!&ndash; android:paddingLeft="10dp" &ndash;&gt;
+    &lt;!&ndash; android:paddingRight="10dp" &ndash;&gt;
+    &lt;!&ndash; android:paddingStart="10dp" &ndash;&gt;
+    &lt;!&ndash; android:text="Result" /> &ndash;&gt;
 
 	<LinearLayout
         android:id="@+id/ctn_botones"
@@ -176,4 +525,4 @@
             android:background="@color/transparent"/>
     </LinearLayout>
 
-</RelativeLayout>
+</RelativeLayout>-->
