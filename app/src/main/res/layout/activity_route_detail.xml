@@ -61,6 +61,283 @@
                 android:layout_alignParentEnd="true"
                 android:scaleType="fitEnd"
                 android:layout_alignTop="@+id/btn_Layer" />
+
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/linearLayout2"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentStart="false">
+
+                <!-- Rate Button -->
+
+                <!-- Related Species Button -->
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btn_Rate"
+                        android:src="@drawable/menuinferior_valorar"
+                        android:background="#00ffffff"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/linearLayout2"
+                android:layout_toLeftOf="@+id/linearLayout3"
+                android:layout_toStartOf="@+id/linearLayout3">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="0dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="0dp"
+                    android:gravity="center_vertical|center_horizontal">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mod_discover__desnivel"
+                            android:id="@+id/textView"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+150m"
+                            android:id="@+id/txt_ramp"
+                            android:textColor="@color/blue_route_value"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mod_discover__duracion"
+                            android:id="@+id/textView6"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2H30"
+                            android:id="@+id/txt_duration"
+                            android:textColor="@color/blue_route_value"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mod_discover__distancia"
+                            android:id="@+id/textView7"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="7,2 km"
+                            android:id="@+id/txt_distance"
+                            android:textColor="@color/blue_route_value"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical|center_horizontal">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mod_discover__dificultad"
+                            android:id="@+id/textView8"
+                            android:textColor="@color/black"/>
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/img_difficulty"
+                            android:background="#00ffffff"
+                            android:src="@drawable/marcador_media"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="NOTE : (215 avis)"
+                            android:id="@+id/txt_note"
+                            android:textColor="@color/black"
+                            />
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:layout_marginTop="5dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/img_star_1"
+                                android:src="@drawable/rating_drawable"
+                                />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/img_star_2"
+                                android:src="@drawable/rating_drawable"/>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/img_star_3"
+                                android:src="@drawable/rating_drawable"/>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/img_star_4"
+                                android:src="@drawable/rating_drawable"/>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/img_star_5"
+                                android:src="@drawable/rating_drawable"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/linearLayout3"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_alignParentBottom="false">
+
+                <!-- Galery Button -->
+
+                <!-- Vids Button -->
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btn_Galery"
+                        android:src="@drawable/menuinferior_img"
+                        android:background="#00ffffff"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btn_Vids"
+                        android:background="#00ffffff"
+                        android:src="@drawable/menuinferior_video"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <ScrollView
@@ -78,287 +355,14 @@
                 android:paddingRight="10dp"
                 android:paddingBottom="10dp">
 
-                <RelativeLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
 
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:id="@+id/linearLayout2"
-                        android:gravity="center_vertical|center_horizontal"
-                        android:layout_alignParentBottom="false"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="false"
-                        android:layout_alignParentStart="false">
-
-                        <!-- Rate Button -->
-
-                        <!-- Related Species Button -->
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:layout_weight="1"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="10dp">
-
-                            <ImageButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/btn_Rate"
-                                android:src="@drawable/menuinferior_valorar"
-                                android:background="#00ffffff"/>
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/linearLayout"
-                        android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/linearLayout2"
-                        android:layout_toLeftOf="@+id/linearLayout3"
-                        android:layout_toStartOf="@+id/linearLayout3">
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginLeft="0dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginTop="0dp"
-                            android:gravity="center_vertical|center_horizontal">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical|center_horizontal"
-                                android:layout_weight="1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/mod_discover__desnivel"
-                                    android:id="@+id/textView"
-                                    android:textColor="@color/black"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="+150m"
-                                    android:id="@+id/txt_ramp"
-                                    android:textColor="@color/blue_route_value"/>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical|center_horizontal"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_weight="1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/mod_discover__duracion"
-                                    android:id="@+id/textView6"
-                                    android:textColor="@color/black"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="2H30"
-                                    android:id="@+id/txt_duration"
-                                    android:textColor="@color/blue_route_value"/>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical|center_horizontal"
-                                android:layout_weight="1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/mod_discover__distancia"
-                                    android:id="@+id/textView7"
-                                    android:textColor="@color/black"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="7,2 km"
-                                    android:id="@+id/txt_distance"
-                                    android:textColor="@color/blue_route_value"/>
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginTop="10dp"
-                            android:gravity="center_vertical|center_horizontal">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:gravity="center_horizontal"
-                                android:layout_marginRight="10dp"
-                                android:layout_weight="1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/mod_discover__dificultad"
-                                    android:id="@+id/textView8"
-                                    android:textColor="@color/black"/>
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/img_difficulty"
-                                    android:background="#00ffffff"
-                                    android:src="@drawable/marcador_media"/>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:gravity="center_horizontal"
-                                android:layout_weight="1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="NOTE : (215 avis)"
-                                    android:id="@+id/txt_note"
-                                    android:textColor="@color/black"
-                                    />
-
-                                <LinearLayout
-                                    android:orientation="horizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center_horizontal"
-                                    android:layout_marginTop="5dp">
-
-                                    <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/img_star_1"
-                                        android:src="@drawable/rating_drawable"
-                                        />
-
-                                    <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/img_star_2"
-                                        android:src="@drawable/rating_drawable"/>
-
-                                    <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/img_star_3"
-                                        android:src="@drawable/rating_drawable"/>
-
-                                    <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/img_star_4"
-                                        android:src="@drawable/rating_drawable"/>
-
-                                    <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/img_star_5"
-                                        android:src="@drawable/rating_drawable"/>
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/linearLayout3"
-                        android:gravity="center_vertical|center_horizontal"
-                        android:layout_alignParentBottom="false">
-
-                        <!-- Galery Button -->
-
-                        <!-- Vids Button -->
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:layout_weight="1"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="10dp">
-
-                            <ImageButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/btn_Galery"
-                                android:src="@drawable/menuinferior_img"
-                                android:background="#00ffffff"
-                                android:layout_weight="1"/>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:layout_weight="1"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="5dp">
-
-                            <ImageButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/btn_Vids"
-                                android:background="#00ffffff"
-                                android:src="@drawable/menuinferior_video"
-                                android:layout_weight="1"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                </RelativeLayout>
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/wrapper_description">
 
                     <!-- Description Title Text -->
 

@@ -27,7 +27,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -139,6 +141,9 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     String paramMapUrl;
     double paramDistanceMeters;
     private Dialog dialogPoi = null;
+
+    LinearLayout wrapper_description;
+    ScrollView scrollView2;
 
 
     RelativeLayout panelCargando;
@@ -265,7 +270,14 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                         break;
                     }
                     case "INFO": {
-                        Toast.makeText(RouteDetailActivity.this, "OPTION DISABLED", Toast.LENGTH_LONG);
+                        /*Toast.makeText(RouteDetailActivity.this, "OPTION DISABLED", Toast.LENGTH_LONG);
+                        break;*/
+                        if (scrollView2.getVisibility() == View.GONE) {
+                            scrollView2.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            scrollView2.setVisibility(View.GONE);
+                        }
                         break;
                     }
                     default:
@@ -525,9 +537,13 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         img_star_4 = (ImageView) findViewById(R.id.img_star_4);
         img_star_5 = (ImageView) findViewById(R.id.img_star_5);
 
+        wrapper_description = (LinearLayout) findViewById(R.id.wrapper_description);
+        scrollView2 = (ScrollView) findViewById(R.id.scrollView2);
+
     }
 
     private void setData() {
+
         txt_route_title.setText(route.getTitle());
         txt_ramp.setText(Util.formatDesnivel(route.getSlope()));
         Log.d("Desnivel:", String.valueOf(route.getSlope()));
