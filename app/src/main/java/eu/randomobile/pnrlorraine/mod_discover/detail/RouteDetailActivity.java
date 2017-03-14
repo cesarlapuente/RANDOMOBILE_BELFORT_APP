@@ -693,7 +693,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         }
 
         ls.start();
-        if (!Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)))
+        if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)) == false)
             //showDialog();
             Log.d("Dialod here", "Info descarga");
     }
@@ -1114,15 +1114,99 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         String allPoisDescription = "";
         Context ctx = app.getApplicationContext();
         for (int j = 0; j < pois.size(); j++) {
-            int number = 1;
+            int number;
             Point puntoProyectado = GeometryEngine.project(pois.get(j).getLongitude(),
                     pois.get(j).getLatitude(), app.spatialReference);
             number = pois.get(j).getNumber();
             int clase = pois.get(j).getType();
+            Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
             Log.d("LA clase es:", String.valueOf(clase));
             String claseNombre = "";
             allPoisDescription += pois.get(j).getTitle() + "\n" + pois.get(j).getBody() + "\n\n";
             switch (clase) {
+                case 52:
+                    switch (number) {
+                        case 1:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_01));
+                            firstPoint = puntoProyectado;
+                            break;
+                        case 2:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_02));
+                            break;
+                        case 3:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_03));
+                            break;
+                        case 4:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_04));
+                            break;
+                        case 5:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_05));
+                            break;
+                        case 6:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_06));
+                            break;
+                        case 7:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_07));
+                            break;
+                        case 8:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_08));
+                            break;
+                        case 9:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_09));
+                            break;
+                        case 10:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_10));
+                            break;
+                        case 11:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_11));
+                            break;
+                        case 12:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_12));
+                            break;
+                        case 13:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_13));
+                            break;
+                        case 14:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_14));
+                            break;
+                        case 15:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_15));
+                            break;
+                        case 16:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_16));
+                            break;
+                        case 17:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_17));
+                            break;
+                        case 18:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_18));
+                            break;
+                        case 19:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_19));
+                            break;
+                        case 20:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_20));
+                            break;
+                        case 21:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_21));
+                            break;
+                        case 22:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_22));
+                            break;
+                        case 23:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_23));
+                            break;
+                        case 24:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_24));
+                            break;
+                        case 25:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_25));
+                            break;
+
+                        default:
+                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.ic_launcher));
+                    }
+                    break;
                 case 26:
                 case 47:
                 case 48:
