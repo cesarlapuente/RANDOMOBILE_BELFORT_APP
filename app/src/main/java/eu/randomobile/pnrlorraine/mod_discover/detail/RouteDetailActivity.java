@@ -262,7 +262,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     case "POINTS": {
                         boolean poisLayerIsEnabled = geometricPOIsLayer.isVisible();
 
-                        geometricPOIsLayer.setVisible(poisLayerIsEnabled ? false : true);
+                        geometricPOIsLayer.setVisible(!poisLayerIsEnabled);
                         break;
                     }
                     case "PLUS": {
@@ -299,18 +299,18 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
             private static final long serialVersionUID = 1L;
 
-            public void onSingleTap(float x, float y) {
+                public void onSingleTap(float x, float y) {
                 if (!map.isLoaded()) {
                     return;
                 }
 
-                int[] graphicsIDS = geometricPOIsLayer.getGraphicIDs(x, y, 8);
+                int[] graphicsIDS = geometricLayer.getGraphicIDs(x, y, 8);
                 int[] graphicsPoisSearch = geometricPOIsLayer.getGraphicIDs(x, y, 8);
 
                 if (graphicsIDS != null && graphicsIDS.length > 0) {
                     int targetId = graphicsIDS[0];
 
-                    Graphic gr = geometricPOIsLayer.getGraphic(targetId);
+                    Graphic gr = geometricLayer.getGraphic(targetId);
 
                     if (gr != null) {
                         String nombre = (String) gr.getAttributes().get("nombre");
@@ -325,8 +325,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                         View contenidoCallout = null;
 
                         if (nid != null) {
-                            contenidoCallout = getViewForCalloutPoi(nombre, clase, nid, cat);
+                            if (!clase.equals(Route.class.getName()))
+                                contenidoCallout = getViewForCallout(nombre,
+                                        clase, cat, nid);
                         }
+                        else
+                            dialogPoiDescription(nombre, descripcion);
 
                         if (contenidoCallout != null) {
                             callout.setContent(contenidoCallout);
@@ -1248,7 +1252,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             attrs.put("cat", claseNombre);
 
             Graphic gr = new Graphic(puntoProyectado, sym, attrs);
-            geometricPOIsLayer.addGraphic(gr);
+
+            if(clase == 52)
+                geometricLayer.addGraphic(gr);
+            else
+                geometricPOIsLayer.addGraphic(gr);
         }
         // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
     }
