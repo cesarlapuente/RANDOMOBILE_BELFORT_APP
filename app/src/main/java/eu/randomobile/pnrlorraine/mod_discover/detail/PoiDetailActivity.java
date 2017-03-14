@@ -744,7 +744,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
                             sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurant));
                             break;
                         default:
-                            imgViewCategoria.setBackgroundResource(R.drawable.poi_icono);
+							sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
                     }
 
 					Graphic gr = new Graphic(point, sym, attrs);

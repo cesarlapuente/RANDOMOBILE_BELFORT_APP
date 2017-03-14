@@ -253,7 +253,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                                     startActivity(unrestrictedIntent);
 
                                 } catch (ActivityNotFoundException innerEx) {
-                                    Toast.makeText(RouteDetailActivity.this, "ES NECESARIO UNA APLICACIÓ DE MAPAS PARA ESTA FUNCIÓN", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(RouteDetailActivity.this, getString(R.string.mod_discover__appli_carte), Toast.LENGTH_LONG).show();
                                 }
                             }
                         }
@@ -693,7 +693,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         }
 
         ls.start();
-        if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)) == false)
+        if (!Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)))
             //showDialog();
             Log.d("Dialod here", "Info descarga");
     }
@@ -995,7 +995,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 dialogPoi.dismiss();
             }
         });
-        //now that the dialog is set up, it's time to show it    
+        //now that the dialog is set up, it's time to show it
         dialogPoi.show();
     }
 
@@ -1153,42 +1153,6 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 default:
                     sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.poi_icono));
                     claseNombre = this.getResources().getString(R.string.punto_de_interes);
-
-                /*
-
-                case 36: //Lugar de interes cultural
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_descubrir));
-                    firstPoint = puntoProyectado;
-                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
-                    break;
-                case 30: //Lugar de interes natural
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_naturaleza));
-                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
-                    break;
-                case 33: //Servicios estaciones
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.poi_icono));
-                    claseNombre = this.getResources().getString(R.string.servicios_estaciones);
-                    break;
-                case 28: //Servicios sanidad
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_sanidad));
-                    claseNombre = this.getResources().getString(R.string.servicios_sanidad);
-                    break;
-                case 26: //Alojamientos
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_hotel));
-                    claseNombre = this.getResources().getString(R.string.alojamientos);
-                    break;
-                case 27: //REstauracion
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_restaurant));
-                    claseNombre = this.getResources().getString(R.string.restauracion);
-                    break;
-                case 25: //Servicios oficinas de turismo
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_info));
-                    claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
-                    break;
-
-                default:
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.ic_launcher));
-                    claseNombre = this.getResources().getString(R.string.punto_de_interes);*/
             }
 
             final HashMap<String, Object> attrs = new HashMap<String, Object>();
@@ -1610,10 +1574,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             attrs.put("cat", cat);
 
             String paramCat = cat;
+            Log.d("Debug", "cat a une valeur de : " + cat);
             PictureMarkerSymbol sym = null;
-            if (paramCat.equals("Chambre d'h�tes") || paramCat.equals("H�tellerie")
-                    || paramCat.equals("H�bergement collectif") || paramCat.equals("H�tellerie de plein air")
-                    || paramCat.equals("Meubl�") || paramCat.equals("R�sidence")) {
+            if (paramCat.equals("Chambre d'hôtes") || paramCat.equals("Hôtellerie")
+                    || paramCat.equals("Hébergements collectifs") || paramCat.equals("Hôtellerie de plein air")
+                    || paramCat.equals("Meublés") || paramCat.equals("Résidences")) {
                 //Drawable d = getResources().getDrawable(R.drawable.icono_hotel);
                 //Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
                 sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
@@ -1621,14 +1586,14 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 //Drawable dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 50, 50, true));
                 //sym = new PictureMarkerSymbol(dr);
                 //sym.setOffsetY(-px2dip(this.getApplicationContext(),d.getIntrinsicHeight() / 2));
-            } else if (paramCat.equals("Mus�e") || paramCat.equals("Patrimoine Naturel")
-                    || paramCat.equals("Site et Monument") || paramCat.equals("Office de Tourisme")
+            } else if (paramCat.equals("Musées") || paramCat.equals("Patrimoine naturel")
+                    || paramCat.equals("Sites et monuments") || paramCat.equals("Offices de tourisme")
                     || paramCat.equals("Parc et Jardin")) {
                 sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
             } else if (paramCat.equals("Restauration"))
                 sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurante));
             else
-                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
 
             Graphic gr = new Graphic(puntoProyectado, sym, attrs);
             geometricPOIsLayer.addGraphic(gr);

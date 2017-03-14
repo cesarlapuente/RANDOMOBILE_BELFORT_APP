@@ -502,7 +502,7 @@ public class Route {
 
                         if (response != null && !response.equals("")) {
                             Route route = fillRoute(response);
-                            Log.d("Jmlog","ROUTE VALUE IMAGES ARRAY :"+route.getImages()+" route nid :"+route.getNid());
+                            //Log.d("Jmlog","ROUTE VALUE IMAGES ARRAY :"+route.getImages()+" route nid :"+route.getNid());
                             // Informar al delegate
                             if (Route.routesInterface != null) {
                                 if (route != null)

@@ -112,6 +112,7 @@
     <string name="mod_recover_pass__contrasena_cambiada_con_exito">Mot de passe modifié avec succès ! Maintenant, vous pouvez vous identifier</string>
     <string name="mod_recover_pass__error_al_reestablecer_contrasena">Échec de réinitialisation de votre mot de passe</string>
 
+    <string name="mod_discover__appli_carte">Une application de cartes doit être installé sur votre appareil pour utiliser cette fonction</string>
     <string name="mod_discover__pois_cercanos">Points d\'intérêt à proximité</string>
     <string name="mod_discover__courtaus_cercanos">Courtaous cercanos</string>
     <string name="mod_discover__buscar_pois">Recherche pois ...</string>
