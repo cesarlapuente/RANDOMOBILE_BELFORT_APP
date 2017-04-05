@@ -4,44 +4,46 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.android.map.Callout;
-import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
-import com.esri.android.map.LocationDisplayManager;
-import com.esri.android.map.LocationDisplayManager.AutoPanMode;
-import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISLocalTiledLayer;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
-import com.esri.android.map.bing.BingMapsLayer;
-import com.esri.android.map.event.OnSingleTapListener;
-import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.Geometry;
-import com.esri.core.geometry.Point;
-import com.esri.core.geometry.Polygon;
-import com.esri.core.geometry.Polyline;
-import com.esri.core.map.Graphic;
-import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.SimpleFillSymbol;
-import com.esri.core.symbol.SimpleLineSymbol;
-import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.LayerList;
+import com.esri.arcgisruntime.mapping.view.Callout;
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -79,7 +81,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 	ImageMap mImageMap = null;
 	
 	MapView mapa;
-	GraphicsLayer capaGeometrias;
+	GraphicsOverlay capaGeometrias;
 	Callout callout;
 
 	Button btnSeleccionarCapaBase;
@@ -122,10 +124,10 @@ public class RoutesGeneralMapActivity extends Activity implements
 		mImageMap.mBubbleMap.clear();
 		mImageMap.postInvalidate();
 		// Activar GPS
-		LocationDisplayManager ls = mapa.getLocationDisplayManager();
+		LocationDisplay ls = mapa.getLocationDisplay();
 //		ls.setLocationListener(new MyLocationListener());
 //		ls.setAutoPanMode(AutoPanMode.OFF);
-		ls.start();
+		ls.startAsync();
 	}
 
 	@Override
@@ -133,7 +135,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 		// TODO Auto-generated method stub
 		super.onPause();
 		//Parar GPS
-		LocationDisplayManager ls = mapa.getLocationDisplayManager();
+		LocationDisplay ls = mapa.getLocationDisplay();
 		//ls.setLocationListener(new MyLocationListener());
 		
 		if(ls != null){
@@ -150,7 +152,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (callout != null && callout.isShowing()) {
-				callout.hide();
+				callout.dismiss();
 				return true;
 			}
 
@@ -208,7 +210,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 	    if (data == null) {return;}
 	    String name = data.getStringExtra("name");
 	    filterRoutes();
-	    capaGeometrias.removeAll();
+	    capaGeometrias.clearSelection();
 	    cargarListaRoutesFiltrada(arrayFilteredRoutes);
 	    
 	  }
@@ -218,10 +220,8 @@ public class RoutesGeneralMapActivity extends Activity implements
 
 		ponerCapaBase();
 
-		mapa.setEsriLogoVisible(false);
-
-		capaGeometrias = new GraphicsLayer();
-		mapa.addLayer(capaGeometrias);
+		capaGeometrias = new GraphicsOverlay();
+		mapa.getGraphicsOverlays().add(capaGeometrias);
 		
 		// Tipografias
 		Typeface tfBubleGum = Util.fontBubblegum_Regular(this);
@@ -266,75 +266,68 @@ public class RoutesGeneralMapActivity extends Activity implements
 			}
 		});
 
-
-		// Al tocar un punto en el mapa
-		this.mapa.setOnSingleTapListener(new OnSingleTapListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			public void onSingleTap(float x, float y) {
+		this.mapa.setOnTouchListener(new DefaultMapViewOnTouchListener(this,mapa){
+			@Override
+			public boolean onSingleTapConfirmed(final MotionEvent e) {
 				// Si el mapa no est� cargado, salir
-				if (!mapa.isLoaded()) {
-					return;
+				if (mapa.getMap().getLoadStatus()== LoadStatus.NOT_LOADED) {
+					return false;
 				}
 
-				// Recuperamos los gr�ficos
-				int[] graphicsIDS = capaGeometrias.getGraphicIDs(x, y, 8);
-				if (graphicsIDS != null && graphicsIDS.length > 0) {
-					Log.d("Milog", "Hay graficos en la zona pulsada");
-					int targetId = graphicsIDS[0];
+				Point point = new Point(Math.round(e.getX()), Math.round(e.getY()));
+				double tolerance = 8;
+				final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphics = mapa.identifyGraphicsOverlaysAsync(point, tolerance, false);
+				graphics.addDoneListener(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							List lr = graphics.get();
+							Graphic gr = (Graphic) lr.get(0);
+							if (gr != null) {
+								String nombre = (String) gr.getAttributes().get(
+										"nombre");
+								String clase = (String) gr.getAttributes().get("clase");
+								String nid = (String) gr.getAttributes().get("nid");
+								String cat = (String) gr.getAttributes().get("cat");
+								String type = (String) gr.getAttributes().get("type");
+								String color = (String) gr.getAttributes().get("color");
 
-					Graphic gr = capaGeometrias.getGraphic(targetId);
 
-					if (gr != null) {
-						String nombre = (String) gr.getAttributes().get(
-								"nombre");
-						String clase = (String) gr.getAttributes().get("clase");
-						String nid = (String) gr.getAttributes().get("nid");
-						String cat = (String) gr.getAttributes().get("cat");
-						String type = (String) gr.getAttributes().get("type");
-						String color = (String) gr.getAttributes().get("color");
+								callout = mapa.getCallout();
+								// Establecer el estilo del callout
+								callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+								callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+								// Establecer el contenido del callout
+								View contenidoCallout = getViewForCallout(nombre,
+										clase, nid, cat, type, color);
+								callout.setContent(contenidoCallout);
+								callout.setLocation(mapa.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+								callout.show();
+							}
 
-
-						callout = mapa.getCallout();
-						// Establecer el estilo del callout
-						callout.setStyle(R.xml.style_callout_mapa_global);
-						callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-						// Establecer el contenido del callout
-						View contenidoCallout = getViewForCallout(nombre,
-								clase, nid, cat, type, color);
-						callout.setContent(contenidoCallout);
-						callout.show(mapa.toMapPoint(new Point(x, y)));
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						} catch (ExecutionException e1) {
+							e1.printStackTrace();
+						}
 					}
-
-				} else {
-					Log.d("Milog", "No hay graficos en la zona pulsada");
-					if (callout != null && callout.isShowing()) {
-						callout.hide();
-					}
-				}
+				});
+				return super.onSingleTapConfirmed(e);
 			}
 		});
 
-		this.mapa.setOnStatusChangedListener(new OnStatusChangedListener() {
-			private static final long serialVersionUID = 1L;
 
-			public void onStatusChanged(Object source, STATUS status) {
+		this.mapa.getMap().addDoneLoadingListener(new Runnable() {
+			@Override
+			public void run() {
 
-				if (OnStatusChangedListener.STATUS.INITIALIZED == status
-						&& source == mapa) {
+				LocationDisplay ls = mapa.getLocationDisplay();
+				ls.addLocationChangedListener(new MyLocationListener());
+				ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
+				ls.startAsync();
 
-					LocationDisplayManager ls = mapa.getLocationDisplayManager();
-					ls.setLocationListener(new MyLocationListener());
-					ls.setAutoPanMode(AutoPanMode.OFF);
-					ls.start();
-
-					representarGeometrias();
-
-				}
-
+				representarGeometrias();
 			}
-
 		});
 
 		btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
@@ -374,9 +367,9 @@ public class RoutesGeneralMapActivity extends Activity implements
 						app.FILTER_KEY_ROUTE_TEXT, null);
 				Route.routesInterface = this;
 				if ((-0.001 < lat) && (lat < 0.001)) {
-					if (mapa.getLocationDisplayManager().getLocation() != null) {
-						lat = mapa.getLocationDisplayManager().getLocation().getLatitude();
-						lon = mapa.getLocationDisplayManager().getLocation().getLongitude();
+					if (mapa.getLocationDisplay().getLocation() != null) {
+						lat = mapa.getLocationDisplay().getLocation().getPosition().getX();
+						lon = mapa.getLocationDisplay().getLocation().getPosition().getY();
 					}
 				}
 				Route.cargarListaRutasOrdenadosDistancia(app, lat, lon, 0, 0, 0, tidRouteCat, tidRouteDif, txtBuscarRoute);
@@ -413,7 +406,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 				attrs.put("clase",  route.getClass().getName());
 				attrs.put("nid", route.getNid());
 				attrs.put("nombre", route.getTitle());
-				attrs.put("cat", "Ruta");
+				attrs.put("cat", "Itineraire");
 				attrs.put("type", route.getCategory().getName());
 				attrs.put("color", Integer.toString(route.getColorForMap(this)));
 				
@@ -423,13 +416,13 @@ public class RoutesGeneralMapActivity extends Activity implements
 		        
 		        // Definir el color de la ruta
 		        int color = route.getColorForMap(this);
-				Graphic gr = new Graphic(polylineProyectada, new SimpleLineSymbol(color, 6, STYLE.SOLID), attrs);
-				capaGeometrias.addGraphic(gr);
+				Graphic gr = new Graphic(polylineProyectada, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 6));
+				capaGeometrias.getGraphics().add(gr);
 				
 			}
 			
 		}
-		if (capaGeometrias.getNumberOfGraphics() > 0){
+		if (capaGeometrias.getGraphics().size() > 0){
 			Log.d("RoutesMap", "Ahora mismo vamos a centrar");
 			centrarEnExtentCapa(capaGeometrias);
 			Log.d("RoutesMap", "Ya hemos centrado, ¿qué tal?");
@@ -514,7 +507,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 							PoiDetailActivity.class);
 					intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
 					startActivity(intent);
-					callout.hide();
+					callout.dismiss();
 				}
 			});
 		}else if (clase.equals(Route.class.getName())) {
@@ -535,7 +528,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 					intent.putExtra(RouteDetailActivity.PARAM_KEY_CATEGORY_ROUTE, type);
 					intent.putExtra(RouteDetailActivity.PARAM_KEY_COLOR_ROUTE, color);
 					startActivity(intent);
-					callout.hide();
+					callout.dismiss();
 				}
 			});
 		}
@@ -562,19 +555,18 @@ public class RoutesGeneralMapActivity extends Activity implements
 						&& geomObj.getClass().getName()
 								.equals(Polygon.class.getName())) {
 					Polygon polygon = (Polygon) geomObj;
-					SimpleFillSymbol sym = new SimpleFillSymbol(
-							polygonFillColor);
-					sym.setAlpha(100);
-					sym.setOutline(new SimpleLineSymbol(polygonBorderColor, 8,
-							SimpleLineSymbol.STYLE.SOLID));
-					Graphic gr = new Graphic(polygon, sym, attrs);
-					capaGeometrias.addGraphic(gr);
+					SimpleFillSymbol sym = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID,
+							polygonFillColor, null);
+
+					sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
+					Graphic gr = new Graphic(polygon, attrs, sym);
+					capaGeometrias.getGraphics().add(gr);
 				} else if (geomObj != null
 						&& geomObj.getClass().getName()
 								.equals(Point.class.getName())) {
 					
 					
-					final Point point = (Point) geomObj;
+					final com.esri.arcgisruntime.geometry.Point point = (com.esri.arcgisruntime.geometry.Point) geomObj;
 
 					// Cargar los iconos de remoto con AsyncTask
 					new AsyncTask<Integer, Float, Integer>() {
@@ -589,17 +581,17 @@ public class RoutesGeneralMapActivity extends Activity implements
 									sym = new PictureMarkerSymbol(urlIcon);
 								} catch (Exception e) {
 									Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
-									sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
+									sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
 								}
 							}else{
-								sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
+								sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
 							}
 							return 0;
 						}
 						// Acciones despu�s de ejecutarse (Main Thread)
 						protected void onPostExecute(Integer bytes) {
-							Graphic gr = new Graphic(point, sym, attrs);
-							capaGeometrias.addGraphic(gr);
+							Graphic gr = new Graphic(point, attrs, sym);
+							capaGeometrias.getGraphics().add(gr);
 							
 							// Centrar en el extent de la capa
 							centrarEnExtentCapa(capaGeometrias);
@@ -613,14 +605,14 @@ public class RoutesGeneralMapActivity extends Activity implements
 
 			        int color = Color.BLUE;
 
-					Graphic gr = new Graphic(polyline, new SimpleLineSymbol(color, 10, STYLE.SOLID), attrs);
-					capaGeometrias.addGraphic(gr);
+					Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
+					capaGeometrias.getGraphics().add(gr);
 				}
 			}
 		}
 	}
 
-	private void centrarEnExtentCapa(GraphicsLayer capa) {
+	private void centrarEnExtentCapa(GraphicsOverlay capa) {
 		// Hacer zoom a la capa de geometrias
 		/*
 		Envelope env = new Envelope();
@@ -638,21 +630,21 @@ public class RoutesGeneralMapActivity extends Activity implements
 		//this.mapa.setExtent(NewEnv);
 		*/
 		// Envelope to focus on the map extent on the results
-		Envelope extent = new Envelope();
+		Envelope extent = capa.getExtent();
 
 		// iterate through results
-		for (int element : capa.getGraphicIDs()) {
-				Geometry geom = capa.getGraphic(element).getGeometry();
+
+		for (int element=0; element<capa.getGraphics().size();element++) {
+				Geometry geom = capa.getGraphics().get(element).getGeometry();
 				// merge extent with point
-			    Envelope env = new Envelope();
-				geom.queryEnvelope(env);
-				extent.merge(env);
+			    Envelope env = geom.getExtent();
+				extent.createFromInternal(env.getInternal());
 		}
 
 		// Set the map extent to the envelope containing the result graphics
-		this.mapa.setExtent(extent, 100);
+		this.mapa.setViewpointGeometryAsync(extent, 100);
 		extent.getCenter();
-		mapa.centerAt(extent.getCenter(),false);
+		mapa.locationToScreen(extent.getCenter());
 	}
 
 
@@ -680,49 +672,49 @@ public class RoutesGeneralMapActivity extends Activity implements
 
 		// Correcci�n, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
-		Layer[] capas = mapa.getLayers();
+		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
 			Log.d("Milog", "capas no es nulo");
-			if (capas.length > 0) {
+			if (capas.size() > 0) {
 
 				Log.d("Milog", "Hay alguna capa");
-				Object capa0 = capas[0];
+				Object capa0 = capas.get(0);
 				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
 					Log.d("Milog",
 							"La clase de la capa base es igual que la clase de la capa0");
-					if (capaBase.getClass() == BingMapsLayer.class) {
+					if (capaBase.getClass() == ArcGISTiledLayer.class) {
 						Log.d("Milog", "capaBase es de tipo BING");
-						BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
-						BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
+						ArcGISVectorTiledLayer capaBaseCasted = (ArcGISVectorTiledLayer) capaBase;
+						ArcGISVectorTiledLayer capa0Casted = (ArcGISVectorTiledLayer) capa0;
 
-						if (capaBaseCasted.getMapStyle().equals(
-								capa0Casted.getMapStyle())) {
+						if (capaBaseCasted.getStyle().equals(
+								capa0Casted.getStyle())) {
 							return;
 						} else {
-							mapa.removeLayer(0);
+							mapa.getMap().getOperationalLayers().remove(0);
 							Log.d("Milog",
 									"PUNTO INTERMEDIO BING: el mapa tiene "
-											+ mapa.getLayers().length
+											+ mapa.getMap().getOperationalLayers().size()
 											+ " capas");
 						}
-					} else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+					} else if (capaBase.getClass() == ArcGISTiledLayer.class) {
 						Log.d("Milog", "capaBase es de tipo TiledMap");
-						ArcGISTiledMapServiceLayer capaBaseCasted = (ArcGISTiledMapServiceLayer) capaBase;
-						ArcGISTiledMapServiceLayer capa0Casted = (ArcGISTiledMapServiceLayer) capa0;
-						String strUrlCapaBaseCasted = capaBaseCasted.getUrl()
+						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
+						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
+						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
 								.toString();
-						String strUrlCapa0Casted = capa0Casted.getUrl()
+						String strUrlCapa0Casted = capa0Casted.getUri()
 								.toString();
 						if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
 							return;
 						} else {
-							mapa.removeLayer(0);
+							mapa.getMap().getOperationalLayers().remove(0);
 							Log.d("Milog",
 									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getLayers().length
+											+ mapa.getMap().getOperationalLayers().size()
 											+ " capas");
 						}
 					}
@@ -730,29 +722,17 @@ public class RoutesGeneralMapActivity extends Activity implements
 							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
 						// la capa 0
+					mapa.getMap().getOperationalLayers().remove(0);
 
-					if (capaBase.getClass() == BingMapsLayer.class) {
-						mapa.removeLayer(0);
-					} else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
-						mapa.removeLayer(0);
-					}
 				}
 			}
 			// btnAbrirCapas.setEnabled(true);
-			if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+			if (capaBase.getClass() == ArcGISTiledLayer.class) {
 
-				if (capas.length > 0) {
-					mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase, 0);
+				if (capas.size() > 0) {
+					mapa.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
 				} else {
-					mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase);
-				}
-
-			} else if (capaBase.getClass() == BingMapsLayer.class) {
-
-				if (capas.length > 0) {
-					mapa.addLayer((BingMapsLayer) capaBase, 0);
-				} else {
-					mapa.addLayer((BingMapsLayer) capaBase);
+					mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
 				}
 
 			} else {
@@ -760,7 +740,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 			}
 
 			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getLayers().length
+			Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
 					+ " capas");
 		}
 	}
@@ -783,7 +763,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 	 * @author
 	 * 
 	 */
-	private class MyLocationListener implements LocationListener {
+	private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
 		public MyLocationListener() {
 			super();
@@ -805,6 +785,11 @@ public class RoutesGeneralMapActivity extends Activity implements
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
 
+		@Override
+		public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+			if (locationChangedEvent.getLocation() == null)
+				return;
+		}
 	}
 	
 	

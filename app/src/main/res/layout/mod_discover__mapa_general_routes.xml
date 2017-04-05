@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-   	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/white"
-    android:orientation="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:background="@color/white"
+	android:orientation="vertical"
+	tools:context=".mod_discover.map.RoutesGeneralMapActivity">
 
-    <com.esri.android.map.MapView
+    <com.esri.arcgisruntime.mapping.view.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mapa"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginTop="110dp">
-    </com.esri.android.map.MapView>
+    </com.esri.arcgisruntime.mapping.view.MapView>
 
     <LinearLayout 
         android:id="@+id/border"

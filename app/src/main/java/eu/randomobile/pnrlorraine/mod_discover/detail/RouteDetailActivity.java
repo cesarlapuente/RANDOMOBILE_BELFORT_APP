@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,6 +23,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -33,28 +35,28 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esri.android.map.Callout;
-import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
-import com.esri.android.map.LocationDisplayManager;
-import com.esri.android.map.LocationDisplayManager.AutoPanMode;
-import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISLocalTiledLayer;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
-import com.esri.android.map.bing.BingMapsLayer;
-import com.esri.android.map.event.OnSingleTapListener;
-import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.Geometry;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.Point;
-import com.esri.core.geometry.Polygon;
-import com.esri.core.geometry.Polyline;
-import com.esri.core.map.Graphic;
-import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.SimpleFillSymbol;
-import com.esri.core.symbol.SimpleLineSymbol;
-import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.LayerList;
+import com.esri.arcgisruntime.mapping.view.Callout;
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.File;
@@ -64,6 +66,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -106,8 +109,8 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     private ImageMap imageMap;
 
     private MapView map;
-    private GraphicsLayer geometricLayer;
-    private GraphicsLayer geometricPOIsLayer;
+    private GraphicsOverlay geometricLayer;
+    private GraphicsOverlay geometricPOIsLayer;
     private Callout callout;
     private Point firstPoint;
 
@@ -295,101 +298,216 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // <----------------->_MAP_DECLARATIONS_<----------------->
 
         map = (MapView) findViewById(R.id.mapa);
-        map.setOnSingleTapListener(new OnSingleTapListener() {
 
-            private static final long serialVersionUID = 1L;
-
-                public void onSingleTap(float x, float y) {
-                if (!map.isLoaded()) {
-                    return;
+        map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map) {
+            @Override
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
+                // Si el mapa no est� cargado, salir
+                if (map.getMap().getLoadStatus() == LoadStatus.NOT_LOADED) {
+                    return false;
                 }
+                final android.graphics.Point point = new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()));
+                final double tolerance = 8;
+                final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsIDS = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
+                graphicsIDS.addDoneListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsPoisSearch = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
+                        graphicsPoisSearch.addDoneListener(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
 
-                int[] graphicsIDS = geometricLayer.getGraphicIDs(x, y, 8);
-                int[] graphicsPoisSearch = geometricPOIsLayer.getGraphicIDs(x, y, 8);
+                                        List lr = graphicsIDS.get();
+                                        Graphic gr = (Graphic) lr.get(0);
 
-                if (graphicsIDS != null && graphicsIDS.length > 0) {
-                    int targetId = graphicsIDS[0];
+                                        if (gr != null) {
+                                            String nombre = (String) gr.getAttributes().get("nombre");
+                                            String clase = (String) gr.getAttributes().get("clase");
+                                            String nid = (String) gr.getAttributes().get("nid");
+                                            String descripcion = (String) gr.getAttributes().get("descripcion");
+                                            String cat = (String) gr.getAttributes().get("cat");
 
-                    Graphic gr = geometricLayer.getGraphic(targetId);
+                                            callout = map.getCallout();
+                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                            View contenidoCallout = null;
 
-                    if (gr != null) {
-                        String nombre = (String) gr.getAttributes().get("nombre");
-                        String clase = (String) gr.getAttributes().get("clase");
-                        String nid = (String) gr.getAttributes().get("nid");
-                        String descripcion = (String) gr.getAttributes().get("descripcion");
-                        String cat = (String) gr.getAttributes().get("cat");
+                                            if (nid != null) {
+                                                if (!clase.equals(Route.class.getName()))
+                                                    contenidoCallout = getViewForCallout(nombre,
+                                                            clase, cat, nid);
+                                            }
+                                            else
+                                                dialogPoiDescription(nombre, descripcion);
 
-                        callout = map.getCallout();
-                        callout.setStyle(R.xml.style_callout_mapa_global);
-                        callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-                        View contenidoCallout = null;
+                                            if (contenidoCallout != null) {
+                                                callout.setContent(contenidoCallout);
+                                                callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+                                                callout.show();
+                                            }
+                                        }
 
-                        if (nid != null) {
-                            if (!clase.equals(Route.class.getName()))
-                                contenidoCallout = getViewForCallout(nombre,
-                                        clase, cat, nid);
-                        }
-                        else
-                            dialogPoiDescription(nombre, descripcion);
+                                    } else if (graphicsPoisSearch != null && graphicsPoisSearch.get().size() > 0) {
+                                        List lrPoiSearch = graphicsPoisSearch.get();
 
-                        if (contenidoCallout != null) {
-                            callout.setContent(contenidoCallout);
-                            callout.show(map.toMapPoint(new Point(x, y)));
-                        }
+                                        Graphic gr = (Graphic) lrPoiSearch.get(0);
+
+                                        if (gr != null) {
+                                            String nombre = (String) gr.getAttributes().get("nombre");
+                                            String clase = (String) gr.getAttributes().get("clase");
+                                            String nid = (String) gr.getAttributes().get("nid");
+                                            String descripcion = (String) gr.getAttributes().get("descripcion");
+                                            String cat = (String) gr.getAttributes().get("cat");
+
+                                            callout = map.getCallout();
+                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                            View contenidoCallout;
+
+                                            if (nid != null) {
+                                                contenidoCallout = getViewForCallout(nombre, clase, cat, nid);
+
+                                            } else {
+                                                contenidoCallout = getViewForPoiCallout(nombre, descripcion);
+                                            }
+
+                                            callout.setContent(contenidoCallout);
+                                            callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+                                            callout.show();
+                                        }
+
+
+
+                                    } else {
+                                        if (callout != null && callout.isShowing()) {
+                                            callout.dismiss();
+                                        }
+                                    }
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                } catch (ExecutionException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        });
                     }
-
-                } else if (graphicsPoisSearch != null && graphicsPoisSearch.length > 0) {
-                    int targetId = graphicsPoisSearch[0];
-
-                    Graphic gr = geometricPOIsLayer.getGraphic(targetId);
-
-                    if (gr != null) {
-                        String nombre = (String) gr.getAttributes().get("nombre");
-                        String clase = (String) gr.getAttributes().get("clase");
-                        String nid = (String) gr.getAttributes().get("nid");
-                        String descripcion = (String) gr.getAttributes().get("descripcion");
-                        String cat = (String) gr.getAttributes().get("cat");
-
-                        callout = map.getCallout();
-                        callout.setStyle(R.xml.style_callout_mapa_global);
-                        callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-                        View contenidoCallout;
-
-                        if (nid != null) {
-                            contenidoCallout = getViewForCallout(nombre, clase, cat, nid);
-
-                        } else {
-                            contenidoCallout = getViewForPoiCallout(nombre, descripcion);
-                        }
-
-                        callout.setContent(contenidoCallout);
-                        callout.show(map.toMapPoint(new Point(x, y)));
-                    }
-
-                } else {
-                    if (callout != null && callout.isShowing()) {
-                        callout.hide();
-                    }
-                }
+                });
+                return true;
             }
         });
 
-        map.setOnStatusChangedListener(new OnStatusChangedListener() {
-            private static final long serialVersionUID = 1L;
 
-            public void onStatusChanged(Object source, STATUS status) {
-                if (STATUS.INITIALIZED == status && source == map) {
-                    LocationDisplayManager ls = map.getLocationDisplayManager();
-                    ls.setLocationListener(new MyLocationListener());
-                    ls.setAutoPanMode(AutoPanMode.OFF);
-
-                    ls.start();
-
-                    representarGeometrias();
+        map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map){
+            @Override
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
+                // Si el mapa no est� cargado, salir
+                if (map.getMap().getLoadStatus() == LoadStatus.NOT_LOADED) {
+                    return false;
                 }
-            }
+                final android.graphics.Point point = new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()));
+                final double tolerance = 8;
+                final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsIDS = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
+                graphicsIDS.addDoneListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsPoisSearch = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
+                        graphicsPoisSearch.addDoneListener(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
+                                        List lr = graphicsIDS.get();
 
+
+                                        Graphic gr = geometricLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lr.get(0)));
+
+                                        if (gr != null) {
+                                            String nombre = (String) gr.getAttributes().get("nombre");
+                                            String clase = (String) gr.getAttributes().get("clase");
+                                            String nid = (String) gr.getAttributes().get("nid");
+                                            String descripcion = (String) gr.getAttributes().get("descripcion");
+                                            String cat = (String) gr.getAttributes().get("cat");
+
+                                            callout = map.getCallout();
+                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                            View contenidoCallout = null;
+
+                                            if (nid != null) {
+                                                if (!clase.equals(Route.class.getName()))
+                                                    contenidoCallout = getViewForCallout(nombre,
+                                                            clase, cat, nid);
+                                            }
+                                            else
+                                                dialogPoiDescription(nombre, descripcion);
+
+                                            if (contenidoCallout != null) {
+                                                callout.setContent(contenidoCallout);
+                                                callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+                                                callout.show();
+                                            }
+                                        }
+
+                                    } else if (graphicsPoisSearch != null && graphicsPoisSearch.get().size() > 0) {
+                                        List lrSearch = graphicsPoisSearch.get();
+
+                                        Graphic gr = geometricPOIsLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lrSearch.get(0)));
+
+                                        if (gr != null) {
+                                            String nombre = (String) gr.getAttributes().get("nombre");
+                                            String clase = (String) gr.getAttributes().get("clase");
+                                            String nid = (String) gr.getAttributes().get("nid");
+                                            String descripcion = (String) gr.getAttributes().get("descripcion");
+                                            String cat = (String) gr.getAttributes().get("cat");
+
+                                            callout = map.getCallout();
+                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                            View contenidoCallout;
+
+                                            if (nid != null) {
+                                                contenidoCallout = getViewForCallout(nombre, clase, cat, nid);
+
+                                            } else {
+                                                contenidoCallout = getViewForPoiCallout(nombre, descripcion);
+                                            }
+
+                                            callout.setContent(contenidoCallout);
+                                            callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+                                            callout.show();
+                                        }
+
+                                    } else {
+                                        if (callout != null && callout.isShowing()) {
+                                            callout.dismiss();
+                                        }
+                                    }
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                } catch (ExecutionException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                });
+                return true;
+            }
         });
+
+        map.getMap().addDoneLoadingListener(new Runnable() {
+            @Override
+            public void run() {
+                LocationDisplay ls = map.getLocationDisplay();
+                ls.addLocationChangedListener(new MyLocationListener());
+                ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
+                ls.startAsync();
+                representarGeometrias();
+            }
+        });
+
 
         // <----------------->_BUTTONS_DECLARATIONS_<----------------->
 
@@ -689,14 +807,14 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         imageMap.mBubbleMap.clear();
         imageMap.postInvalidate();
         // Activar GPS
-        LocationDisplayManager ls = map.getLocationDisplayManager();
+        LocationDisplay ls = map.getLocationDisplay();
 
-        if (ls.getLocationListener() == null) {
-            ls.setLocationListener(new MyLocationListener());
-            ls.setAutoPanMode(AutoPanMode.OFF);
+        if (ls.isShowLocation() == false) {
+            ls.addLocationChangedListener(new MyLocationListener());
+            ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
         }
 
-        ls.start();
+        ls.startAsync();
         if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)) == false)
             //showDialog();
             Log.d("Dialod here", "Info descarga");
@@ -707,7 +825,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // TODO Auto-generated method stub
         super.onPause();
         //Parar GPS
-        LocationDisplayManager ls = map.getLocationDisplayManager();
+        LocationDisplay ls = map.getLocationDisplay();
         //ls.setLocationListener(new MyLocationListener());
 
         if (ls != null) {
@@ -945,13 +1063,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     public void inicializarMapa() {
         ponerCapaBase();
 
-        map.setEsriLogoVisible(true);
 
-        geometricLayer = new GraphicsLayer();
-        geometricPOIsLayer = new GraphicsLayer();
+        geometricLayer = new GraphicsOverlay();
+        geometricPOIsLayer = new GraphicsOverlay();
 
-        map.addLayer(geometricLayer);
-        map.addLayer(geometricPOIsLayer);
+        map.getGraphicsOverlays().add(geometricLayer);
+        map.getGraphicsOverlays().add(geometricPOIsLayer);
     }
 
     private void representarGeometrias() {
@@ -1052,7 +1169,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     //intent.putExtra(PoiDetailActivity.PARAM_KEY_VALORATION,0);
                     //BitmapManager.INSTANCE.cache.remove(poiPulsado.getMainImage());
                     startActivity(intent);
-                    callout.hide();
+                    callout.dismiss();
                 }
             });
         }
@@ -1088,7 +1205,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                             PoiDetailActivity.class);
                     intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
                     startActivity(intent);
-                    callout.hide();
+                    callout.dismiss();
                 }
             });
         } else if (clase.equals(Route.class.getName())) {
@@ -1103,7 +1220,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 //							RouteDetailActivity.class);
 //					intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
 //					startActivity(intent);
-                    callout.hide();
+                    callout.dismiss();
                 }
             });
         }
@@ -1119,8 +1236,8 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         Context ctx = app.getApplicationContext();
         for (int j = 0; j < pois.size(); j++) {
             int number;
-            Point puntoProyectado = GeometryEngine.project(pois.get(j).getLongitude(),
-                    pois.get(j).getLatitude(), app.spatialReference);
+            Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
+                    pois.get(j).getLatitude()), SpatialReference.create(102100));
             number = pois.get(j).getNumber();
             int clase = pois.get(j).getType();
             Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
@@ -1131,84 +1248,84 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 case 52:
                     switch (number) {
                         case 1:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_01));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_01));
                             firstPoint = puntoProyectado;
                             break;
                         case 2:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_02));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_02));
                             break;
                         case 3:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_03));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_03));
                             break;
                         case 4:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_04));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_04));
                             break;
                         case 5:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_05));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_05));
                             break;
                         case 6:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_06));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_06));
                             break;
                         case 7:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_07));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_07));
                             break;
                         case 8:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_08));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_08));
                             break;
                         case 9:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_09));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_09));
                             break;
                         case 10:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_10));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_10));
                             break;
                         case 11:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_11));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_11));
                             break;
                         case 12:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_12));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_12));
                             break;
                         case 13:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_13));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_13));
                             break;
                         case 14:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_14));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_14));
                             break;
                         case 15:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_15));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_15));
                             break;
                         case 16:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_16));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_16));
                             break;
                         case 17:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_17));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_17));
                             break;
                         case 18:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_18));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_18));
                             break;
                         case 19:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_19));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_19));
                             break;
                         case 20:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_20));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_20));
                             break;
                         case 21:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_21));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_21));
                             break;
                         case 22:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_22));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_22));
                             break;
                         case 23:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_23));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_23));
                             break;
                         case 24:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_24));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_24));
                             break;
                         case 25:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.mapa_ruta_num_25));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_25));
                             break;
 
                         default:
-                            sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.ic_launcher));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
                     }
                     break;
                 case 26:
@@ -1217,29 +1334,29 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 case 49:
                 case 50:
                 case 51: // Hébergements
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_hotel));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
                     claseNombre = this.getResources().getString(R.string.alojamientos);
                     firstPoint = puntoProyectado;
                     break;
                 case 30: //Patrimoine naturel
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_naturaleza));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_naturaleza));
                     claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
                     break;
                 case 36:  //Monuments
                 case 28:
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_descubrir));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
                     claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
                     break;
                 case 27: //Restauracion
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_restaurante));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
                     claseNombre = this.getResources().getString(R.string.restauracion);
                     break;
                 case 25: //Offices de tourisme
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.icono_info));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
                     claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
                     break;
                 default:
-                    sym = new PictureMarkerSymbol(ctx, getResources().getDrawable(R.drawable.poi_icono));
+                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
                     claseNombre = this.getResources().getString(R.string.punto_de_interes);
             }
 
@@ -1251,12 +1368,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             attrs.put("clase", Poi.class.getName());
             attrs.put("cat", claseNombre);
 
-            Graphic gr = new Graphic(puntoProyectado, sym, attrs);
+            Graphic gr = new Graphic(puntoProyectado, attrs, sym);
 
             if(clase == 52)
-                geometricLayer.addGraphic(gr);
+                geometricLayer.getGraphics().add(gr);
             else
-                geometricPOIsLayer.addGraphic(gr);
+                geometricPOIsLayer.getGraphics().add(gr);
         }
         // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
     }
@@ -1279,13 +1396,13 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                         && geomObj.getClass().getName()
                         .equals(Polygon.class.getName())) {
                     Polygon polygon = (Polygon) geomObj;
-                    SimpleFillSymbol sym = new SimpleFillSymbol(
+                    SimpleFillSymbol sym = new SimpleFillSymbol();
+                    sym.setColor(
                             polygonFillColor);
-                    sym.setAlpha(100);
-                    sym.setOutline(new SimpleLineSymbol(polygonBorderColor, 4,
-                            STYLE.SOLID));
-                    Graphic gr = new Graphic(polygon, sym, attrs);
-                    geometricLayer.addGraphic(gr);
+
+                    sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 4));
+                    Graphic gr = new Graphic(polygon, attrs, sym);
+                    geometricLayer.getGraphics().add(gr);
                 } else if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Point.class.getName())) {
@@ -1305,23 +1422,22 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                                     sym = new PictureMarkerSymbol(urlIcon);
                                 } catch (Exception e) {
                                     Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
-                                    sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+                                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
                                 }
                             } else {
-                                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.ic_launcher));
+                                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
                             }
                             return 0;
                         }
 
                         // Acciones despu�s de ejecutarse (Main Thread)
                         protected void onPostExecute(Integer bytes) {
-                            Graphic gr = new Graphic(point, sym, attrs);
-                            geometricLayer.addGraphic(gr);
+                            Graphic gr = new Graphic(point, attrs, sym);
+                            geometricLayer.getGraphics().add(gr);
 
                             // Centrar en el poi y hacer zoom
                             double scale = 5000.0;
-                            map.centerAt(point, true);
-                            map.setScale(scale);
+                            map.setViewpointCenterAsync(point, scale);
                         }
                     }.execute(1);
 
@@ -1331,24 +1447,26 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     Polyline polyline = (Polyline) geomObj;
                     //int color = paramColorRoute;
                     //TOTO
-                    Graphic gr = new Graphic(polyline, new SimpleLineSymbol(color, 6, STYLE.SOLID), attrs);
-                    geometricLayer.addGraphic(gr);
+                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 6));
+                    geometricLayer.getGraphics().add(gr);
                 }
             }
         }
     }
 
-    private void centrarEnExtentCapa(GraphicsLayer capa) {
+    private void centrarEnExtentCapa(GraphicsOverlay capa) {
         // Hacer zoom a la capa de geometrias
-        Envelope env = new Envelope();
-        Envelope NewEnv = new Envelope();
-        for (int i : capa.getGraphicIDs()) {
-            Geometry geom = capa.getGraphic(i).getGeometry();
-            geom.queryEnvelope(env);
-            NewEnv.merge(env);
+        Envelope env;
+        Envelope NewEnv = capa.getExtent();
+        for (int i=0; i< capa.getGraphics().size(); i++) {
+            Geometry geom = capa.getGraphics().get(i).getGeometry();
+            env = geom.getExtent();
+            //geom.queryEnvelope(env);
+            NewEnv.createFromInternal(env.getInternal());
+            //NewEnv.merge(env);
         }
 
-        this.map.setExtent(NewEnv, 100);
+        this.map.setViewpointGeometryAsync(NewEnv, 100);
     }
 
     private void copyMapFileInAppFileDir(String fileOutput, String fileAssetsInput) {
@@ -1380,10 +1498,10 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         /* Codigo de prueba */
         if (!DataConection.hayConexion(this)) {
             String basemapurl = Util.getUrlRouteBaseLayerOffline(app, paramNid, paramMapUrl);
-            ArcGISLocalTiledLayer baseLayer;
-            baseLayer = new ArcGISLocalTiledLayer(basemapurl);
-            map.addLayer(baseLayer);
-            map.setMaxScale(1000);
+            ArcGISTiledLayer baseLayer;
+            baseLayer = new ArcGISTiledLayer(basemapurl);
+            map.getMap().getOperationalLayers().add(baseLayer);
+            map.getMap().setMaxScale(1000);
             return;
         }
         /* Fin de codigo de prueba */
@@ -1396,20 +1514,20 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
         // Correcci�n, para que no cambie la capa base cuando la seleccionada es
         // la misma que ya estaba (ahorra datos)
-        Layer[] capas = map.getLayers();
+        LayerList capas = map.getMap().getOperationalLayers();
         if (capas != null) {
             Log.d("Milog", "capas no es nulo");
-            if (capas.length > 0) {
+            if (capas.size() > 0) {
 
                 Log.d("Milog", "Hay alguna capa");
-                Object capa0 = capas[0];
+                Object capa0 = capas.get(0);
                 Log.d("Milog", "Tenemos capa0");
                 // si la capa base seleccionada es del mismo tipo que la capa 0
                 if (capaBase.getClass().getName()
                         .equals(capa0.getClass().getName())) {
                     Log.d("Milog",
                             "La clase de la capa base es igual que la clase de la capa0");
-                    if (capaBase.getClass() == BingMapsLayer.class) {
+                    /*if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo BING");
                         BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
                         BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
@@ -1424,19 +1542,19 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                                             + map.getLayers().length
                                             + " capas");
                         }
-                    } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+                    } else */if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo TiledMap");
-                        ArcGISTiledMapServiceLayer capaBaseCasted = (ArcGISTiledMapServiceLayer) capaBase;
-                        ArcGISTiledMapServiceLayer capa0Casted = (ArcGISTiledMapServiceLayer) capa0;
-                        String strUrlCapaBaseCasted = capaBaseCasted.getUrl().toString();
-                        String strUrlCapa0Casted = capa0Casted.getUrl().toString();
+                        ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
+                        ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
+                        String strUrlCapaBaseCasted = capaBaseCasted.getUri().toString();
+                        String strUrlCapa0Casted = capa0Casted.getUri().toString();
                         if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
                             return;
                         } else {
-                            map.removeLayer(0);
+                            map.getMap().getOperationalLayers().remove(0);
                             Log.d("Milog",
                                     "PUNTO INTERMEDIO TILED: el map tiene "
-                                            + map.getLayers().length
+                                            + map.getMap().getOperationalLayers().size()
                                             + " capas");
                         }
                     }
@@ -1445,23 +1563,24 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 } else {// si la capa base seleccionada no es del mismo tipo que
                     // la capa 0
 
-                    if (capaBase.getClass() == BingMapsLayer.class) {
+                    map.getMap().getOperationalLayers().remove(0);
+                    /*if (capaBase.getClass() == BingMapsLayer.class) {
                         map.removeLayer(0);
                     } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
                         map.removeLayer(0);
-                    }
+                    }*/
                 }
             }
             // btnAbrirCapas.setEnabled(true);
-            if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+            if (capaBase.getClass() == ArcGISTiledLayer.class) {
 
-                if (capas.length > 0) {
-                    map.addLayer((ArcGISTiledMapServiceLayer) capaBase, 0);
+                if (capas.size() > 0) {
+                    map.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
                 } else {
-                    map.addLayer((ArcGISTiledMapServiceLayer) capaBase);
+                    map.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
                 }
 
-            } else if (capaBase.getClass() == BingMapsLayer.class) {
+            } /*else if (capaBase.getClass() == BingMapsLayer.class) {
 
                 if (capas.length > 0) {
                     map.addLayer((BingMapsLayer) capaBase, 0);
@@ -1469,12 +1588,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     map.addLayer((BingMapsLayer) capaBase);
                 }
 
-            } else {
+            } */else {
                 // otro tipo de capa
             }
 
             app.capaBaseSeleccionada = capaSeleccionada;
-            Log.d("Milog", "El map tiene " + map.getLayers().length
+            Log.d("Milog", "El map tiene " + map.getMap().getOperationalLayers().size()
                     + " capas");
         }
     }
@@ -1485,7 +1604,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
      *
      * @author
      */
-    private class MyLocationListener implements LocationListener {
+    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
         public MyLocationListener() {
             super();
@@ -1509,6 +1628,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
 
+        @Override
+        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+            if (locationChangedEvent.getLocation() == null)
+                return;
+        }
     }
 
 
@@ -1644,9 +1768,8 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             // Por cada poi obtener sus coordenadas y construir un objeto
             // Point de Arcgis
             GeoPoint gp = poi.getCoordinates();
-            Point puntoProyectado = GeometryEngine.project(
-                    gp.getLongitude(), gp.getLatitude(),
-                    app.spatialReference);
+            Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
+                    SpatialReference.create(102100));
             ArrayList<Object> geometrias = new ArrayList<Object>();
             geometrias.add(puntoProyectado);
 
@@ -1673,7 +1796,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     || paramCat.equals("Meublés") || paramCat.equals("Résidences")) {
                 //Drawable d = getResources().getDrawable(R.drawable.icono_hotel);
                 //Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
+                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
                 // Scale it to 50 x 50
                 //Drawable dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 50, 50, true));
                 //sym = new PictureMarkerSymbol(dr);
@@ -1681,21 +1804,21 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             } else if (paramCat.equals("Musées") || paramCat.equals("Patrimoine naturel")
                     || paramCat.equals("Sites et monuments") || paramCat.equals("Offices de tourisme")
                     || paramCat.equals("Parc et Jardin")) {
-                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
+                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
             } else if (paramCat.equals("Restauration"))
-                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurante));
+                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
             else
-                sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
+                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
 
-            Graphic gr = new Graphic(puntoProyectado, sym, attrs);
-            geometricPOIsLayer.addGraphic(gr);
+            Graphic gr = new Graphic(puntoProyectado, attrs, sym);
+            geometricPOIsLayer.getGraphics().add(gr);
         }
     }
 
     /* Proceso que se realizar� tras la busqueda de Pois */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        geometricPOIsLayer.removeAll();
+        geometricPOIsLayer.getGraphics().clear();
         if (data == null) {
             return;
         }
