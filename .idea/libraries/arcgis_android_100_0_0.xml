@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="arcgis-android-100.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/c3d1cbfcc564d36c17021f366bba9fded398e76b/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/c3d1cbfcc564d36c17021f366bba9fded398e76b/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
