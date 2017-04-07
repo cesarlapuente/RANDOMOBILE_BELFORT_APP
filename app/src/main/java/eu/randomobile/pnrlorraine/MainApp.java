@@ -250,7 +250,9 @@ public class MainApp extends Application {
 	
 	// Evento al lanzarse la aplicaci�n. Poner aqu� las inicializaciones
 	public void onCreate(){
+		super.onCreate();
 		this.inicializarAplicacion();
+		System.loadLibrary("runtimecore_java");
 		//initImageLoader();
 
 		dBHandler = new DBHandler(getApplicationContext(), null, null, 1, MainApp.this);
