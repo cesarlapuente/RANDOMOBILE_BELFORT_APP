@@ -7,13 +7,13 @@
     android:background="@color/white"
     android:orientation="vertical" >
 
-    <com.esri.android.map.MapView
+    <com.esri.arcgisruntime.mapping.view.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mapa"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginTop="110dp">
-    </com.esri.android.map.MapView>
+    </com.esri.arcgisruntime.mapping.view.MapView>
 
     <LinearLayout 
         android:id="@+id/border"

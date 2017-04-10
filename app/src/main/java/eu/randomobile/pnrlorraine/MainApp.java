@@ -8,12 +8,9 @@ import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.esri.android.map.bing.BingMapsLayer;
-import com.esri.android.runtime.ArcGISRuntime;
-import com.esri.core.geometry.SpatialReference;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 
 import java.util.ArrayList;
 
@@ -206,7 +203,7 @@ public class MainApp extends Application {
 	public SharedPreferences preferencias;
 
 	// Referencia espacial para los mapas
-	public SpatialReference spatialReference = SpatialReference.create(102100);
+	//public SpatialReference spatialReference = SpatialReference.create(102100);
 	// Capa base que se encuentra seleccionada actualmente
 	public CapaBase capaBaseSeleccionada = null;
 
@@ -254,23 +251,18 @@ public class MainApp extends Application {
 	// Evento al lanzarse la aplicaci�n. Poner aqu� las inicializaciones
 	public void onCreate(){
 		this.inicializarAplicacion();
-		initImageLoader();
+		//initImageLoader();
 
 		dBHandler = new DBHandler(getApplicationContext(), null, null, 1, MainApp.this);
 	}
 
-	private void initImageLoader() {
-		DisplayImageOptions displayImageOptions= new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisk(true).build();
-		ImageLoaderConfiguration imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(getApplicationContext()).defaultDisplayImageOptions(displayImageOptions).build();
-		ImageLoader.getInstance().init(imageLoaderConfiguration);
-	}
 	
 	// M�todo que hace las primeras operaciones al arrancar la aplicaci�n
 	public void inicializarAplicacion() {
 		Context _ctx = getApplicationContext();
-		
+
 		//Registrar en Esri
-		ArcGISRuntime.setClientId("HDPgu8RTqQsIuaki");
+        //ArcGISRuntimeEnvironment.setLicense("HDPgu8RTqQsIuaki");
 		// Obtener una copia de la BBDD con permisos de escritura
 		boolean haySD = ExternalStorage.tieneSD(_ctx);
 		if (haySD) {
@@ -334,7 +326,7 @@ public class MainApp extends Application {
 		CapaBase capa = new CapaBase(this);
 		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS);
 		capa.setEtiqueta("Bing Road");
-		capa.setClaseCapaBase(BingMapsLayer.class);
+		capa.setClaseCapaBase(ArcGISTiledLayer.class);
 		this.capaBaseSeleccionada = capa;
 	}
 

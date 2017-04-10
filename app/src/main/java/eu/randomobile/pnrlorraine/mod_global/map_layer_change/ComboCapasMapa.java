@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
-import com.esri.android.map.bing.BingMapsLayer;
 
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 
 public class ComboCapasMapa {
 	
@@ -47,47 +47,47 @@ public class ComboCapasMapa {
 		CapaBase capaBingAerial = new CapaBase(app);
 		capaBingAerial.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL);
 		capaBingAerial.setEtiqueta("Bing Aerial");
-		capaBingAerial.setClaseCapaBase(BingMapsLayer.class);
+		capaBingAerial.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaBingAerialLabels = new CapaBase(app);
 		capaBingAerialLabels.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS);
 		capaBingAerialLabels.setEtiqueta("Bing Aerial with labels");
-		capaBingAerialLabels.setClaseCapaBase(BingMapsLayer.class);
+		capaBingAerialLabels.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaBingRoad = new CapaBase(app);
 		capaBingRoad.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_ROAD);
 		capaBingRoad.setEtiqueta("Bing Road");
-		capaBingRoad.setClaseCapaBase(BingMapsLayer.class);
+		capaBingRoad.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldImagery = new CapaBase(app);
 		capaWorldImagery.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_IMAGERY);
 		capaWorldImagery.setEtiqueta("World Imagery");
-		capaWorldImagery.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldImagery.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldPhisical = new CapaBase(app);
 		capaWorldPhisical.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_PHISICAL);
 		capaWorldPhisical.setEtiqueta("World Phisical");
-		capaWorldPhisical.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldPhisical.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldShadedRelief = new CapaBase(app);
 		capaWorldShadedRelief.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_SHADED_RELIEF);
 		capaWorldShadedRelief.setEtiqueta("World Shaded Relief");
-		capaWorldShadedRelief.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldShadedRelief.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldStreetMap = new CapaBase(app);
 		capaWorldStreetMap.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_STREET_MAP);
 		capaWorldStreetMap.setEtiqueta("World Street Map");
-		capaWorldStreetMap.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldStreetMap.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldTerrainBase = new CapaBase(app);
 		capaWorldTerrainBase.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_TERRAIN_BASE);
 		capaWorldTerrainBase.setEtiqueta("World Terrain Base");
-		capaWorldTerrainBase.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldTerrainBase.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		CapaBase capaWorldTopo = new CapaBase(app);
 		capaWorldTopo.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_TOPO);
 		capaWorldTopo.setEtiqueta("World Topo");
-		capaWorldTopo.setClaseCapaBase(ArcGISTiledMapServiceLayer.class);
+		capaWorldTopo.setClaseCapaBase(ArcGISTiledLayer.class);
 		
 		this.capas.add(capaBingAerial);
 		this.capas.add(capaBingAerialLabels);

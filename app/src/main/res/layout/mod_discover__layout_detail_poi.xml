@@ -12,13 +12,12 @@
 		android:layout_marginLeft="12dp"
 		android:layout_marginRight="12dp">
 		<!-- Introducir mapa -->
-		<com.esri.android.map.MapView
-			xmlns:android="http://schemas.android.com/apk/res/android"
+		<com.esri.arcgisruntime.mapping.view.MapView
 			android:id="@+id/mapa"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:visibility="gone">
-		</com.esri.android.map.MapView>
+		</com.esri.arcgisruntime.mapping.view.MapView>
 		<ImageView
 			android:id="@+id/imgViewPrincipal"
 			android:layout_width="match_parent"

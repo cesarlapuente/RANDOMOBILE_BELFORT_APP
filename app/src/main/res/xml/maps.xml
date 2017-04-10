@@ -90,26 +90,26 @@
        	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_im1" name = "BACK"/>
   		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
    </map>
-  
+
    <map name="mapa_FFRP">
-       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_im1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_mf1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mf2" name = "HOME"/>
    </map>
    <map name="mapa_RA">
-       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_im1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_mra1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mra2" name = "HOME"/>
    </map>
    <map name="mapa_Opciones">
-       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_im1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_mop1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mop2" name = "HOME"/>
    </map>
    <map name="mapa_Conexion">
        	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_cn1" name = "BACK"/>
   		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_cn2" name = "HOME"/>
    </map>
    <map name="mapa_RecoverPassword">
-       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_cn1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_cn2" name = "HOME"/>
+       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_mrp1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mrp2" name = "HOME"/>
    </map>
    <map name="mapa_Registro">
        	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_rg1" name = "BACK"/>
@@ -132,27 +132,27 @@
   		<area shape="poly" coords="342,241,438,215,543,170,668,97,737,150,589,251,460,306,390,328" id="@+id/area_pnr4" name = "LIEUX DE VISITE"/>
    </map>
 	<map name="mapa_naturaleza_intro">
-		<area shape="poly" coords="0,0,91,0,74,92,0,94" id="@+id/area_pr_back" name = "BACK"/>
-		<area shape="poly" coords="641,0,613,35,669,97,749,155,748,0" id="@+id/area_pr_home" name = "HOME"/>
-		<area shape="poly" coords="0,163,123,170,246,167,310,159,341,240,200,258,101,259,0,246" id="@+id/area_pr1" name = "INTRO"/>
-		<area shape="poly" coords="311,159,375,145,468,111,542,76,612,35,668,96,543,169,438,214,342,240" id="@+id/area_pnr2" name = "ESPECIES"/>
-		<area shape="poly" coords="0,247,101,260,200,259,341,241,388,328,223,351,110,351,0,336" id="@+id/area_pnr3" name = "BUSCAR"/>
-		<area shape="poly" coords="342,241,438,215,543,170,668,97,737,150,589,251,460,306,390,328" id="@+id/area_pnr4" name = "ESPACIOS"/>
+		<area shape="poly" coords="0,0,91,0,74,92,0,94" id="@+id/area_mni_back" name = "BACK"/>
+		<area shape="poly" coords="641,0,613,35,669,97,749,155,748,0" id="@+id/area_mni_home" name = "HOME"/>
+		<area shape="poly" coords="0,163,123,170,246,167,310,159,341,240,200,258,101,259,0,246" id="@+id/area_mni1" name = "INTRO"/>
+		<area shape="poly" coords="311,159,375,145,468,111,542,76,612,35,668,96,543,169,438,214,342,240" id="@+id/area_mni2" name = "ESPECIES"/>
+		<area shape="poly" coords="0,247,101,260,200,259,341,241,388,328,223,351,110,351,0,336" id="@+id/area_mni3" name = "BUSCAR"/>
+		<area shape="poly" coords="342,241,438,215,543,170,668,97,737,150,589,251,460,306,390,328" id="@+id/area_mni4" name = "ESPACIOS"/>
 	</map>
    <map name="mapa_consejos">
-	   <area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_ip1" name = "BACK"/>
-	   <area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+	   <area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_mc1" name = "BACK"/>
+	   <area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mc2" name = "HOME"/>
    </map>
 	<map name="mapa_creditos">
-		<area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_ip1" name = "BACK"/>
-		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+		<area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_mcr1" name = "BACK"/>
+		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mcr2" name = "HOME"/>
 	</map>
 	<map name="lista_item_poi">
-		<area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_ip1" name = "BACK"/>
-		<area shape="poly" coords="7,167,46,170,92,172,157,173,227,172,292,166,307,266,238,274,158,276,103,272,47,267,7,256" id="@+id/area_ip2" name = "CHECK-IN"/>
-  		<area shape="poly" coords="293,166,338,160,368,153,404,140,465,117,540,82,605,160,516,198,444,229,289,250,308,266" id="@+id/area_ip3" name = "EVENTS"/>
-  		<area shape="poly" coords="541,82,606,160,738,74,726,24,642,18,591,55" id="@+id/area_ip4" name = "PLUS"/>
-  		<area shape="poly" coords="607,160,739,75,743,246,682,216,647,192" id="@+id/area_ip5" name = "HOME"/>
+		<area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_lip1" name = "BACK"/>
+		<area shape="poly" coords="7,167,46,170,92,172,157,173,227,172,292,166,307,266,238,274,158,276,103,272,47,267,7,256" id="@+id/area_lip2" name = "CHECK-IN"/>
+  		<area shape="poly" coords="293,166,338,160,368,153,404,140,465,117,540,82,605,160,516,198,444,229,289,250,308,266" id="@+id/area_lip3" name = "EVENTS"/>
+  		<area shape="poly" coords="541,82,606,160,738,74,726,24,642,18,591,55" id="@+id/area_lip4" name = "PLUS"/>
+  		<area shape="poly" coords="607,160,739,75,743,246,682,216,647,192" id="@+id/area_lip5" name = "HOME"/>
    </map>
 	<map name="lista_item_especie">
 		<area shape="poly" coords="0,0,83,1,81,29,77,59,73,94,1,99" id="@+id/area_ip1" name = "BACK"/>
@@ -160,22 +160,22 @@
 		<area shape="poly" coords="607,160,739,75,743,246,682,216,647,192" id="@+id/area_ip5" name = "HOME"/>
 	</map>
 	<map name="mapa_lista_videos">
-       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_im1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_im2" name = "HOME"/>
+       	<area shape="poly" coords="0,0,0,98,81,92,89,0" id="@+id/area_mlv1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mlv2" name = "HOME"/>
    </map>
    <map name="mapa_patrocinador">
-		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_ip1" name = "BACK"/>
-		<area shape="poly" coords="24,167,290,164,307,263,24,259" id="@+id/area_ip2" name = "PRESENTATION"/>
-  		<area shape="poly" coords="292,164,512,101,634,24,727,78,306,262" id="@+id/area_ip3" name = "PARTENAIRE"/>
-  		<area shape="poly" coords="727,78,606,155,727,246" id="@+id/area_ip5" name = "HOME"/>
+		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_mpa1" name = "BACK"/>
+		<area shape="poly" coords="24,167,290,164,307,263,24,259" id="@+id/area_mpa2" name = "PRESENTATION"/>
+  		<area shape="poly" coords="292,164,512,101,634,24,727,78,306,262" id="@+id/area_mpa3" name = "PARTENAIRE"/>
+  		<area shape="poly" coords="727,78,606,155,727,246" id="@+id/area_mpa5" name = "HOME"/>
    </map>
    <map name="mapa_lista_eventos">
-		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_ip1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_ip2" name = "HOME"/>
+		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_mle1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mle2" name = "HOME"/>
    </map>
    <map name="mapa_detalle_evento">
-		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_ip1" name = "BACK"/>
-  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_ip2" name = "HOME"/>
+		<area shape="poly" coords="0,0,83,0,81,88,0,88" id="@+id/area_mde1" name = "BACK"/>
+  		<area shape="poly" coords="623,0,612,69,749,174,750,0" id="@+id/area_mde2" name = "HOME"/>
    </map>
    		
 </maps>

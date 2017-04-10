@@ -6,43 +6,49 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.android.map.Callout;
-import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
-import com.esri.android.map.LocationDisplayManager;
-import com.esri.android.map.LocationDisplayManager.AutoPanMode;
-import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISLocalTiledLayer;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
-import com.esri.android.map.bing.BingMapsLayer;
-import com.esri.android.map.event.OnSingleTapListener;
-import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.Geometry;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.Point;
-import com.esri.core.geometry.Polygon;
-import com.esri.core.geometry.Polyline;
-import com.esri.core.map.Graphic;
-import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.SimpleFillSymbol;
-import com.esri.core.symbol.SimpleLineSymbol;
-import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+import com.esri.arcgisruntime.concurrent.Job;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedEvent;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedListener;
+import com.esri.arcgisruntime.mapping.LayerList;
+import com.esri.arcgisruntime.mapping.view.Callout;
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -82,7 +88,7 @@ public class PoisGeneralMapActivity extends Activity implements
     ImageMap mImageMap = null;
 
     MapView mapa;
-    GraphicsLayer capaGeometrias;
+    GraphicsOverlay capaGeometrias;
     Callout callout;
 
     Button btnSeleccionarCapaBase;
@@ -125,10 +131,10 @@ public class PoisGeneralMapActivity extends Activity implements
         mImageMap.mBubbleMap.clear();
         mImageMap.postInvalidate();
         // Activar GPS
-        LocationDisplayManager ls = mapa.getLocationDisplayManager();
+        LocationDisplay ls = mapa.getLocationDisplay();
 //		ls.setLocationListener(new MyLocationListener());
 //		ls.setAutoPanMode(AutoPanMode.OFF);
-        ls.start();
+        ls.startAsync();
 
     }
 
@@ -137,10 +143,10 @@ public class PoisGeneralMapActivity extends Activity implements
     protected void onPause() {
         // TODO Auto-generated method stub
         super.onPause();
-        LocationDisplayManager ls = mapa.getLocationDisplayManager();
+        LocationDisplay ls = mapa.getLocationDisplay();
         //ls.setLocationListener(new MyLocationListener());
 
-        if (ls != null) {
+        if (ls.isStarted()) {
             ls.stop();
         }
     }
@@ -154,7 +160,7 @@ public class PoisGeneralMapActivity extends Activity implements
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (callout != null && callout.isShowing()) {
-                callout.hide();
+                callout.dismiss();
                 return true;
             }
 
@@ -211,10 +217,8 @@ public class PoisGeneralMapActivity extends Activity implements
 
         ponerCapaBase();
 
-        mapa.setEsriLogoVisible(true);
-
-        capaGeometrias = new GraphicsLayer();
-        mapa.addLayer(capaGeometrias);
+        capaGeometrias = new GraphicsOverlay();
+        mapa.getGraphicsOverlays().add(capaGeometrias);
 
         // Tipografias
         Typeface tfBubleGum = Util.fontBubblegum_Regular(this);
@@ -265,72 +269,76 @@ public class PoisGeneralMapActivity extends Activity implements
         });
 
 
-        // Al tocar un punto en el mapa
-        this.mapa.setOnSingleTapListener(new OnSingleTapListener() {
-
-            private static final long serialVersionUID = 1L;
-
-            public void onSingleTap(float x, float y) {
-                // Si el mapa no est� cargado, salir
-                if (!mapa.isLoaded()) {
-                    return;
+        this.mapa.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mapa){
+            @Override
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
+                if (mapa.getMap().getLoadStatus() == LoadStatus.NOT_LOADED) {
+                    return false;
                 }
+                final android.graphics.Point point = new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()));
+                final double tolerance = 8;
+                final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsIDS = mapa.identifyGraphicsOverlaysAsync(point, tolerance, false);
 
-                // Recuperamos los gr�ficos
-                int[] graphicsIDS = capaGeometrias.getGraphicIDs(x, y, 8);
-                if (graphicsIDS != null && graphicsIDS.length > 0) {
-                    Log.d("Milog", "Hay graficos en la zona pulsada");
-                    int targetId = graphicsIDS[0];
+                graphicsIDS.addDoneListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
+                                Log.d("Milog", "Hay graficos en la zona pulsada");
+                                List lr = graphicsIDS.get();
 
-                    Graphic gr = capaGeometrias.getGraphic(targetId);
+                                Graphic gr = capaGeometrias.getGraphics().get(capaGeometrias.getGraphics().indexOf(lr.get(0)));
 
-                    if (gr != null) {
-                        String nombre = (String) gr.getAttributes().get(
-                                "nombre");
-                        String clase = (String) gr.getAttributes().get("clase");
-                        String nid = (String) gr.getAttributes().get("nid");
-                        String cat = (String) gr.getAttributes().get("cat");
-                        String distanceMeters = (String) gr.getAttributes().get("distanceMeters");
+                                if (gr != null) {
+                                    String nombre = (String) gr.getAttributes().get(
+                                            "nombre");
+                                    String clase = (String) gr.getAttributes().get("clase");
+                                    String nid = (String) gr.getAttributes().get("nid");
+                                    String cat = (String) gr.getAttributes().get("cat");
+                                    String distanceMeters = (String) gr.getAttributes().get("distanceMeters");
 
-                        callout = mapa.getCallout();
-                        // Establecer el estilo del callout
-                        callout.setStyle(R.xml.style_callout_mapa_global);
-                        callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-                        // Establecer el contenido del callout
-                        View contenidoCallout = getViewForCallout(nombre,
-                                clase, nid, cat, distanceMeters);
-                        callout.setContent(contenidoCallout);
-                        callout.show(mapa.toMapPoint(new Point(x, y)));
+                                    callout = mapa.getCallout();
+                                    // Establecer el estilo del callout
+                                    callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
+                                    callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                    // Establecer el contenido del callout
+                                    View contenidoCallout = getViewForCallout(nombre,
+                                            clase, nid, cat, distanceMeters);
+                                    callout.setContent(contenidoCallout);
+                                    callout.setLocation(mapa.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
+                                    callout.show();                            }
+
+                            } else {
+                                Log.d("Milog", "No hay graficos en la zona pulsada");
+                                if (callout != null && callout.isShowing()) {
+                                    callout.dismiss();
+                                }
+                            }
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        } catch (ExecutionException e1) {
+                            e1.printStackTrace();
+                        }
                     }
-
-                } else {
-                    Log.d("Milog", "No hay graficos en la zona pulsada");
-                    if (callout != null && callout.isShowing()) {
-                        callout.hide();
-                    }
-                }
+                });
+                return false;
             }
         });
 
-        this.mapa.setOnStatusChangedListener(new OnStatusChangedListener() {
-            private static final long serialVersionUID = 1L;
 
-            public void onStatusChanged(Object source, STATUS status) {
+        this.mapa.getMap().addLoadStatusChangedListener(new LoadStatusChangedListener() {
+            @Override
+            public void loadStatusChanged(LoadStatusChangedEvent loadStatusChangedEvent) {
+                if (LoadStatus.LOADED == loadStatusChangedEvent.getNewLoadStatus()) {
 
-                if (OnStatusChangedListener.STATUS.INITIALIZED == status
-                        && source == mapa) {
-
-                    LocationDisplayManager ls = mapa.getLocationDisplayManager();
-                    ls.setLocationListener(new MyLocationListener());
-                    ls.setAutoPanMode(AutoPanMode.OFF);
-                    ls.start();
+                    LocationDisplay ls = mapa.getLocationDisplay();
+                    ls.addLocationChangedListener(new PoisGeneralMapActivity.MyLocationListener());
+                    ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
+                    ls.startAsync();
 
                     representarGeometrias();
-
                 }
-
             }
-
         });
 
         btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
@@ -355,7 +363,7 @@ public class PoisGeneralMapActivity extends Activity implements
         arrayFilteredPois.clear();
         filterPois();
         Cache.filteredPois = arrayFilteredPois;
-        capaGeometrias.removeAll();
+        capaGeometrias.getGraphics().clear();
         if (arrayFilteredPois.size() > 0)
             seCargoListaPois(arrayFilteredPois);
     }
@@ -431,9 +439,8 @@ public class PoisGeneralMapActivity extends Activity implements
                 // Por cada poi obtener sus coordenadas y construir un objeto
                 // Point de Arcgis
                 GeoPoint gp = poi.getCoordinates();
-                Point puntoProyectado = GeometryEngine.project(
-                        gp.getLongitude(), gp.getLatitude(),
-                        app.spatialReference);
+                Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
+                        SpatialReference.create(102100));
                 ArrayList<Object> geometrias = new ArrayList<Object>();
                 geometrias.add(puntoProyectado);
 
@@ -494,7 +501,7 @@ public class PoisGeneralMapActivity extends Activity implements
                     intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
                     intent.putExtra(PoiDetailActivity.PARAM_KEY_DISTANCE, Double.valueOf(distanceMeters));
                     startActivity(intent);
-                    callout.hide();
+                    callout.dismiss();
                 }
             });
         } else if (clase.equals(Route.class.getName())) {
@@ -509,7 +516,7 @@ public class PoisGeneralMapActivity extends Activity implements
                             RouteDetailActivity.class);
                     intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
                     startActivity(intent);
-                    callout.hide();
+                    callout.dismiss();
                 }
             });
         }
@@ -548,13 +555,11 @@ public class PoisGeneralMapActivity extends Activity implements
                         && geomObj.getClass().getName()
                         .equals(Polygon.class.getName())) {
                     Polygon polygon = (Polygon) geomObj;
-                    SimpleFillSymbol sym = new SimpleFillSymbol(
-                            polygonFillColor);
-                    sym.setAlpha(100);
-                    sym.setOutline(new SimpleLineSymbol(polygonBorderColor, 8,
-                            SimpleLineSymbol.STYLE.SOLID));
-                    Graphic gr = new Graphic(polygon, sym, attrs);
-                    capaGeometrias.addGraphic(gr);
+                    SimpleFillSymbol sym = new SimpleFillSymbol();
+                    sym.setColor(polygonFillColor);
+                    sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
+                    Graphic gr = new Graphic(polygon, attrs, sym);
+                    capaGeometrias.getGraphics().add(gr);
                 } else if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Point.class.getName())) {
@@ -571,24 +576,24 @@ public class PoisGeneralMapActivity extends Activity implements
                         case "49":
                         case "50":
                         case "51":
-                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_hotel));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
                             break;
                         case "36":
                         case "28":
-                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_descubrir));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
                             break;
                         case "27":
-                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_restaurante));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
                             break;
                         case "25":
-                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.icono_info));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
                             break;
                         default:
-                            sym = new PictureMarkerSymbol(getResources().getDrawable(R.drawable.poi_icono));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
                     }
 
-                    Graphic gr = new Graphic(point, sym, attrs);
-                    capaGeometrias.addGraphic(gr);
+                    Graphic gr = new Graphic(point, attrs, sym );
+                    capaGeometrias.getGraphics().add(gr);
 
                     // Centrar en el extent de la capa
                     //centrarEnExtentCapa(capaGeometrias);
@@ -600,25 +605,27 @@ public class PoisGeneralMapActivity extends Activity implements
 
                     int color = Color.BLUE;
 
-                    Graphic gr = new Graphic(polyline, new SimpleLineSymbol(color, 10, STYLE.SOLID), attrs);
-                    capaGeometrias.addGraphic(gr);
+                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
+                    capaGeometrias.getGraphics().add(gr);
                 }
             }
         }
     }
 
-    private void centrarEnExtentCapa(GraphicsLayer capa) {
+    private void centrarEnExtentCapa(GraphicsOverlay capa) {
         // Hacer zoom a la capa de geometrias
-        Envelope env = new Envelope();
-        Envelope NewEnv = new Envelope();
-        if (capa.getGraphicIDs() != null)
-            for (int i : capa.getGraphicIDs()) {
-                Geometry geom = capa.getGraphic(i).getGeometry();
-                geom.queryEnvelope(env);
-                NewEnv.merge(env);
+        Envelope env ;
+        Envelope NewEnv = capa.getExtent();
+        if (capa.getGraphics() != null)
+            for (int i=0; i<capa.getGraphics().size(); i++) {
+                Geometry geom = capa.getGraphics().get(i).getGeometry();
+                env = geom.getExtent();
+                //geom.queryEnvelope(env);
+                NewEnv.createFromInternal(env.getInternal());
+                //NewEnv.merge(env);
             }
-
-        this.mapa.setExtent(NewEnv, 100);
+        this.mapa.setViewpointGeometryAsync(NewEnv, 100);
+        //this.mapa.setExtent(NewEnv, 100);
     }
 
 
@@ -626,10 +633,10 @@ public class PoisGeneralMapActivity extends Activity implements
         /* Codigo de prueba */
         if (!DataConection.hayConexion(this)) {
             String basemapurl = Util.getUrlGeneralBaseLayerOffline(app);
-            ArcGISLocalTiledLayer baseLayer;
-            baseLayer = new ArcGISLocalTiledLayer(basemapurl);
-            mapa.addLayer(baseLayer);
-            mapa.setMaxScale(1000);
+            ArcGISTiledLayer baseLayer;
+            baseLayer = new ArcGISTiledLayer(basemapurl);
+            mapa.getMap().getOperationalLayers().add(baseLayer);
+            mapa.getMap().setMaxScale(1000);
             return;
         }
 		/* Fin de codigo de prueba */
@@ -642,20 +649,20 @@ public class PoisGeneralMapActivity extends Activity implements
 
         // Correcci�n, para que no cambie la capa base cuando la seleccionada es
         // la misma que ya estaba (ahorra datos)
-        Layer[] capas = mapa.getLayers();
+        LayerList capas = mapa.getMap().getOperationalLayers();
         if (capas != null) {
             Log.d("Milog", "capas no es nulo");
-            if (capas.length > 0) {
+            if (capas.size() > 0) {
 
                 Log.d("Milog", "Hay alguna capa");
-                Object capa0 = capas[0];
+                Object capa0 = capas.get(0);
                 Log.d("Milog", "Tenemos capa0");
                 // si la capa base seleccionada es del mismo tipo que la capa 0
                 if (capaBase.getClass().getName()
                         .equals(capa0.getClass().getName())) {
                     Log.d("Milog",
                             "La clase de la capa base es igual que la clase de la capa0");
-                    if (capaBase.getClass() == BingMapsLayer.class) {
+                    /*if (capaBase.getClass() == BingMapsLayer.class) {
                         Log.d("Milog", "capaBase es de tipo BING");
                         BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
                         BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
@@ -670,21 +677,21 @@ public class PoisGeneralMapActivity extends Activity implements
                                             + mapa.getLayers().length
                                             + " capas");
                         }
-                    } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+                    } else*/ if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo TiledMap");
-                        ArcGISTiledMapServiceLayer capaBaseCasted = (ArcGISTiledMapServiceLayer) capaBase;
-                        ArcGISTiledMapServiceLayer capa0Casted = (ArcGISTiledMapServiceLayer) capa0;
-                        String strUrlCapaBaseCasted = capaBaseCasted.getUrl()
+                        ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
+                        ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
+                        String strUrlCapaBaseCasted = capaBaseCasted.getUri()
                                 .toString();
-                        String strUrlCapa0Casted = capa0Casted.getUrl()
+                        String strUrlCapa0Casted = capa0Casted.getUri()
                                 .toString();
                         if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
                             return;
                         } else {
-                            mapa.removeLayer(0);
+                            mapa.getMap().getOperationalLayers().remove(0);
                             Log.d("Milog",
                                     "PUNTO INTERMEDIO TILED: el mapa tiene "
-                                            + mapa.getLayers().length
+                                            + mapa.getMap().getOperationalLayers().size()
                                             + " capas");
                         }
                     }
@@ -693,23 +700,23 @@ public class PoisGeneralMapActivity extends Activity implements
                 } else {// si la capa base seleccionada no es del mismo tipo que
                     // la capa 0
 
-                    if (capaBase.getClass() == BingMapsLayer.class) {
+                    /*if (capaBase.getClass() == BingMapsLayer.class) {
                         mapa.removeLayer(0);
                     } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
                         mapa.removeLayer(0);
-                    }
+                    }*/
                 }
             }
             // btnAbrirCapas.setEnabled(true);
-            if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+            if (capaBase.getClass() == ArcGISTiledLayer.class) {
 
-                if (capas.length > 0) {
-                    mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase, 0);
+                if (capas.size() > 0) {
+                    mapa.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
                 } else {
-                    mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase);
+                    mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
                 }
 
-            } else if (capaBase.getClass() == BingMapsLayer.class) {
+            } /*else if (capaBase.getClass() == BingMapsLayer.class) {
 
                 if (capas.length > 0) {
                     mapa.addLayer((BingMapsLayer) capaBase, 0);
@@ -717,12 +724,12 @@ public class PoisGeneralMapActivity extends Activity implements
                     mapa.addLayer((BingMapsLayer) capaBase);
                 }
 
-            } else {
+            } */else {
                 // otro tipo de capa
             }
 
             app.capaBaseSeleccionada = capaSeleccionada;
-            Log.d("Milog", "El mapa tiene " + mapa.getLayers().length
+            Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
                     + " capas");
         }
     }
@@ -741,15 +748,10 @@ public class PoisGeneralMapActivity extends Activity implements
      *
      * @author
      */
-    private class MyLocationListener implements LocationListener {
+    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
         public MyLocationListener() {
             super();
-        }
-
-        public void onLocationChanged(Location loc) {
-            if (loc == null)
-                return;
         }
 
         public void onProviderDisabled(String provider) {
@@ -763,6 +765,11 @@ public class PoisGeneralMapActivity extends Activity implements
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
 
+        @Override
+        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+            if (locationChangedEvent.getLocation() == null)
+                return;
+        }
     }
 
 

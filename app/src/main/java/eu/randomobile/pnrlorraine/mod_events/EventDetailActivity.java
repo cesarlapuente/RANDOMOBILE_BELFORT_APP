@@ -9,6 +9,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -21,24 +22,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.android.map.Callout;
-import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
-import com.esri.android.map.LocationDisplayManager;
-import com.esri.android.map.LocationDisplayManager.AutoPanMode;
-import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
-import com.esri.android.map.bing.BingMapsLayer;
-import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.Point;
-import com.esri.core.geometry.Polygon;
-import com.esri.core.geometry.Polyline;
-import com.esri.core.map.Graphic;
-import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.SimpleFillSymbol;
-import com.esri.core.symbol.SimpleLineSymbol;
-import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.layers.Layer;
+import com.esri.arcgisruntime.mapping.LayerList;
+import com.esri.arcgisruntime.mapping.view.*;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -66,7 +62,7 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 	private Event evento = null;
 	private GeoPoint coordenadas = null;
 	private PoiCategoryTerm categoria = null;
-	GraphicsLayer capaGeometrias = null;
+	GraphicsOverlay capaGeometrias = null;
 
 	RelativeLayout panelCargando;
 
@@ -118,21 +114,10 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 			}
 		});
 
-		this.mapa.setOnStatusChangedListener(new OnStatusChangedListener() {
-			private static final long serialVersionUID = 1L;
+		LocationDisplay ls = mapa.getLocationDisplay();
+		ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
+		ls.startAsync();
 
-			public void onStatusChanged(Object source, STATUS status) {
-
-				if (OnStatusChangedListener.STATUS.INITIALIZED == status
-						&& source == mapa) {
-
-					LocationDisplayManager ls = mapa
-							.getLocationDisplayManager();
-					ls.setAutoPanMode(AutoPanMode.OFF);
-					ls.start();
-				}
-			}
-		});
 
 	}
 
@@ -175,10 +160,11 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 
 	private void inicializarMapa() {
 		ponerCapaBase();
-		mapa.setEsriLogoVisible(false);
-		capaGeometrias = new GraphicsLayer();
-		mapa.addLayer(capaGeometrias);
-		mapa.setScale(5000);
+
+		capaGeometrias = new GraphicsOverlay();
+		mapa.getGraphicsOverlays().add(capaGeometrias);
+		mapa.getMap().setMaxScale(5000);
+		mapa.getMap().setMinScale(5000);
 	}
 
 	private void recargarDatos() {
@@ -259,88 +245,64 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 
 		// Corrección, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
-		Layer[] capas = mapa.getLayers();
+		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
 			Log.d("Milog", "capas no es nulo");
-			if (capas.length > 0) {
+			if (capas.size() > 0) {
 
 				Log.d("Milog", "Hay alguna capa");
-				Object capa0 = capas[0];
+				Object capa0 = capas.get(0);
 				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
 					Log.d("Milog",
 							"La clase de la capa base es igual que la clase de la capa0");
-					if (capaBase.getClass() == BingMapsLayer.class) {
-						Log.d("Milog", "capaBase es de tipo BING");
-						BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
-						BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
 
-						if (capaBaseCasted.getMapStyle().equals(
-								capa0Casted.getMapStyle())) {
-							return;
-						} else {
-							mapa.removeLayer(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO BING: el mapa tiene "
-											+ mapa.getLayers().length
-											+ " capas");
-						}
-					} else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+					if (capaBase.getClass() == ArcGISTiledLayer.class) {
 						Log.d("Milog", "capaBase es de tipo TiledMap");
-						ArcGISTiledMapServiceLayer capaBaseCasted = (ArcGISTiledMapServiceLayer) capaBase;
-						ArcGISTiledMapServiceLayer capa0Casted = (ArcGISTiledMapServiceLayer) capa0;
-						String strUrlCapaBaseCasted = capaBaseCasted.getUrl()
+						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
+						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
+						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
 								.toString();
-						String strUrlCapa0Casted = capa0Casted.getUrl()
+						String strUrlCapa0Casted = capa0Casted.getUri()
 								.toString();
 						if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
 							return;
 						} else {
-							mapa.removeLayer(0);
+							mapa.getMap().getOperationalLayers().remove(0);
 							Log.d("Milog",
 									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getLayers().length
+											+ mapa.getGraphicsOverlays().size()
 											+ " capas");
 						}
 					}
 					Log.d("Milog", "La capa 0 es de clase "
 							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
-						// la capa 0
+					// la capa 0
 
-					if (capaBase.getClass() == BingMapsLayer.class) {
-						mapa.removeLayer(0);
-					} else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
-						mapa.removeLayer(0);
+					if (capaBase.getClass() == ArcGISTiledLayer.class) {
+						mapa.getMap().getOperationalLayers().remove(0);
 					}
 				}
-			}
-			// btnAbrirCapas.setEnabled(true);
-			if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
+				// btnAbrirCapas.setEnabled(true);
+				if (capaBase.getClass() == ArcGISTiledLayer.class) {
 
-				if (capas.length > 0) {
-					mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase, 0);
+					if (capas.size() > 0) {
+						mapa.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
+					} else {
+						mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
+					}
+
 				} else {
-					mapa.addLayer((ArcGISTiledMapServiceLayer) capaBase);
+					// otro tipo de capa
 				}
 
-			} else if (capaBase.getClass() == BingMapsLayer.class) {
-
-				if (capas.length > 0) {
-					mapa.addLayer((BingMapsLayer) capaBase, 0);
-				} else {
-					mapa.addLayer((BingMapsLayer) capaBase);
-				}
-
-			} else {
-				// otro tipo de capa
+				app.capaBaseSeleccionada = capaSeleccionada;
+				Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
+						+ " capas");
 			}
-
-			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getLayers().length
-					+ " capas");
 		}
 	}
 
@@ -352,10 +314,10 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 	 */
 	private void ponerPoiEnMapa() {
 		try {
-			capaGeometrias.removeAll();
-			Point puntoProyectado = GeometryEngine.project(
+			capaGeometrias.getGraphics().clear();
+			Point puntoProyectado = new Point(
 					this.coordenadas.getLongitude(),
-					this.coordenadas.getLatitude(), app.spatialReference);
+					this.coordenadas.getLatitude(), SpatialReference.create(102100));
 
 			ArrayList<Object> geometrias = new ArrayList<Object>();
 			geometrias.add(puntoProyectado);
@@ -371,8 +333,7 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 			Object geomObj = geometrias.get(0);
 			final Point punto = (Point) geomObj;
 			double scale = 5000.0;
-			mapa.centerAt(punto, true);
-			mapa.setScale(scale);
+			mapa.setViewpointCenterAsync(punto, scale);
 		} catch (Exception ex) {
 		}
 	}
@@ -398,13 +359,13 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 						&& geomObj.getClass().getName()
 								.equals(Polygon.class.getName())) {
 					Polygon polygon = (Polygon) geomObj;
-					SimpleFillSymbol sym = new SimpleFillSymbol(
-							polygonFillColor);
-					sym.setAlpha(100);
-					sym.setOutline(new SimpleLineSymbol(polygonBorderColor, 8,
-							SimpleLineSymbol.STYLE.SOLID));
-					Graphic gr = new Graphic(polygon, sym, attrs);
-					capaGeometrias.addGraphic(gr);
+					SimpleFillSymbol sym = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID,
+							polygonFillColor, null);
+					//sym.setAlpha(100);
+					sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
+					Graphic gr = new Graphic(polygon, sym);
+					gr.getAttributes().putAll(attrs);
+					capaGeometrias.getGraphics().add(gr);
 				} else if (geomObj != null
 						&& geomObj.getClass().getName()
 								.equals(Point.class.getName())) {
@@ -421,7 +382,7 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 						// Drawable d =
 						// getResources().getDrawable(R.drawable.icono_hotel);
 						// Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-						sym = new PictureMarkerSymbol(getResources()
+						sym = new PictureMarkerSymbol((BitmapDrawable) getResources()
 								.getDrawable(R.drawable.icono_hotel));
 						// Scale it to 50 x 50
 						// Drawable dr = new BitmapDrawable(getResources(),
@@ -434,17 +395,17 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 							|| paramCat.equals("Site et Monument")
 							|| paramCat.equals("Office de Tourisme")
 							|| paramCat.equals("Parc et Jardin")) {
-						sym = new PictureMarkerSymbol(getResources()
+						sym = new PictureMarkerSymbol((BitmapDrawable)getResources()
 								.getDrawable(R.drawable.icono_descubrir));
 					} else if (paramCat.equals("Restauration"))
-						sym = new PictureMarkerSymbol(getResources()
+						sym = new PictureMarkerSymbol((BitmapDrawable)getResources()
 								.getDrawable(R.drawable.icono_restaurante));
 					else
-						sym = new PictureMarkerSymbol(getResources()
+						sym = new PictureMarkerSymbol((BitmapDrawable)getResources()
 								.getDrawable(R.drawable.ic_launcher));
 
-					Graphic gr = new Graphic(point, sym, attrs);
-					capaGeometrias.addGraphic(gr);
+					Graphic gr = new Graphic(point, attrs, sym);
+					capaGeometrias.getGraphics().add(gr);
 
 					// Centrar en el extent de la capa
 					// centrarEnExtentCapa(capaGeometrias);
@@ -456,9 +417,9 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 
 					int color = Color.BLUE;
 
-					Graphic gr = new Graphic(polyline, new SimpleLineSymbol(
-							color, 10, STYLE.SOLID), attrs);
-					capaGeometrias.addGraphic(gr);
+					Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(
+							SimpleLineSymbol.Style.SOLID, color, 10));
+					capaGeometrias.getGraphics().add(gr);
 				}
 			}
 		}

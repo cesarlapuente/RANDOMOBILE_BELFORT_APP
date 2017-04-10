@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import android.app.Application;
 import android.util.Log;
 
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.PointCollection;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+
 import  eu.randomobile.pnrlorraine.MainApp;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.Point;
-import com.esri.core.geometry.Polygon;
-import com.esri.core.geometry.Polyline;
 
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
+import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 
 public class WKTUtil {
 
@@ -216,20 +220,16 @@ public class WKTUtil {
 		}
 		
 		if(puntosPoligono != null){
-			polygon = new Polygon();
+			ArrayList<Point> points = new ArrayList<>();
 			for(int i=0; i<puntosPoligono.size(); i++){
 				GeoPoint punto = puntosPoligono.get(i);
-				Point puntoProyectado = GeometryEngine.project(punto.getLongitude(), punto.getLatitude(), app.spatialReference );
+				Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100) );
 				//Log.d("Milog", "Voy a anadir el siguiente punto al pol’gono: " + punto.getLatitud() + "  " + punto.getLongitud());
-				if( i == 0){
-					polygon.startPath(puntoProyectado);
-				}else{
-					polygon.lineTo(puntoProyectado);
-				}
-				
+				points.add(puntoProyectado);
 			}
+			polygon = new Polygon(new PointCollection(points));
 		}
-		
+
 		return polygon;
 	}
 	
@@ -299,18 +299,15 @@ public class WKTUtil {
 		
 		if(puntosPolyline != null){
 			Log.d("Milog", "Puntos polyline no es nulo y tiene estos elementos: " + puntosPolyline.size());
-			polyline = new Polyline();
+
+			ArrayList<Point> points = new ArrayList<>();
 			for(int i=0; i<puntosPolyline.size(); i++){
 				GeoPoint punto = puntosPolyline.get(i);
-				Point puntoProyectado = GeometryEngine.project(punto.getLongitude(), punto.getLatitude(), app.spatialReference );
+				Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100));
 				//Log.d("Milog", "Voy a anadir el siguiente punto al polyline: " + punto.getLatitude() + "  " + punto.getLongitude());
-				if( i == 0){
-					polyline.startPath(puntoProyectado);
-				}else{
-					polyline.lineTo(puntoProyectado);
-				}
-				
+				points.add(puntoProyectado);
 			}
+			polyline = new Polyline(new PointCollection(points));
 		}else{
 			Log.d("Milog", "Puntos polyline es nulo");
 		}
@@ -342,7 +339,7 @@ public class WKTUtil {
 				coordenadas.setLatitude(Double.parseDouble(latitud));
 				coordenadas.setLongitude(Double.parseDouble(longitud));
 				
-				puntoProyectado = GeometryEngine.project(coordenadas.getLongitude(), coordenadas.getLatitude(), app.spatialReference );
+				puntoProyectado = (Point) GeometryEngine.project(new Point(coordenadas.getLongitude(), coordenadas.getLatitude()), SpatialReference.create(102100));
 			}
 		}
 		return puntoProyectado;
