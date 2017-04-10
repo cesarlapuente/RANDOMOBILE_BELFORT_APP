@@ -303,8 +303,10 @@ public class WKTUtil {
 			ArrayList<Point> points = new ArrayList<>();
 			for(int i=0; i<puntosPolyline.size(); i++){
 				GeoPoint punto = puntosPolyline.get(i);
-				Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100));
-				//Log.d("Milog", "Voy a anadir el siguiente punto al polyline: " + punto.getLatitude() + "  " + punto.getLongitude());
+				//Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100));
+				Point puntoProyectado = new Point(punto.getLatitude(), punto.getLongitude());
+				Log.d("Milog", "Voy a anadir el siguiente punto al polyline: " + punto.getLatitude() + "  " + punto.getLongitude());
+				Log.d("Pierre Log", "Point polyline: " + puntoProyectado.getX() + "  " + puntoProyectado.getY());
 				points.add(puntoProyectado);
 			}
 			polyline = new Polyline(new PointCollection(points));

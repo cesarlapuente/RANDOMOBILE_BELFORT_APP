@@ -253,6 +253,8 @@ public class MainApp extends Application {
 		super.onCreate();
 		this.inicializarAplicacion();
 		System.loadLibrary("runtimecore_java");
+		//System.loadLibrary("rs.main"); //crash ...
+		System.loadLibrary("render_script_analysis");
 		//initImageLoader();
 
 		dBHandler = new DBHandler(getApplicationContext(), null, null, 1, MainApp.this);
@@ -326,7 +328,8 @@ public class MainApp extends Application {
 	
 	public void setCapaBaseSeleccionadaPorDefecto() {
 		CapaBase capa = new CapaBase(this);
-		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS);
+		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS); //TODO this one bug, need to be treated
+		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_STREET_MAP);
 		capa.setEtiqueta("Bing Road");
 		capa.setClaseCapaBase(ArcGISTiledLayer.class);
 		this.capaBaseSeleccionada = capa;

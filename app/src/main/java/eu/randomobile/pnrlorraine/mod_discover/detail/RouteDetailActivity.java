@@ -46,6 +46,8 @@ import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
@@ -298,7 +300,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // <----------------->_MAP_DECLARATIONS_<----------------->
 
         map = (MapView) findViewById(R.id.mapa);
-
+        map.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
         map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map) {
             @Override
             public boolean onSingleTapConfirmed(final MotionEvent e) {
@@ -1236,8 +1238,10 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         Context ctx = app.getApplicationContext();
         for (int j = 0; j < pois.size(); j++) {
             int number;
-            Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
-                    pois.get(j).getLatitude()), SpatialReference.create(102100));
+            //Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
+            //        pois.get(j).getLatitude()), SpatialReference.create(102100));
+            Point puntoProyectado = new Point(pois.get(j).getLongitude(),
+                    pois.get(j).getLatitude(), SpatialReference.create(102100));
             number = pois.get(j).getNumber();
             int clase = pois.get(j).getType();
             Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
@@ -1496,6 +1500,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
     public void ponerCapaBase() {
         /* Codigo de prueba */
+        map.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
         if (!DataConection.hayConexion(this)) {
             String basemapurl = Util.getUrlRouteBaseLayerOffline(app, paramNid, paramMapUrl);
             ArcGISTiledLayer baseLayer;
