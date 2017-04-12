@@ -11,6 +11,7 @@ import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 
 import  eu.randomobile.pnrlorraine.MainApp;
 
@@ -304,12 +305,12 @@ public class WKTUtil {
 			for(int i=0; i<puntosPolyline.size(); i++){
 				GeoPoint punto = puntosPolyline.get(i);
 				//Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100));
-				Point puntoProyectado = new Point(punto.getLatitude(), punto.getLongitude());
+				Point puntoProyectado = new Point(punto.getLongitude(), punto.getLatitude());
 				Log.d("Milog", "Voy a anadir el siguiente punto al polyline: " + punto.getLatitude() + "  " + punto.getLongitude());
 				Log.d("Pierre Log", "Point polyline: " + puntoProyectado.getX() + "  " + puntoProyectado.getY());
 				points.add(puntoProyectado);
 			}
-			polyline = new Polyline(new PointCollection(points));
+			polyline = new Polyline(new PointCollection(points,SpatialReferences.getWgs84()), SpatialReferences.getWgs84());
 		}else{
 			Log.d("Milog", "Puntos polyline es nulo");
 		}
