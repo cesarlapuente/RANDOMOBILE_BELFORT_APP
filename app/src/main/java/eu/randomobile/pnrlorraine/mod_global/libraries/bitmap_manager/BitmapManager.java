@@ -98,37 +98,45 @@ public enum BitmapManager {
 			Bitmap bitmap = null;
 			String url_temp = url;
 			if (!DataConection.connection) {
+
 				if (url_temp.lastIndexOf("?itok=") > 0)
 					url_temp = url.substring(0, url_temp.lastIndexOf("?itok="));
 				url_temp = url_temp.replace("/styles/listados_app/public", "");
-				url_temp = Util.getRouteFolder() + Util.md5Sum(url_temp);				
-			}				
-			if(url_temp.startsWith("file://")){
-				String rutaCompleta = url_temp.replace("file://", "");
-				File f = new File(rutaCompleta); 
-		        FileInputStream is = null; 
-		        try { 
-		            is = new FileInputStream(f); 
+                url_temp = Util.getRouteFolder() + Util.md5Sum(url_temp);
+            }
+
+			/* provoque le bug sur des thread
+            les images ne sont jamais enregistrees donc impossible de faire un newFile(f) */
+
+			/*if(url_temp.startsWith("file://")){
+                String rutaCompleta = url_temp.replace("file://", "");
+				File f = new File(rutaCompleta);
+
+		        FileInputStream is = null;
+		        try {
+
+		            is = new FileInputStream(f);
+					bitmap = BitmapFactory.decodeStream(is);
+					is.close();
+
 		        } catch (FileNotFoundException e) {
 		            Log.d("error: ",String.format( "BitmapManager Exception file[%s]Not Found",rutaCompleta)); 
-		        } 
-		        
-		        bitmap = BitmapFactory.decodeStream(is, null, null); 
-			
-			}else{
-				bitmap = BitmapFactory.decodeStream( (InputStream) new URL(url).getContent());
-			}
+		        }
 
+
+		        //bitmap = BitmapFactory.decodeStream(is, null, null);
+			}else{*/
+
+			/* les images ne sont pas enregistrees dans la memoire mais recuperees directement*/
+            bitmap = BitmapFactory.decodeStream( (InputStream) new URL(url).getContent());
+            //}
 
 			if(width != 0 && height != 0){
 				bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
 			}
-			
-			
-			
-			
-			
-			cache.put(url, new SoftReference<Bitmap>(bitmap));
+
+
+            cache.put(url, new SoftReference<Bitmap>(bitmap));
 			return bitmap;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

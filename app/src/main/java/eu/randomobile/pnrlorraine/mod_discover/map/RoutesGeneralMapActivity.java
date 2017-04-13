@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -283,8 +284,13 @@ public class RoutesGeneralMapActivity extends Activity implements
 					@Override
 					public void run() {
 						try {
-							List lr = graphics.get();
-							Graphic gr = (Graphic) lr.get(0);
+							List<IdentifyGraphicsOverlayResult> lr = graphics.get();
+							List<Graphic> listGraphic = new ArrayList<Graphic>();
+							Graphic gr = null;
+							if (!lr.isEmpty())
+								listGraphic = lr.get(0).getGraphics();
+							if (!listGraphic.isEmpty())
+								gr = listGraphic.get(0);
 							if (gr != null) {
 								String nombre = (String) gr.getAttributes().get(
 										"nombre");

@@ -84,7 +84,8 @@ public class CapaBase {
 			}else if(identificador.equals(CAPA_BASE_TIPO_BING_ROAD)){
 				capaBaseADevolver = new BingMapsLayer(app.BING_MAPS_KEY, MapStyle.ROAD);
 			}
-		}else */if(claseCapaBase == ArcGISTiledLayer.class){
+		}else*/
+		if (claseCapaBase == ArcGISTiledLayer.class) {
 			Log.d("Milog", "La capa es de tipo TiledMap");
 			if(identificador.equals(CAPA_BASE_TIPO_WORLD_IMAGERY)){
 				capaBaseADevolver = new ArcGISTiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");

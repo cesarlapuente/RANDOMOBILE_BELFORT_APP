@@ -88,10 +88,12 @@ public class ComboCapasMapa {
 		capaWorldTopo.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_TOPO);
 		capaWorldTopo.setEtiqueta("World Topo");
 		capaWorldTopo.setClaseCapaBase(ArcGISTiledLayer.class);
-		
+
+		/* A decommenter si le premier if de getMapLayer est decommenter aussi *
 		this.capas.add(capaBingAerial);
 		this.capas.add(capaBingAerialLabels);
 		this.capas.add(capaBingRoad);
+		*/
 		this.capas.add(capaWorldImagery);
 		//this.capas.add(capaWorldPhisical);
 		this.capas.add(capaWorldShadedRelief);

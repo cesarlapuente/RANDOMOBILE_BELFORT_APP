@@ -36,11 +36,13 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.LayerList;
+import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
@@ -408,8 +410,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 				}
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);
-
-				mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+				Log.d("thib ==========", "run: 1 " + miPoi.getCoordinates().getLongitude() + " " + miPoi.getCoordinates().getLatitude());
+				//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+				mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
 			}
 		});
 
@@ -663,8 +666,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		GeoPoint gp = poi.getCoordinates();
 		ubicacionPunto = gp;
 
-		Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()), SpatialReference.create(102100));
-		
+		//Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()), SpatialReferences.getWgs84());
+		Point puntoProyectado = (Point) new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());
+
 		ArrayList<Object> geometrias = new ArrayList<Object>();
 		geometrias.add(puntoProyectado);
 
@@ -682,7 +686,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		//mapa.setScale(scale);
 
 		//mapa.centerAt(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), false);
-		mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+		Log.d("thib ==========", "run: 2 ");
+		mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
+		//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
 	}
 
 	private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon) {
@@ -750,7 +756,8 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					// centrarEnExtentCapa(capaGeometrias);l
 
 					// Centrar en el poi y hacer zoom
-					mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()));
+					//mapa.setViewpointAsync(new Point(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude()));
+					mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 5));
 
 				} else if (geomObj != null && geomObj.getClass().getName().equals(Polyline.class.getName())) {
 					Polyline polyline = (Polyline) geomObj;
@@ -879,7 +886,8 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					Log.d("Milog", "1");
 					
 					Point wgspoint = new Point(locx, locy);
-					Point mapPoint = (Point) GeometryEngine.project(wgspoint, mapa.getSpatialReference());
+				//Point mapPoint = (Point) GeometryEngine.project(wgspoint, mapa.getSpatialReference());
+				Point mapPoint = new Point(locx, locy, SpatialReferences.getWgs84());
 					
 					Log.d("Milog", "2");
 					
@@ -913,7 +921,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					mapa.setViewpointGeometryAsync(NewEnv, 50);
 					
 					Log.d("Milog", "Recibida coordenada: " + location.getLatitude() + "  ,  " + location.getLongitude());
-				   	Point punto = (Point) GeometryEngine.project(new Point(location.getLongitude(), location.getLatitude()), SpatialReference.create(102100));
+
+				Point punto = (Point) new Point(location.getLongitude(), location.getLatitude(), SpatialReferences.getWgs84());
+				//Point punto = (Point) GeometryEngine.project(new Point(location.getLongitude(), location.getLatitude()), SpatialReference.create(102100));
 
 			  		ultimaUbicacion = new GeoPoint();
 			  		//ultimaUbicacion.setLatitude(location.getLatitude());
@@ -939,7 +949,8 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					//mapa.setExtent(NewEnv1, 100);
 			}
 
-		mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+		Log.d("thib ==========", "run: 3 ");
+		mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), SpatialReferences.getWgs84()), 10000);
 		//mapa.centerAndZoom(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), 0.000005F);
 		
 	}

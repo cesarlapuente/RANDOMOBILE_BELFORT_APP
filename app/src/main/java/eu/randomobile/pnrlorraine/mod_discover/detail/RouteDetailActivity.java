@@ -44,6 +44,7 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -420,10 +421,14 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                             public void run() {
                                 try {
                                     if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
-                                        List lr = graphicsIDS.get();
-
-
-                                        Graphic gr = geometricLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lr.get(0)));
+                                        List<IdentifyGraphicsOverlayResult> lr = graphicsIDS.get();
+                                        List<Graphic> listGraphic = new ArrayList<Graphic>();
+                                        Graphic gr = null;
+                                        if (!lr.isEmpty())
+                                            listGraphic = lr.get(0).getGraphics();
+                                        if (!listGraphic.isEmpty())
+                                            gr = listGraphic.get(0);
+                                        //gr = geometricLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lr.get(0)));
 
                                         if (gr != null) {
                                             String nombre = (String) gr.getAttributes().get("nombre");
@@ -1241,7 +1246,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             //Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
             //        pois.get(j).getLatitude()), SpatialReference.create(102100));
             Point puntoProyectado = new Point(pois.get(j).getLongitude(),
-                    pois.get(j).getLatitude(), SpatialReference.create(102100));
+                    pois.get(j).getLatitude(), SpatialReferences.getWgs84() /*SpatialReference.create(102100)*/);
             number = pois.get(j).getNumber();
             int clase = pois.get(j).getType();
             Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
@@ -1366,13 +1371,13 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
             final HashMap<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("nombre", pois.get(j).getTitle());
-            attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()));
+            //attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()));
             attrs.put("nid", Integer.toString(pois.get(j).getNid()));
             Log.d("EL id del poi es: ", Integer.toString(pois.get(j).getNid()));
             attrs.put("clase", Poi.class.getName());
             attrs.put("cat", claseNombre);
 
-            Graphic gr = new Graphic(puntoProyectado, attrs, sym);
+            Graphic gr = new Graphic(/*puntoProyectado, sym);*/puntoProyectado, attrs, sym);
 
             if(clase == 52)
                 geometricLayer.getGraphics().add(gr);

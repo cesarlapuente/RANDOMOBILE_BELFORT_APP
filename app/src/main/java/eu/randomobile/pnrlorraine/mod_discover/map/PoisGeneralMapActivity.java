@@ -29,10 +29,13 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.loadable.LoadStatusChangedEvent;
 import com.esri.arcgisruntime.loadable.LoadStatusChangedListener;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
@@ -285,9 +288,16 @@ public class PoisGeneralMapActivity extends Activity implements
                         try {
                             if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
                                 Log.d("Milog", "Hay graficos en la zona pulsada");
-                                List lr = graphicsIDS.get();
+                                /*List lr = graphicsIDS.get();
 
-                                Graphic gr = capaGeometrias.getGraphics().get(capaGeometrias.getGraphics().indexOf(lr.get(0)));
+                                Graphic gr = capaGeometrias.getGraphics().get(capaGeometrias.getGraphics().indexOf(lr.get(0)));*/
+                                List<IdentifyGraphicsOverlayResult> lr = graphicsIDS.get();
+                                List<Graphic> listGraphic = new ArrayList<Graphic>();
+                                Graphic gr = null;
+                                if (!lr.isEmpty())
+                                    listGraphic = lr.get(0).getGraphics();
+                                if (!listGraphic.isEmpty())
+                                    gr = listGraphic.get(0);
 
                                 if (gr != null) {
                                     String nombre = (String) gr.getAttributes().get(
@@ -439,8 +449,8 @@ public class PoisGeneralMapActivity extends Activity implements
                 // Por cada poi obtener sus coordenadas y construir un objeto
                 // Point de Arcgis
                 GeoPoint gp = poi.getCoordinates();
-                Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
-                        SpatialReference.create(102100));
+                Point puntoProyectado = new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());//(Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
+                //          SpatialReferences.getWgs84());
                 ArrayList<Object> geometrias = new ArrayList<Object>();
                 geometrias.add(puntoProyectado);
 
@@ -649,6 +659,7 @@ public class PoisGeneralMapActivity extends Activity implements
 
         // Correcci�n, para que no cambie la capa base cuando la seleccionada es
         // la misma que ya estaba (ahorra datos)
+        mapa.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10));
         LayerList capas = mapa.getMap().getOperationalLayers();
         if (capas != null) {
             Log.d("Milog", "capas no es nulo");
