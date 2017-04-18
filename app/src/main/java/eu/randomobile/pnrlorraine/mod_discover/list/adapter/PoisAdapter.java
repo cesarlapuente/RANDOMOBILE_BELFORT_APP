@@ -26,6 +26,8 @@ public class PoisAdapter extends BaseAdapter {
 		this.pois = list;
 		this.context = c;
 		this.gps = g;
+
+
 	}
 
 	public class ViewHolder {

@@ -270,6 +270,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
                 switch (mImageMap.getAreaAttribute(id, "name")) {
                     case "MAP":
+                    case "RA":
                         cargaPoisGeneralMapActivity();
                         break;
                     case "HOME":
@@ -281,9 +282,9 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
                     case "PLUS":
                         cargaActivityOptions();
                         break;
-                    case "RA":
+                    /*case "RA":
                         cargaPoisGeneralMapActivity();
-                        break;
+                        break;*/
                     case "BACK":
                         finish();
                         break;

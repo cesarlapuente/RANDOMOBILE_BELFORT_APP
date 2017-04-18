@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -47,6 +50,8 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
+import com.esri.arcgisruntime.symbology.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +107,13 @@ public class PoisGeneralMapActivity extends Activity implements
     // Array con las pois filtrados por categoria
     ArrayList<Poi> arrayFilteredPois = null;
 
+    PictureMarkerSymbol hotel;
+    PictureMarkerSymbol descubrir;
+    PictureMarkerSymbol restaurante;
+    PictureMarkerSymbol info;
+    PictureMarkerSymbol icono;
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_discover__mapa_general_pois);
@@ -112,6 +124,18 @@ public class PoisGeneralMapActivity extends Activity implements
         mImageMap = (ImageMap) findViewById(R.id.map_poisGeneral);
         mImageMap.setAttributes(true, false, (float) 1.0, "mapa_pois");
         mImageMap.setImageResource(R.drawable.mapa_pois);
+
+        //icono = new PictureMarkerSymbol((BitmapDrawable) ResourcesCompat.getDrawable(getResources(),R.drawable.poi_icono, null));
+        icono = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.poi_icono)));
+        hotel = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.icono_hotel)));
+        descubrir = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.icono_descubrir)));
+        restaurante = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.icono_restaurante)));
+        info = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.icono_info)));
 
         // Recuperar parametros
         Bundle b = getIntent().getExtras();
@@ -141,6 +165,22 @@ public class PoisGeneralMapActivity extends Activity implements
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //mapa.getGraphicsOverlays().clear();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapa.getGraphicsOverlays().clear();
+        hotel = null;
+        restaurante = null;
+        descubrir = null;
+        icono = null;
+        info = null;
+    }
 
     @Override
     protected void onPause() {
@@ -553,6 +593,8 @@ public class PoisGeneralMapActivity extends Activity implements
         if (geometrias != null) {
             for (int j = 0; j < geometrias.size(); j++) {
                 Object geomObj = geometrias.get(j);
+                Geometry geo = null;
+                Symbol symb = null;
 
                 final HashMap<String, Object> attrs = new HashMap<String, Object>();
                 attrs.put("clase", paramNombreClase);
@@ -568,15 +610,18 @@ public class PoisGeneralMapActivity extends Activity implements
                     SimpleFillSymbol sym = new SimpleFillSymbol();
                     sym.setColor(polygonFillColor);
                     sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
-                    Graphic gr = new Graphic(polygon, attrs, sym);
-                    capaGeometrias.getGraphics().add(gr);
+                    /*Graphic gr = new Graphic(polygon, attrs, sym);
+                    capaGeometrias.getGraphics().add(gr);*/
+
+                    geo = polygon;
+                    symb = sym;
+
                 } else if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Point.class.getName())) {
 
 
                     final Point point = (Point) geomObj;
-
 
                     PictureMarkerSymbol sym = null;
                     switch (paramCat) {
@@ -586,38 +631,67 @@ public class PoisGeneralMapActivity extends Activity implements
                         case "49":
                         case "50":
                         case "51":
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
+                            sym = hotel;
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
                             break;
                         case "36":
                         case "28":
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
+                            sym = descubrir;
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
                             break;
                         case "27":
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
+                            sym = restaurante;
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
                             break;
                         case "25":
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
+                            sym = info;
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
                             break;
                         default:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
+                            sym = icono;
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
                     }
+                    /*Graphic gr = new Graphic(point, attrs, sym );
+                    capaGeometrias.getGraphics().add(gr);*/
 
-                    Graphic gr = new Graphic(point, attrs, sym );
-                    capaGeometrias.getGraphics().add(gr);
+                    geo = point;
+                    symb = sym;
 
                     // Centrar en el extent de la capa
                     //centrarEnExtentCapa(capaGeometrias);
 
                 } else if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Polyline.class.getName())) {
+                        && geomObj.getClass().isInstance(Polyline.class)) {
                     Polyline polyline = (Polyline) geomObj;
 
                     int color = Color.BLUE;
 
-                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
-                    capaGeometrias.getGraphics().add(gr);
+                    /*Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
+                    capaGeometrias.getGraphics().add(gr);*/
+
+                    geo = polyline;
+                    symb = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10);
+
                 }
+
+                Graphic gr = null;
+
+                if (geo != null)
+                    gr = new Graphic(geo, attrs, symb);
+                else
+                    Log.e("thib", "geo null  ");
+                try {
+                    capaGeometrias.getGraphics().add(gr);
+
+                } catch (Exception e) {
+
+                    capaGeometrias.getGraphics().remove(gr);
+                    Log.e("thib", "echec add " + gr.getAttributes().toString() + "\n"
+                            + symb.equals(hotel) + "\n" + symb.equals(restaurante) + "\n"
+                            + symb.equals(descubrir) + "\n" + symb.equals(icono) + "\n"
+                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);
+                }
+                //capaGeometrias.getGraphics().add(gr);
             }
         }
     }

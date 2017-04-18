@@ -410,7 +410,6 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 				}
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);
-				Log.d("thib ==========", "run: 1 " + miPoi.getCoordinates().getLongitude() + " " + miPoi.getCoordinates().getLatitude());
 				//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
 				mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
 			}
@@ -686,7 +685,6 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		//mapa.setScale(scale);
 
 		//mapa.centerAt(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), false);
-		Log.d("thib ==========", "run: 2 ");
 		mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
 		//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
 	}
@@ -949,7 +947,6 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 					//mapa.setExtent(NewEnv1, 100);
 			}
 
-		Log.d("thib ==========", "run: 3 ");
 		mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), SpatialReferences.getWgs84()), 10000);
 		//mapa.centerAndZoom(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), 0.000005F);
 		
