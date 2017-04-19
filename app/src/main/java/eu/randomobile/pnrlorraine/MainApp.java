@@ -9,8 +9,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.arcgisservices.ArcGISMapServiceInfo;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,8 @@ import eu.randomobile.pnrlorraine.mod_global.model.Route;
 import eu.randomobile.pnrlorraine.mod_offline.Offline;
 import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
 import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute;
+
+//import com.esri.android.runtime.ArcGISRuntime;
 
 public class MainApp extends Application {
 	private DBHandler dBHandler;
@@ -251,6 +255,14 @@ public class MainApp extends Application {
 	// Evento al lanzarse la aplicaci�n. Poner aqu� las inicializaciones
 	public void onCreate(){
 		super.onCreate();
+		ArcGISRuntimeEnvironment.setLicense("1b0RocULdMWbihVJ");
+		//ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,1b0RocULdMWbihVJ,none,1b0RocULdMWbihVJ");
+
+		// License Julian
+		//ArcGISRuntimeEnvironment.setLicense("LY68fKDsOtVKsJ4a");
+
+		// license with a license key
+		//ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud#########,day-month-year,1b0RocULdMWbihVJ");
 		this.inicializarAplicacion();
 		System.loadLibrary("runtimecore_java");
 		//System.loadLibrary("rs.main"); //crash ...
