@@ -6,7 +6,7 @@ android {
     compileOptions.encoding = 'windows-1251'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId 'com.dev44screens.belfort'
+        applicationId 'com.randomobile.belfort'
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 5
