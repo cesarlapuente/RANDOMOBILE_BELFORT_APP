@@ -6,13 +6,9 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
-import com.esri.arcgisruntime.arcgisservices.ArcGISMapServiceInfo;
-import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
-import com.esri.arcgisruntime.mapping.ArcGISMap;
 
 import java.util.ArrayList;
 
@@ -32,8 +28,8 @@ import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute;
 //import com.esri.android.runtime.ArcGISRuntime;
 
 public class MainApp extends Application {
-	private DBHandler dBHandler;
-
+	// Clave para el sdk de Wikitude (realidad aumentada)
+	public static final String WIKITUDE_SDK_KEY = "fBaXWL8mKNa8JQ8UA59hRz3l8hRhU5NgcQqsffzxIvjfgwvmwJJF0mf3XsigK3Nt/EX7DS0eJbNhwxGCPv8qiZF8QLiGZ+Ekt8DIjEmKHuZOFEHt31XYGKSXB2vvD0Es/6W/+8IMaeNdPIMd01qXt46HO0Ki/eDVjYfeuWa0Ix9TYWx0ZWRfX0Nd/19q9Av3yhIax1+dkU8B8p0UKYT9lVflA6EIDZApLmQevvk9Yw/LJzNohufaWj7ehvPMObF0C/xWigIkakGZe94L58eN0B4+hA3VSeqe9BBY3vn8xYuZZtwhEU1o39wL0F0XcXUGe4SxIbsMf5NjAufHtieDyfB3ZppEUyCHiroxxaJ9R9gbGhiMjOZdbBTq1Al3JL8WYQeRJxIy8TeyjtIVB8Jo4WsT6AjToIYdzgRR409zUgwaoofadANI02x50tg7aH7AOAvebNMoArTFIVrbbOUUlj4tlfbwpFZN1//UXQQkkzzxJO3+dxxbO2eJNaDwthX/2NBw/GYJwjuE5Dozeaa5ABiLq5BLJQKlPIH61nh+NbrPrCXhAL6PBzyDiC5G6BGq/YSyqgPztZrLvsA1yJ7/Cz2biTJSBtwtLYBWukaFhS5GQuTxmReSOGOMrCAJzrWBlBWqm+as9q1qFFw7P9EXJLsTEwfLW/sDuuWTB4nqRDTx8CrdA4/ZLEaV8b/c+u22";
 	// Nombre del fichero de la BBDD
 	public String NOMBRE_FICH_BBDD = "bd_app_pnrlorraine.sqlite";
 
@@ -58,7 +54,57 @@ public class MainApp extends Application {
 
 	public String KEY_ESPECIES_NID="especie_nid";
 	public String KEY_ESPECIES_ESPACIOS_STATE = "0";
-
+	// Nombres de dominios y urls de servicios
+	//public String URL_SERVIDOR = "http://185.18.198.182/"; // Altoagueda (por defecto)
+	//public String URL_SERVIDOR = "http://dns198182.phdns.es/"; //Altoagueda (nuevo -ha habido redireccion ips-)
+	public String URL_SERVIDOR = "http://belfort.randomobile.eu/";
+	public String ENDPOINT = "api";
+	// Tiempo m�ximo que dura una sesi�n abierta (en segundos)
+	public long MAX_SESION_LIFETIME = 1296000000; // 15 d�as
+	// Constante del radio maximo de distancia para buscar pois y rutas (en metros)
+	public int MAX_DISTANCE_SEARCH_GEOMETRIES = /*1000000*/        1000000;
+	// Constante del radio maximo de distancia para resolver enigma (en metros)
+	public int MAX_DISTANCE_RESOLVE_ENIGMA_METERS = /*1000000*/        150;
+	// Constante que define el radio de distancia en el que se buscar�n geocach�s cercanos (en kms)
+	public int DISTANCE_SEARCH_GEOCACHES_KMS = /*200000*/            20000;
+	// Constante que define la distancia m�xima en la que el usuario podr� realizar un checkin (en metros)
+	public int MAX_DISTANCE_MAKE_CHECKIN_METERS = /*1000000*/        150;
+	// Constante que define la distancia m�xima en la que el usuario podr� capturar un geocach� (en metros)
+	public int MAX_DISTANCE_CAPTURE_GEOCACHE_METERS = /*1000000*/        150;
+	// Coordenadas
+	public String FILTER_KEY_LAST_LOCATION_LATITUDE = "filter_key_last_location_latitude";
+	public String FILTER_KEY_LAST_LOCATION_LONGITUDE = "filter_key_last_location_longitude";
+	public String FILTER_KEY_LAST_LOCATION_ALTITUDE = "filter_key_last_location_altitude";
+	// Claves para acceder a los filtros de pois
+	public String FILTER_KEY_POI_RADIO_DISTANCIA_KMS = "filter_key_poi_radio_distancia";
+	public String FILTER_KEY_POI_CATEGORY_TID = "filter_key_poi_category_tid";
+	public String FILTER_KEY_POI_TEXT = "filter_key_poi_text_search";
+	// Claves para acceder a los filtros de pois
+	public String FILTER_KEY_ROUTE_RADIO_DISTANCIA_KMS = "filter_key_route_radio_distancia";
+	public String FILTER_KEY_ROUTE_CATEGORY_TID = "filter_key_route_category_tid";
+	public String FILTER_KEY_ROUTE_DIFFICULTY_TID = "filter_key_route_difficulty_tid";
+	public String FILTER_KEY_ROUTE_TEXT = "filter_key_route_text_search";
+	// Claves para acceder a los filtros de Panoramio
+	public String FILTER_KEY_NUM_PANORAMIOS_CARGAR = "filter_key_num_panoramios_cargar";
+	public String FILTER_KEY_NUM_WIKIPEDIAS_CARGAR = "filter_key_num_wikipedias_cargar";
+	public String FILTER_KEY_NUM_YOUTUBES_CARGAR = "filter_key_num_youtubes_cargar";
+	// Define la el api key para los mapas de bing
+	public String BING_MAPS_KEY = "AknzEuD2VRWfmk_HRnAq7SIBMNE6n3qXskFXUDhEW5kWjTlnec8I5dHjWht9_j_O";
+	// Types de drupal
+	public String DRUPAL_TYPE_POI = "poi";
+	public String DRUPAL_TYPE_ROUTE = "route";
+	// Preferencias de la aplicaci�n
+	public SharedPreferences preferencias;
+	// Referencia espacial para los mapas
+	//public SpatialReference spatialReference = SpatialReference.create(102100);
+	// Capa base que se encuentra seleccionada actualmente
+	public CapaBase capaBaseSeleccionada = null;
+	// Cliente del API de conexi�n con Servicios 3. Se inicializa al arrancar la
+	// aplicaci�n
+	public Drupal7RESTClient clienteDrupal;
+	// Clase para gestionar la seguridad entre la app y los servicios
+	public Drupal7Security drupalSecurity;
+	private DBHandler dBHandler;
 	private ArrayList<Route> routesList;
 	private ArrayList<Poi> poisList;
 	private ArrayList<Especie> especies;
@@ -89,16 +135,16 @@ public class MainApp extends Application {
 		return poisList;
 	}
 
+	public void setPoisList(ArrayList<Poi> poisList) {
+		this.poisList = poisList;
+	}
+
 	public int[] getPoisOfEspecie() {
 		return poisOfEspecie;
 	}
 
 	public void setPoisOfEspecie(int[] poisOfEspecie) {
 		this.poisOfEspecie = poisOfEspecie;
-	}
-
-	public void setPoisList(ArrayList<Poi> poisList) {
-		this.poisList = poisList;
 	}
 
 	public DBHandler getDBHandler (){
@@ -129,17 +175,13 @@ public class MainApp extends Application {
 		this.especiesListaEspacios = especiesListaEspacios;
 	}
 
-	public void setEspecies(ArrayList<Especie> especies) {
-		this.especies = especies;
-	}
-
 	public ArrayList<Especie> getEspecies() {
 
 		return especies;
 	}
 
-	public void setEspeciesInRoute(ArrayList<Especie> especiesInRoute) {
-		this.especiesInRoute = especiesInRoute;
+	public void setEspecies(ArrayList<Especie> especies) {
+		this.especies = especies;
 	}
 
 	public ArrayList<Especie> getEspeciesInRoute() {
@@ -147,82 +189,14 @@ public class MainApp extends Application {
 		return especiesInRoute;
 	}
 
-	// Nombres de dominios y urls de servicios
-	//public String URL_SERVIDOR = "http://185.18.198.182/"; // Altoagueda (por defecto)
-	//public String URL_SERVIDOR = "http://dns198182.phdns.es/"; //Altoagueda (nuevo -ha habido redireccion ips-)
-	public String URL_SERVIDOR = "http://belfort.randomobile.eu/";
+	public void setEspeciesInRoute(ArrayList<Especie> especiesInRoute) {
+		this.especiesInRoute = especiesInRoute;
+	}
 	
-	public String ENDPOINT = "api";
-
-	// Tiempo m�ximo que dura una sesi�n abierta (en segundos)
-	public long MAX_SESION_LIFETIME = 1296000000; // 15 d�as
-	
-	// Constante del radio maximo de distancia para buscar pois y rutas (en metros)
-	public int MAX_DISTANCE_SEARCH_GEOMETRIES = /*1000000*/ 		1000000;
-
-	// Constante del radio maximo de distancia para resolver enigma (en metros)
-	public int MAX_DISTANCE_RESOLVE_ENIGMA_METERS = /*1000000*/		150;
-	
-	// Constante que define el radio de distancia en el que se buscar�n geocach�s cercanos (en kms)
-	public int DISTANCE_SEARCH_GEOCACHES_KMS = /*200000*/ 			20000;
-	
-	// Constante que define la distancia m�xima en la que el usuario podr� realizar un checkin (en metros)
-	public int MAX_DISTANCE_MAKE_CHECKIN_METERS = /*1000000*/		150;
-	
-	// Constante que define la distancia m�xima en la que el usuario podr� capturar un geocach� (en metros)
-	public int MAX_DISTANCE_CAPTURE_GEOCACHE_METERS = /*1000000*/		150;
-
-	// Clave para el sdk de Wikitude (realidad aumentada)
-	public static final String	WIKITUDE_SDK_KEY = "fBaXWL8mKNa8JQ8UA59hRz3l8hRhU5NgcQqsffzxIvjfgwvmwJJF0mf3XsigK3Nt/EX7DS0eJbNhwxGCPv8qiZF8QLiGZ+Ekt8DIjEmKHuZOFEHt31XYGKSXB2vvD0Es/6W/+8IMaeNdPIMd01qXt46HO0Ki/eDVjYfeuWa0Ix9TYWx0ZWRfX0Nd/19q9Av3yhIax1+dkU8B8p0UKYT9lVflA6EIDZApLmQevvk9Yw/LJzNohufaWj7ehvPMObF0C/xWigIkakGZe94L58eN0B4+hA3VSeqe9BBY3vn8xYuZZtwhEU1o39wL0F0XcXUGe4SxIbsMf5NjAufHtieDyfB3ZppEUyCHiroxxaJ9R9gbGhiMjOZdbBTq1Al3JL8WYQeRJxIy8TeyjtIVB8Jo4WsT6AjToIYdzgRR409zUgwaoofadANI02x50tg7aH7AOAvebNMoArTFIVrbbOUUlj4tlfbwpFZN1//UXQQkkzzxJO3+dxxbO2eJNaDwthX/2NBw/GYJwjuE5Dozeaa5ABiLq5BLJQKlPIH61nh+NbrPrCXhAL6PBzyDiC5G6BGq/YSyqgPztZrLvsA1yJ7/Cz2biTJSBtwtLYBWukaFhS5GQuTxmReSOGOMrCAJzrWBlBWqm+as9q1qFFw7P9EXJLsTEwfLW/sDuuWTB4nqRDTx8CrdA4/ZLEaV8b/c+u22";
-	
-	// Coordenadas
-	public String FILTER_KEY_LAST_LOCATION_LATITUDE = "filter_key_last_location_latitude";
-	public String FILTER_KEY_LAST_LOCATION_LONGITUDE = "filter_key_last_location_longitude";
-	public String FILTER_KEY_LAST_LOCATION_ALTITUDE = "filter_key_last_location_altitude";
-	
-	// Claves para acceder a los filtros de pois
-	public String FILTER_KEY_POI_RADIO_DISTANCIA_KMS = "filter_key_poi_radio_distancia";
-	public String FILTER_KEY_POI_CATEGORY_TID = "filter_key_poi_category_tid";
-	public String FILTER_KEY_POI_TEXT = "filter_key_poi_text_search";
-	
-	// Claves para acceder a los filtros de pois
-	public String FILTER_KEY_ROUTE_RADIO_DISTANCIA_KMS = "filter_key_route_radio_distancia";
-	public String FILTER_KEY_ROUTE_CATEGORY_TID = "filter_key_route_category_tid";
-	public String FILTER_KEY_ROUTE_DIFFICULTY_TID = "filter_key_route_difficulty_tid";
-	public String FILTER_KEY_ROUTE_TEXT = "filter_key_route_text_search";
-
-	// Claves para acceder a los filtros de Panoramio
-	public String FILTER_KEY_NUM_PANORAMIOS_CARGAR = "filter_key_num_panoramios_cargar";
-	public String FILTER_KEY_NUM_WIKIPEDIAS_CARGAR = "filter_key_num_wikipedias_cargar";
-	public String FILTER_KEY_NUM_YOUTUBES_CARGAR = "filter_key_num_youtubes_cargar";
-
-	// Define la el api key para los mapas de bing
-	public String BING_MAPS_KEY = "AknzEuD2VRWfmk_HRnAq7SIBMNE6n3qXskFXUDhEW5kWjTlnec8I5dHjWht9_j_O";
-
-	// Types de drupal
-	public String DRUPAL_TYPE_POI = "poi";
-	public String DRUPAL_TYPE_ROUTE = "route";
-
-	// Preferencias de la aplicaci�n
-	public SharedPreferences preferencias;
-
-	// Referencia espacial para los mapas
-	//public SpatialReference spatialReference = SpatialReference.create(102100);
-	// Capa base que se encuentra seleccionada actualmente
-	public CapaBase capaBaseSeleccionada = null;
-
 	// Nombre del almacen de cookies
 	public String getPreferencesKEY(Context ctx) {
 		return Util.getPackageName(ctx) + "_cookies";
 	}
-
-	// Cliente del API de conexi�n con Servicios 3. Se inicializa al arrancar la
-	// aplicaci�n
-	public Drupal7RESTClient clienteDrupal;
-	
-	// Clase para gestionar la seguridad entre la app y los servicios
-	public Drupal7Security drupalSecurity;
-
 
 	public int getNetStatus(){
 		// Checking for network status.
@@ -255,14 +229,7 @@ public class MainApp extends Application {
 	// Evento al lanzarse la aplicaci�n. Poner aqu� las inicializaciones
 	public void onCreate(){
 		super.onCreate();
-		ArcGISRuntimeEnvironment.setLicense("1b0RocULdMWbihVJ");
-		//ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,1b0RocULdMWbihVJ,none,1b0RocULdMWbihVJ");
-
-		// License Julian
-		//ArcGISRuntimeEnvironment.setLicense("LY68fKDsOtVKsJ4a");
-
-		// license with a license key
-		//ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud#########,day-month-year,1b0RocULdMWbihVJ");
+		ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud1476524168,none,YYPJD4SZ8LL2F5KHT065");
 		this.inicializarAplicacion();
 		System.loadLibrary("runtimecore_java");
 		//System.loadLibrary("rs.main"); //crash ...
