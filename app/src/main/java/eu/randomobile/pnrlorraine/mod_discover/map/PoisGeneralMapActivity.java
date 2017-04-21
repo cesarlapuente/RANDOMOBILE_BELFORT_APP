@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,15 +19,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.arcgisruntime.concurrent.Job;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
-import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
@@ -50,7 +43,6 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
 
 import java.util.ArrayList;
@@ -63,7 +55,6 @@ import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.detail.PoiDetailActivity;
 import eu.randomobile.pnrlorraine.mod_discover.detail.RouteDetailActivity;
 import eu.randomobile.pnrlorraine.mod_discover.list.PoisListActivity;
-//import eu.randomobile.pnrlorraine.mod_discover.ra.MetaIORAActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
@@ -82,6 +73,8 @@ import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
 
+//import eu.randomobile.pnrlorraine.mod_discover.ra.MetaIORAActivity;
+
 public class PoisGeneralMapActivity extends Activity implements
         ComboCapasMapaInterface, PoisInterface, PoisModeOfflineInterface {
 
@@ -89,30 +82,33 @@ public class PoisGeneralMapActivity extends Activity implements
 
     public static final int PARAM_MAPA_GENERAL_MOSTRAR_POIS = 200;
     public static final int PARAM_MAPA_GENERAL_MOSTRAR_RUTAS = 201;
-
-    private int paramMapaGeneralMostrar;
-
     MainApp app;
     ImageMap mImageMap = null;
-
     MapView mapa;
     GraphicsOverlay capaGeometrias;
     Callout callout;
-
     Button btnSeleccionarCapaBase;
-
     RelativeLayout panelCargando;
-
     ArrayList<Poi> arrayPois = null;
     // Array con las pois filtrados por categoria
     ArrayList<Poi> arrayFilteredPois = null;
-
     PictureMarkerSymbol hotel;
     PictureMarkerSymbol descubrir;
     PictureMarkerSymbol restaurante;
     PictureMarkerSymbol info;
     PictureMarkerSymbol icono;
+    PictureMarkerSymbol naturaleza;
+    private int paramMapaGeneralMostrar;
 
+    public static int dip2px(Context context, float dipValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
+    }
+
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,6 +132,8 @@ public class PoisGeneralMapActivity extends Activity implements
                 R.drawable.icono_restaurante)));
         info = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
                 R.drawable.icono_info)));
+        naturaleza = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.icono_naturaleza)));
 
         // Recuperar parametros
         Bundle b = getIntent().getExtras();
@@ -224,6 +222,17 @@ public class PoisGeneralMapActivity extends Activity implements
         startActivity(intent);
     }
 
+//    private void cargaRAActivity() {
+////		Intent intent = new Intent(PoisGeneralMapActivity.this,
+////				RAActivity.class);
+////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_TITLE_STRING, "RA");
+////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL, "wikitudeWorld" + File.separator + "index.html");
+////		intent.putExtra(RAActivity.PARAM_KEY_JSON_POI_DATA, JSONPOIParser.parseToJSONArray(app, arrayPois).toString() );
+//        Intent intent = new Intent(PoisGeneralMapActivity.this,
+//                MetaIORAActivity.class);
+//        startActivity(intent);
+//    }
+
     private void cargaActivityPoisList() {
         Intent intent = new Intent(PoisGeneralMapActivity.this,
                 PoisListActivity.class);
@@ -237,17 +246,6 @@ public class PoisGeneralMapActivity extends Activity implements
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 1);
     }
-
-//    private void cargaRAActivity() {
-////		Intent intent = new Intent(PoisGeneralMapActivity.this,
-////				RAActivity.class);
-////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_TITLE_STRING, "RA");
-////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL, "wikitudeWorld" + File.separator + "index.html");
-////		intent.putExtra(RAActivity.PARAM_KEY_JSON_POI_DATA, JSONPOIParser.parseToJSONArray(app, arrayPois).toString() );
-//        Intent intent = new Intent(PoisGeneralMapActivity.this,
-//                MetaIORAActivity.class);
-//        startActivity(intent);
-//    }
 
     private void cargaActivityOptions() {
         // Abrir la pantalla de opciones
@@ -485,27 +483,30 @@ public class PoisGeneralMapActivity extends Activity implements
             Log.d("Milog", "Lista pois no es nulo");
 
             for (int i = 0; i < pois.size(); i++) {
-                Poi poi = pois.get(i);
-                // Por cada poi obtener sus coordenadas y construir un objeto
-                // Point de Arcgis
-                GeoPoint gp = poi.getCoordinates();
-                Point puntoProyectado = new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());//(Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
-                //          SpatialReferences.getWgs84());
-                ArrayList<Object> geometrias = new ArrayList<Object>();
-                geometrias.add(puntoProyectado);
+                if (!pois.get(i).getCategory().getTid().equals("52")) {
+                    Poi poi = pois.get(i);
+                    // Por cada poi obtener sus coordenadas y construir un objeto
+                    // Point de Arcgis
+                    GeoPoint gp = poi.getCoordinates();
+                    Point puntoProyectado = new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());//(Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
+                    //          SpatialReferences.getWgs84());
+                    ArrayList<Object> geometrias = new ArrayList<Object>();
+                    geometrias.add(puntoProyectado);
 
-                String cat = "poi";
-                if (poi.getCategory() != null) {
-                    cat = poi.getCategory().getTid();
+                    String cat = "poi";
+                    if (poi.getCategory() != null) {
+                        cat = poi.getCategory().getTid();
+                    }
+
+
+                    String icon = null;
+                    if (poi.getCategory() != null && poi.getCategory().getTid() != null) {
+                        icon = poi.getCategory().getIcon();
+                    }
+
+                    dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(),
+                            poi.getNid(), cat, icon, Double.toString(poi.getDistanceMeters()));
                 }
-
-                String icon = null;
-                if (poi.getCategory() != null && poi.getCategory().getTid() != null) {
-                    icon = poi.getCategory().getIcon();
-                }
-
-                dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(),
-                        poi.getNid(), cat, icon, Double.toString(poi.getDistanceMeters()));
             }
 
             centrarEnExtentCapa(capaGeometrias);
@@ -521,7 +522,6 @@ public class PoisGeneralMapActivity extends Activity implements
         // Quitar el panel de cargando
         panelCargando.setVisibility(View.GONE);
     }
-
 
     private View getViewForCallout(final String nombre, String clase, final String nid, String cat, final String distanceMeters) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
@@ -574,17 +574,6 @@ public class PoisGeneralMapActivity extends Activity implements
         return view;
     }
 
-
-    public static int dip2px(Context context, float dipValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale + 0.5f);
-    }
-
-    public static int px2dip(Context context, float pxValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (pxValue / scale + 0.5f);
-    }
-
     private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon, final String distanceMeters) {
 
         int polygonFillColor = Color.rgb(55, 132, 218);
@@ -600,7 +589,7 @@ public class PoisGeneralMapActivity extends Activity implements
                 attrs.put("clase", paramNombreClase);
                 attrs.put("nid", paramNid);
                 attrs.put("nombre", paramNombre);
-                attrs.put("cat", paramCat);
+                //attrs.put("cat", paramCat);
                 attrs.put("distanceMeters", distanceMeters);
 
                 if (geomObj != null
@@ -624,31 +613,59 @@ public class PoisGeneralMapActivity extends Activity implements
                     final Point point = (Point) geomObj;
 
                     PictureMarkerSymbol sym = null;
+
                     switch (paramCat) {
                         case "26":
+                            attrs.put("cat", "Hébergement collectif");
+                            sym = hotel;
+                            break;
                         case "47":
+                            attrs.put("cat", "Chambre d’hôtes");
+                            sym = hotel;
+                            break;
                         case "48":
+                            attrs.put("cat", "Hôtellerie");
+                            sym = hotel;
+                            break;
                         case "49":
+                            attrs.put("cat", "Hôtellerie de plein air");
+                            sym = hotel;
+                            break;
                         case "50":
+                            attrs.put("cat", "Meublés");
+                            sym = hotel;
+                            break;
                         case "51":
+                            attrs.put("cat", "Hotel");
                             sym = hotel;
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
                             break;
                         case "36":
+                            attrs.put("cat", "Monument");
+                            sym = descubrir;
+                            break;
                         case "28":
+                            attrs.put("cat", "Musée");
                             sym = descubrir;
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
                             break;
                         case "27":
+                            attrs.put("cat", "Restauration");
                             sym = restaurante;
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
                             break;
                         case "25":
+                            attrs.put("cat", "Office de tourisme");
                             sym = info;
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
                             break;
+                        case "30":
+                            sym = naturaleza;
+                            attrs.put("cat", this.getResources().getString(R.string.lugar_de_interes_natural));
+                            break;
                         default:
                             sym = icono;
+                            attrs.put("cat", "Point d'interet");
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
                     }
                     /*Graphic gr = new Graphic(point, attrs, sym );
@@ -827,37 +844,6 @@ public class PoisGeneralMapActivity extends Activity implements
         this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
     }
 
-
-    /**
-     * Location listener propio
-     *
-     * @author
-     */
-    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
-
-        public MyLocationListener() {
-            super();
-        }
-
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-            if (locationChangedEvent.getLocation() == null)
-                return;
-        }
-    }
-
-
     @Override
     public void seCargoPoi(Poi poi) {
         // TODO Auto-generated method stub
@@ -904,6 +890,35 @@ public class PoisGeneralMapActivity extends Activity implements
         panelCargando.setVisibility(View.GONE);
         Log.d("Milog", "seCargoListaPois");
 
+    }
+
+    /**
+     * Location listener propio
+     *
+     * @author
+     */
+    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
+
+        public MyLocationListener() {
+            super();
+        }
+
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+            if (locationChangedEvent.getLocation() == null)
+                return;
+        }
     }
 
 }
