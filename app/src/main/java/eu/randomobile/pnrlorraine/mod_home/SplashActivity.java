@@ -1,10 +1,29 @@
 package eu.randomobile.pnrlorraine.mod_home;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
-import eu.randomobile.pnrlorraine.mod_discover.list.RoutesListActivity;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.environment.GPS;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
@@ -18,179 +37,20 @@ import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteDifficultyTerm;
 import eu.randomobile.pnrlorraine.utils.JSONManager;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.app.Activity;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
 public class SplashActivity extends Activity {
-    private MainApp app;
-
-    private static ProgressBar progressBar;
-
     private static final int SPLASH_TIME = 1 * 2000; // seconds
+    private static ProgressBar progressBar;
     private static boolean splashActivado = true;
-
+    private static int loadedComponents = 0;
     // Coordenadas GPS de Fuerteventura
     double lat = -14.2789;
     double lon = 28.1958;
-
-    private static int loadedComponents = 0;
+    private MainApp app;
     //
     //
-
-    public class MyProgressBar extends ProgressBar {
-        SplashActivity splashActivity;
-
-        public MyProgressBar(Context context, SplashActivity splashActivity) {
-            super(context);
-
-            this.splashActivity = splashActivity;
-        }
-
-        @Override
-        public void setProgress(int progress)
-        {
-            super.setProgress(progress);
-            if(progress == this.getMax())
-            {
-                splashActivity.loadMainActivity();
-            }
-        }
-    }
-
-    //
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.mod_home__activity_splash);
-
-        this.app = (MainApp) getApplication();
-
-        progressBar = (ProgressBar) findViewById(R.id.splash_prograssBar);
-        progressBar.setMax(100);
-
-        if (app.getNetStatus() != 0) {
-            updateLocalDatabase_Routes();
-            //loadMainActivity();
-
-        } else {
-            try {
-                app.setRoutesList(app.getDBHandler().getRouteList());
-
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Se ha producido un error al actualizar las rutas", Toast.LENGTH_LONG).show();
-            }
-
-            loadedComponents = 4;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
-
-            builder.setTitle(R.string.txt_sin_conexion);
-            builder.setMessage(R.string.txt_caracteristicas_no_disponibles);
-            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    loadMainActivity();
-                }
-            });
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    loadMainActivity();
-                }
-            });
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    loadMainActivity();
-                }
-            });
-
-            builder.show();
-        }
-    }
-
-    protected void onResume() {
-        super.onResume();
-
-        splashActivado = true;
-
-        /*
-        try {
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    if (splashActivado) {
-                        // Abrir el home tras unos instantes
-                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(intent);
-
-                        SplashActivity.this.finish();
-
-                        splashActivado = false;
-                    }
-                }
-            }, SPLASH_TIME);
-
-        } catch (Exception e) {
-
-        }
-        */
-    }
-
-    public void onBackPressed() {
-        splashActivado = false;
-
-        super.onBackPressed();
-    }
-
-    //
-
-    //
-
-    private void updateLocalDatabase_Routes() {
-        cargarListaRutasOrdenadosDistancia(getApplication(), // Aplicacion
-                lat, // Latitud
-                lon, // Longitud
-                0, // Radio en Kms
-                0, // N?mero de elementos por p?gina
-                0, // P?gina
-                null, // Tid de la categor?a que queremos filtrar
-                null, // Dificultad
-                null // Texto a buscar
-        );
-
-        updateLocalDatabase_Pois();
-    }
 
     private static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
-        HashMap<String, String> params = new HashMap<String, String>();
+        final HashMap<String, String> params = new HashMap<String, String>();
 
         params.put("lat", String.valueOf(lat));
         params.put("lon", String.valueOf(lon));
@@ -218,30 +78,32 @@ public class SplashActivity extends Activity {
 
         app.clienteDrupal.customMethodCallPost("route/get_list_distance", new AsyncHttpResponseHandler() {
                     public void onSuccess(String response) {
-                        ArrayList<Route> listaRutas = null;
 
+                        ArrayList<Route> listaRutas = null;
                         Log.d("ROUTE: ", response);
 
                         if (response != null && !response.equals("")) {
-                            listaRutas = fillRouteList(response, application);
+                            listaRutas = fillRouteList(response, app);
                         }
 
                         if (listaRutas != null) {
-                            app.setRoutesList(listaRutas);
 
-                            for (Route route : app.getRoutesList()) {
+                            /*for (Route route : app.getRoutesList()) {
                                 Log.d("ForEach route sais:", " Route ID: " + route.getNid());
                                 Log.d("ForEach route sais:", " Route Name: " + route.getTitle());
 
-                                /*
+
+
                                 HashMap<String, String> params = new HashMap<String, String>();
                                 params.put("nid", route.getNid());
+
+                                listaRutas = new ArrayList<Route>();
 
                                 app.clienteDrupal.customMethodCallPost("route/get_item", new AsyncHttpResponseHandler() {
                                     public void onSuccess(String response) {
                                         if (response != null && !response.equals("")) {
-
                                             Route route = fillRoute(response);
+                                            listaRutas.add(route);
 
                                             app.getDBHandler().addOrReplaceRoute(route);
 
@@ -254,15 +116,16 @@ public class SplashActivity extends Activity {
                                         Log.d("cargarRoute():", error.toString());
                                     }
                                 }, params);
-                                */
+
 
                                 app.getDBHandler().addOrReplaceRoute(route);
 
-                            }
+                            }*/
 
                             progressBar.incrementProgressBy(25);
 
-                            app.setRoutesList(app.getDBHandler().getRouteList());
+                            //app.setRoutesList(app.getDBHandler().getRouteList());
+                            app.setRoutesList(listaRutas);
 
                             loadedComponents++;
 
@@ -278,7 +141,9 @@ public class SplashActivity extends Activity {
                 params);
     }
 
-    private static ArrayList<Route> fillRouteList(String response, Application application) {
+    //
+
+    private static ArrayList<Route> fillRouteList(String response, final MainApp application) {
         Context ctx = application.getApplicationContext();
 
         ArrayList<Route> listaRutas = null;
@@ -293,7 +158,6 @@ public class SplashActivity extends Activity {
 
                 for (int i = 0; i < arrayRes.length(); i++) {
                     Object recObj = arrayRes.get(i);
-
                     if (recObj != null) {
                         if (recObj.getClass().getName().equals(JSONObject.class.getName())) {
                             JSONObject recDic = (JSONObject) recObj;
@@ -313,7 +177,7 @@ public class SplashActivity extends Activity {
 
                             Log.d("fillRouteList() sais:", "URL tpk: " + url);
 
-                            Route item = new Route();
+                            final Route item = new Route();
 
                             item.setNid(nid);
                             item.setTitle(title);
@@ -446,6 +310,143 @@ public class SplashActivity extends Activity {
                                     item.setPois(arrayTemp);
                                 }
 
+                                HashMap<String, String> params = new HashMap<String, String>();
+                                params.put("nid", item.getNid());
+                                application.clienteDrupal.customMethodCallPost("route/get_item", new AsyncHttpResponseHandler() {
+
+                                    public void onSuccess(String response) {
+                                        if (response != null && !response.equals("")) {
+                                            try {
+                                                JSONObject dicRes = new JSONObject(response);
+                                                if (dicRes != null) {
+                                                    if (!(dicRes.getString("alt_max").equals("null")) /*&& !(dicRes.getString("alt_min").equals("null"))*/)
+                                                        item.setSlope(dicRes.getDouble("alt_max")/* - dicRes.getDouble("alt_min")*/);
+
+                                                    Object objDif = dicRes.get("difficulty");
+
+                                                    if (objDif != null && objDif.getClass().getName().equals(JSONObject.class.getName())) {
+                                                        JSONObject dicDif = (JSONObject) objDif;
+                                                        String tid = dicDif.getString("tid");
+                                                        String name = dicDif.getString("name");
+                                                        RouteDifficultyTerm routeDifTerm = new RouteDifficultyTerm();
+                                                        routeDifTerm.setTid(tid);
+                                                        routeDifTerm.setName(name);
+                                                        item.setDifficulty(routeDifTerm);
+                                                    }
+
+                                                    ArrayList<ResourceFile> arrayResourceImages = new ArrayList<ResourceFile>();
+
+                                                    Object objImages = dicRes.get("images");
+
+                                                    if (objImages != null && objImages.getClass().getName().equals(JSONArray.class.getName())) {
+                                                        JSONArray array = (JSONArray) objImages;
+
+                                                        for (int i = 0; i < array.length(); i++) {
+                                                            Object obj = array.get(i);
+
+                                                            if (obj != null && obj.getClass().getName().equals(JSONObject.class.getName())) {
+                                                                JSONObject dic = (JSONObject) obj;
+                                                                String name = dic.getString("name");
+                                                                String url = dic.getString("url");
+                                                                ResourceFile rf = new ResourceFile();
+                                                                rf.setFileName(name);
+                                                                rf.setFileUrl(url);
+                                                                rf.setFileTitle(JSONManager.getString(dic, "title"));
+                                                                rf.setFileBody(JSONManager.getString(dic, "body"));
+                                                                rf.setCopyright(JSONManager.getString(dic, "copyright"));
+                                                                arrayResourceImages.add(rf);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    item.setImages(arrayResourceImages);
+
+                                                    ArrayList<ResourceFile> arrayResourceAudios = new ArrayList<ResourceFile>();
+
+                                                    Object objAudios = dicRes.get("audios");
+
+                                                    if (objAudios != null && objAudios.getClass().getName().equals(JSONArray.class.getName())) {
+                                                        JSONArray array = (JSONArray) objAudios;
+
+                                                        for (int i = 0; i < array.length(); i++) {
+                                                            Object obj = array.get(i);
+
+                                                            if (obj != null && obj.getClass().getName().equals(JSONObject.class.getName())) {
+                                                                JSONObject dic = (JSONObject) obj;
+                                                                String name = dic.getString("name");
+                                                                String url = dic.getString("url");
+                                                                ResourceFile rf = new ResourceFile();
+                                                                rf.setFileName(name);
+                                                                rf.setFileUrl(url);
+                                                                arrayResourceAudios.add(rf);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    item.setAudios(arrayResourceAudios);
+
+                                                    ArrayList<ResourceFile> arrayResourceVideos = new ArrayList<ResourceFile>();
+
+                                                    Object objVideos = dicRes.get("videos");
+
+                                                    if (objVideos != null && objVideos.getClass().getName().equals(JSONArray.class.getName())) {
+                                                        JSONArray array = (JSONArray) objVideos;
+
+                                                        for (int i = 0; i < array.length(); i++) {
+                                                            Object obj = array.get(i);
+
+                                                            if (obj != null && obj.getClass().getName().equals(JSONObject.class.getName())) {
+                                                                JSONObject dic = (JSONObject) obj;
+                                                                String name = dic.getString("name");
+                                                                String url = dic.getString("url");
+                                                                ResourceFile rf = new ResourceFile();
+                                                                rf.setFileName(name);
+                                                                rf.setFileUrl(url);
+                                                                arrayResourceVideos.add(rf);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    item.setVideos(arrayResourceVideos);
+
+                                                    ArrayList<ResourceLink> arrayResourceLinks = new ArrayList<ResourceLink>();
+                                                    Object objLinks = dicRes.get("links");
+                                                    if (objLinks != null && objLinks.getClass().getName().equals(JSONArray.class.getName())) {
+                                                        JSONArray array = (JSONArray) objLinks;
+                                                        for (int i = 0; i < array.length(); i++) {
+                                                            Object obj = array.get(i);
+                                                            if (obj != null && obj.getClass().getName().equals(JSONObject.class.getName())) {
+                                                                JSONObject dic = (JSONObject) obj;
+                                                                String name = dic.getString("name");
+                                                                String url = dic.getString("url");
+                                                                ResourceLink rl = new ResourceLink();
+                                                                rl.setTitle(name);
+                                                                rl.setUrl(url);
+                                                                arrayResourceLinks.add(rl);
+                                                            }
+                                                        }
+                                                    }
+                                                    item.setEnlaces(arrayResourceLinks);
+
+                                                } //dicRes != null
+
+                                            } catch (Exception e) {
+                                                Log.d("Milog", "Excepcion cargar route: " + e.toString());
+                                            }
+
+
+                                            application.getDBHandler().addOrReplaceRoute(item);
+
+                                        } else {
+                                            Log.d("DetailedRoute:", " ERROR al descargar la ruta detallada.");
+                                        }
+                                    }
+
+                                    public void onFailure(Throwable error) {
+                                        Log.d("cargarRoute():", error.toString());
+                                    }
+                                }, params);
+
                             } catch (Exception e) {
                                 Log.d("--------------------", " ---------------------------v-ERROR-v------------------------------- ");
                                 e.printStackTrace();
@@ -523,8 +524,8 @@ public class SplashActivity extends Activity {
                 if (!dicRes.getString("distance").equals("null"))
                     route.setRouteLengthMeters(dicRes.getDouble("distance"));
 
-                if (!(dicRes.getString("alt_max").equals("null")) && !(dicRes.getString("alt_min").equals("null")))
-                    route.setSlope(dicRes.getDouble("alt_max") - dicRes.getDouble("alt_min"));
+                if (!(dicRes.getString("alt_max").equals("null")) /*&& !(dicRes.getString("alt_min").equals("null"))*/)
+                    route.setSlope(dicRes.getDouble("alt_max")/* - dicRes.getDouble("alt_min")*/);
 
                 Object objCat = dicRes.get("type");
 
@@ -540,7 +541,10 @@ public class SplashActivity extends Activity {
 
                 Object objDif = dicRes.get("difficulty");
 
-                if (objDif != null && objDif.getClass().getName().equals(JSONObject.class.getName())) {
+                if (!dicRes.getString("difficulty").equals("null"))
+                    route.setDifficulty_tid(dicRes.getString("difficulty"));
+
+                /*if (objDif != null && objDif.getClass().getName().equals(JSONObject.class.getName())) {
                     JSONObject dicDif = (JSONObject) objDif;
                     String tid = dicDif.getString("tid");
                     String name = dicDif.getString("name");
@@ -548,7 +552,7 @@ public class SplashActivity extends Activity {
                     routeDifTerm.setTid(tid);
                     routeDifTerm.setName(name);
                     route.setDifficulty(routeDifTerm);
-                }
+                }*/
 
                 route.setTrack(geom);
 
@@ -707,21 +711,7 @@ public class SplashActivity extends Activity {
 
     //
 
-    private void updateLocalDatabase_Pois() {
-        cargarListaPoisOrdenadosDistancia(getApplication(), // Aplicacion
-                lat, // Latitud
-                lon, // Longitud
-                0, // Radio en Kms
-                0, // N�mero de elementos por p�gina
-                0, // P�gina
-                null, // Tid de la categor�a que queremos filtrar
-                null // Texto a buscar
-        );
-
-
-        progressBar.incrementProgressBy(25);
-        updateLocalDatabase_Pages();
-    }
+    //
 
     private static void cargarListaPoisOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt) {
         HashMap<String, String> params = new HashMap<String, String>();
@@ -894,7 +884,122 @@ public class SplashActivity extends Activity {
         return listaPois;
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.mod_home__activity_splash);
+
+        this.app = (MainApp) getApplication();
+
+        progressBar = (ProgressBar) findViewById(R.id.splash_prograssBar);
+        progressBar.setMax(100);
+
+        if (app.getNetStatus() != 0) {
+            updateLocalDatabase_Routes();
+            //loadMainActivity();
+
+        } else {
+            try {
+                app.setRoutesList(app.getDBHandler().getRouteList());
+
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "Se ha producido un error al actualizar las rutas", Toast.LENGTH_LONG).show();
+            }
+
+            loadedComponents = 4;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+
+            builder.setTitle(R.string.txt_sin_conexion);
+            builder.setMessage(R.string.txt_caracteristicas_no_disponibles);
+            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    loadMainActivity();
+                }
+            });
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    loadMainActivity();
+                }
+            });
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    loadMainActivity();
+                }
+            });
+
+            builder.show();
+        }
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        splashActivado = true;
+
+        /*
+        try {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (splashActivado) {
+                        // Abrir el home tras unos instantes
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+                        SplashActivity.this.finish();
+
+                        splashActivado = false;
+                    }
+                }
+            }, SPLASH_TIME);
+
+        } catch (Exception e) {
+
+        }
+        */
+    }
+
+    public void onBackPressed() {
+        splashActivado = false;
+
+        super.onBackPressed();
+    }
+
     //
+
+    private void updateLocalDatabase_Routes() {
+        cargarListaRutasOrdenadosDistancia(getApplication(), // Aplicacion
+                lat, // Latitud
+                lon, // Longitud
+                0, // Radio en Kms
+                0, // N?mero de elementos por p?gina
+                0, // P?gina
+                null, // Tid de la categor?a que queremos filtrar
+                null, // Dificultad
+                null // Texto a buscar
+        );
+
+        updateLocalDatabase_Pois();
+    }
+
+    private void updateLocalDatabase_Pois() {
+        cargarListaPoisOrdenadosDistancia(getApplication(), // Aplicacion
+                lat, // Latitud
+                lon, // Longitud
+                0, // Radio en Kms
+                0, // N�mero de elementos por p�gina
+                0, // P�gina
+                null, // Tid de la categor�a que queremos filtrar
+                null // Texto a buscar
+        );
+
+
+        progressBar.incrementProgressBy(25);
+        updateLocalDatabase_Pages();
+    }
 
     private void updateLocalDatabase_Pages() {
         try {
@@ -951,5 +1056,25 @@ public class SplashActivity extends Activity {
 
             SplashActivity.this.finish();
         //}
+    }
+
+    //
+
+    public class MyProgressBar extends ProgressBar {
+        SplashActivity splashActivity;
+
+        public MyProgressBar(Context context, SplashActivity splashActivity) {
+            super(context);
+
+            this.splashActivity = splashActivity;
+        }
+
+        @Override
+        public void setProgress(int progress) {
+            super.setProgress(progress);
+            if (progress == this.getMax()) {
+                splashActivity.loadMainActivity();
+            }
+        }
     }
 }

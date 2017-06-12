@@ -5,7 +5,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,7 +32,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
@@ -60,7 +57,6 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -90,7 +86,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.Route.RoutesInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.User;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
-import eu.randomobile.pnrlorraine.mod_login.LoginActivity;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.imgs.GridImagesActivity;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.vids.ListVideosActivity;
 import eu.randomobile.pnrlorraine.mod_notification.Cache;
@@ -106,61 +101,24 @@ import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
 public class RouteDetailActivity extends Activity implements RoutesInterface, RoutesModeOfflineInterface,
         ComboCapasMapaInterface, PoisInterface, PoisModeOfflineInterface, OnTaskCompletedInterface {
-    private MainApp app;
-    private Route route;
-
-    private ImageMap imageMap;
-
-    private MapView map;
-    private GraphicsOverlay geometricLayer;
-    private GraphicsOverlay geometricPOIsLayer;
-    private Callout callout;
-    private Point firstPoint;
-
-    private ImageButton btn_Layers;
-    private ImageButton btn_Download_Map;
-    private ImageButton btn_Rate;
-    //private ImageButton btn_Related;
-    private ImageButton btn_Galery;
-    private ImageButton btn_Vids;
-
-    private TextView txt_route_title;
-    private TextView txt_ramp;
-    private TextView txt_duration;
-    private TextView txt_distance;
-    private TextView txt_note;
-    private TextView txt_description_body;
-
-    private ImageView img_difficulty;
-    private ImageView img_star_1, img_star_2, img_star_3, img_star_4, img_star_5;
-
-    private boolean route_tpk_downloaded = false;
-
     public static final String PARAM_KEY_NID = "nid";
     public static final String PARAM_KEY_DISTANCE = "distance";
+    public static final String PARAM_KEY_NID_MOSTRAR = "mapa_nid_mostrar";
+    public static final String PARAM_KEY_TYPE_DRUPAL = "mapa_type_mostrar";
+    public static final String PARAM_KEY_TITLE_ROUTE = "route_title";
+    public static final String PARAM_KEY_CATEGORY_ROUTE = "route_category";
+    public static final String PARAM_KEY_MAP_URL = "map_url";
+    public static final String PARAM_KEY_COLOR_ROUTE = "route_color";
     public static double lastLatitude = 0;
     public static double lastLongitude = 0;
-
     String paramNid;
     String paramTitleRoute;
     String paramCategoryRoute;
     String paramMapUrl;
     double paramDistanceMeters;
-    private Dialog dialogPoi = null;
-
     LinearLayout wrapper_description;
     ScrollView scrollView2;
-
-
     RelativeLayout panelCargando;
-
-    // RelativeLayout panelCargandoMapas;
-
-
-    // ProgressBar pb;
-
-    private String TAG;
-
     /* arrayPois y arrayFilteredPois para las busquedas
      * Funcionalidad: Ver Pois                  */
     // Array con los elementos que contendra
@@ -169,16 +127,38 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     ArrayList<Poi> arrayFilteredPois = null;
     //
     ArrayList<ResourcePoi> resourcePois = null;
-
-    public static final String PARAM_KEY_NID_MOSTRAR = "mapa_nid_mostrar";
-    public static final String PARAM_KEY_TYPE_DRUPAL = "mapa_type_mostrar";
-    public static final String PARAM_KEY_TITLE_ROUTE = "route_title";
-    public static final String PARAM_KEY_CATEGORY_ROUTE = "route_category";
-    public static final String PARAM_KEY_MAP_URL = "map_url";
-    public static final String PARAM_KEY_COLOR_ROUTE = "route_color";
-
     String paramType;
     int paramColorRoute = 0;
+    private MainApp app;
+    private Route route;
+    private ImageMap imageMap;
+    private MapView map;
+    private GraphicsOverlay geometricLayer;
+    private GraphicsOverlay geometricPOIsLayer;
+    private Callout callout;
+    private Point firstPoint;
+    private ImageButton btn_Layers;
+    private ImageButton btn_Download_Map;
+    private ImageButton btn_Rate;
+    //private ImageButton btn_Related;
+    private ImageButton btn_Galery;
+
+    // RelativeLayout panelCargandoMapas;
+
+
+    // ProgressBar pb;
+    private ImageButton btn_Vids;
+    private TextView txt_route_title;
+    private TextView txt_ramp;
+    private TextView txt_duration;
+    private TextView txt_distance;
+    private TextView txt_note;
+    private TextView txt_description_body;
+    private ImageView img_difficulty;
+    private ImageView img_star_1, img_star_2, img_star_3, img_star_4, img_star_5;
+    private boolean route_tpk_downloaded = false;
+    private Dialog dialogPoi = null;
+    private String TAG;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1255,9 +1235,23 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             allPoisDescription += pois.get(j).getTitle() + "\n" + pois.get(j).getBody() + "\n\n";
             switch (clase) {
                 case 52:
-                    switch (number) {
+                    try {
+                        String num = String.valueOf(number);
+                        if (number == 1) {
+                            firstPoint = puntoProyectado;
+                        }
+                        if (number < 10) {
+                            num = "0" + number;
+                        }
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_" + num, "drawable", getPackageName())));
+                    } catch (Exception e) {
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
+                    }
+                    /*switch (number) {
                         case 1:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_01));
+                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_01));
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_01","drawable", getPackageName())));
+
                             firstPoint = puntoProyectado;
                             break;
                         case 2:
@@ -1335,7 +1329,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
                         default:
                             sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
-                    }
+                    }*/
                     break;
                 case 26:
                 case 47:
@@ -1379,9 +1373,15 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
             Graphic gr = new Graphic(/*puntoProyectado, sym);*/puntoProyectado, attrs, sym);
 
-            if(clase == 52)
-                geometricLayer.getGraphics().add(gr);
-            else
+            if (clase == 52) {
+                try {
+                    geometricLayer.getGraphics().add(gr);
+                } catch (Exception e) {
+                    Log.e(TAG, "dibujarPoisInRoute: ", e);
+                    this.onRestart();
+                }
+
+            } else
                 geometricPOIsLayer.getGraphics().add(gr);
         }
         // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
@@ -1607,44 +1607,6 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     + " capas");
         }
     }
-
-
-    /**
-     * Location listener propio
-     *
-     * @author
-     */
-    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
-
-        public MyLocationListener() {
-            super();
-        }
-
-        public void onLocationChanged(Location loc) {
-            if (loc == null)
-                return;
-//			else
-//				GPS.setLastLocation(loc);
-        }
-
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-            if (locationChangedEvent.getLocation() == null)
-                return;
-        }
-    }
-
 
     @Override
     public void seCargoListaRoutesOffline(ArrayList<Route> routes) {
@@ -1943,6 +1905,42 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // TODO Auto-generated method stub
         // RouteDetailActivity.this.panelCargandoMapas.setVisibility(View.VISIBLE);
 
+    }
+
+    /**
+     * Location listener propio
+     *
+     * @author
+     */
+    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
+
+        public MyLocationListener() {
+            super();
+        }
+
+        public void onLocationChanged(Location loc) {
+            if (loc == null)
+                return;
+//			else
+//				GPS.setLastLocation(loc);
+        }
+
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+            if (locationChangedEvent.getLocation() == null)
+                return;
+        }
     }
 
 }

@@ -308,7 +308,7 @@ public class MainApp extends Application {
 	public void setCapaBaseSeleccionadaPorDefecto() {
 		CapaBase capa = new CapaBase(this);
 		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS); //TODO this one bug, need to be treated
-		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_STREET_MAP);
+		capa.setIdentificador(CapaBase.CAPA_BASE_TIPO_WORLD_TOPO);
 		capa.setEtiqueta("Bing Road");
 		capa.setClaseCapaBase(ArcGISTiledLayer.class);
 		this.capaBaseSeleccionada = capa;

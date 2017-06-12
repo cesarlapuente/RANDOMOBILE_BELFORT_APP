@@ -701,12 +701,14 @@ public class PoisGeneralMapActivity extends Activity implements
                     capaGeometrias.getGraphics().add(gr);
 
                 } catch (Exception e) {
+                    Log.e("Error Graphics", "dibujarGeometrias: ", e);
+                    this.onRestart();
 
-                    capaGeometrias.getGraphics().remove(gr);
+                    /*capaGeometrias.getGraphics().remove(gr);
                     Log.e("thib", "echec add " + gr.getAttributes().toString() + "\n"
                             + symb.equals(hotel) + "\n" + symb.equals(restaurante) + "\n"
                             + symb.equals(descubrir) + "\n" + symb.equals(icono) + "\n"
-                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);
+                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);*/
                 }
                 //capaGeometrias.getGraphics().add(gr);
             }
