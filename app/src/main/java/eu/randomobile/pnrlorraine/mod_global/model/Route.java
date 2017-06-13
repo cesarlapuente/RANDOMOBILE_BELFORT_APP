@@ -10,19 +10,18 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
-import eu.randomobile.pnrlorraine.mod_discover.detail.RouteDetailActivity;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteDifficultyTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.TagTerm;
 import eu.randomobile.pnrlorraine.utils.JSONManager;
 
 public class Route {
+    public static RoutesInterface routesInterface;
     private String nid;
     private String title;
     private RouteCategoryTerm category;
@@ -46,18 +45,6 @@ public class Route {
     private ArrayList<TagTerm> tags;
     private Vote vote;
     private int color;
-
-    public static RoutesInterface routesInterface;
-
-    public static interface RoutesInterface {
-        public void seCargoListaRoutes(ArrayList<Route> routes);
-
-        public void producidoErrorAlCargarListaRoutes(String error);
-
-        public void seCargoRoute(Route route);
-
-        public void producidoErrorAlCargarRoute(String error);
-    }
 
     public Route(){}
 
@@ -135,25 +122,6 @@ public class Route {
                 params);
     }
 
-    public int getColorForMap(Context ctx) {
-        int result = Color.RED;
-        switch (difficulty_tid) {
-            case "22":
-                result = ctx.getResources().getColor(R.color.black);
-                break;
-            case "16":
-                result = ctx.getResources().getColor(R.color.blue_routes);
-                break;
-            case "17":
-                result = ctx.getResources().getColor(R.color.red_routes);
-                break;
-            case "18":
-                result = ctx.getResources().getColor(R.color.green_routes);
-                break;
-        }
-        return result;
-    }
-
     public static ArrayList<Route> fillRouteList(String response, Application application) {
         Context ctx = application.getApplicationContext();
         ArrayList<Route> listaRutas = null;
@@ -217,8 +185,8 @@ public class Route {
                                 routeCatTerm.setTid(tid);
                                 routeCatTerm.setName(name);
                                 item.setCategory(routeCatTerm);
-                                if (item.getCategory().getName().equals("PR")) {
-                                    int n = count_PR % 3;
+                                if ("31".equals(item.getCategory().getTid())) {
+                                    int n = count_PR % 5;
                                     switch (n) {
                                         case 0:
                                             item.setColor(ctx.getResources().getColor(R.color.pr1_route));
@@ -229,11 +197,17 @@ public class Route {
                                         case 2:
                                             item.setColor(ctx.getResources().getColor(R.color.pr3_route));
                                             break;
+                                        case 3:
+                                            item.setColor(ctx.getResources().getColor(R.color.pr4_route));
+                                            break;
+                                        case 4:
+                                            item.setColor(ctx.getResources().getColor(R.color.pr5_route));
+                                            break;
                                         default:
                                             break;
                                     }
                                     count_PR++;
-                                } else if (item.getCategory().getName().equals("GR")) {
+                                } else if ("32".equals(item.getCategory().getTid())) {
                                     int n = count_GR % 2;
                                     switch (n) {
                                         case 0:
@@ -246,7 +220,7 @@ public class Route {
                                             break;
                                     }
                                     count_GR++;
-                                } else if (item.getCategory().getName().equals("CR")) {
+                                } else if ("CR".equals(item.getCategory().getTid())) {
                                     item.setColor(ctx.getResources().getColor(R.color.cr1_route));
                                 }
                             }
@@ -529,11 +503,30 @@ public class Route {
 
     }
 
-    // GETTERS AND SETTERS
+    public int getColorForMap(Context ctx) {
+        int result = Color.RED;
+        switch (difficulty_tid) {
+            case "22":
+                result = ctx.getResources().getColor(R.color.black);
+                break;
+            case "16":
+                result = ctx.getResources().getColor(R.color.blue_routes);
+                break;
+            case "17":
+                result = ctx.getResources().getColor(R.color.red_routes);
+                break;
+            case "18":
+                result = ctx.getResources().getColor(R.color.green_routes);
+                break;
+        }
+        return result;
+    }
 
     public String getNid() {
         return nid;
     }
+
+    // GETTERS AND SETTERS
 
     public void setNid(String nid) {
         this.nid = nid;
@@ -659,12 +652,12 @@ public class Route {
         this.enlaces = enlaces;
     }
 
-    public void setPois(ArrayList<ResourcePoi> pois) {
-        this.pois = pois;
-    }
-
     public ArrayList<ResourcePoi> getPois() {
         return pois;
+    }
+
+    public void setPois(ArrayList<ResourcePoi> pois) {
+        this.pois = pois;
     }
 
     public ArrayList<TagTerm> getTags() {
@@ -717,5 +710,15 @@ public class Route {
 
     public void setMapsLocalDirectory(String local_directory_map) {
         this.local_directory_map = local_directory_map;
+    }
+
+    public static interface RoutesInterface {
+        public void seCargoListaRoutes(ArrayList<Route> routes);
+
+        public void producidoErrorAlCargarListaRoutes(String error);
+
+        public void seCargoRoute(Route route);
+
+        public void producidoErrorAlCargarRoute(String error);
     }
 }

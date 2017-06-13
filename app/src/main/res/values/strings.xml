@@ -300,6 +300,7 @@ Choisissez votre étape de randonnée ou votre point d'intérêt et télécharge
     <string name="route">Parcour</string>
     <string name="poi">Poi</string>
     <string name="punto_de_interes">Point d\'intérêt</string>
+    <string name="punto_de_direccion">Point directionnel</string>
     <string name="title_activity_guia_naturaleza">GuiaNaturaleza</string>
     <string name="duracion_item_route">Durée :</string>
     <string name="distancia_item_route">Distance :</string>

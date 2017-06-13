@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -21,6 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -45,8 +48,11 @@ public class SplashActivity extends Activity {
     // Coordenadas GPS de Fuerteventura
     double lat = -14.2789;
     double lon = 28.1958;
-    private MainApp app;
+    LocationManager mLocationManager;
     //
+    //
+    private MainApp app;
+
     //
 
     private static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
@@ -141,8 +147,6 @@ public class SplashActivity extends Activity {
                 params);
     }
 
-    //
-
     private static ArrayList<Route> fillRouteList(String response, final MainApp application) {
         Context ctx = application.getApplicationContext();
 
@@ -160,7 +164,7 @@ public class SplashActivity extends Activity {
                     Object recObj = arrayRes.get(i);
                     if (recObj != null) {
                         if (recObj.getClass().getName().equals(JSONObject.class.getName())) {
-                            JSONObject recDic = (JSONObject) recObj;
+                            final JSONObject recDic = (JSONObject) recObj;
 
                             Log.d("JSON Object:", " String: " + recDic.toString());
 
@@ -206,8 +210,8 @@ public class SplashActivity extends Activity {
                                 routeCatTerm.setTid(tid);
                                 routeCatTerm.setName(name);
                                 item.setCategory(routeCatTerm);
-                                if (item.getCategory().getName().equals("PR")) {
-                                    int n = count_PR % 3;
+                                if ("31".equals(item.getCategory().getTid())) {
+                                    int n = count_PR % 5;
                                     switch (n) {
                                         case 0:
                                             item.setColor(ctx.getResources().getColor(R.color.pr1_route));
@@ -218,11 +222,17 @@ public class SplashActivity extends Activity {
                                         case 2:
                                             item.setColor(ctx.getResources().getColor(R.color.pr3_route));
                                             break;
+                                        case 3:
+                                            item.setColor(ctx.getResources().getColor(R.color.pr4_route));
+                                            break;
+                                        case 4:
+                                            item.setColor(ctx.getResources().getColor(R.color.pr5_route));
+                                            break;
                                         default:
                                             break;
                                     }
                                     count_PR++;
-                                } else if (item.getCategory().getName().equals("GR")) {
+                                } else if ("32".equals(item.getCategory().getTid())) {
                                     int n = count_GR % 2;
                                     switch (n) {
                                         case 0:
@@ -235,7 +245,7 @@ public class SplashActivity extends Activity {
                                             break;
                                     }
                                     count_GR++;
-                                } else if (item.getCategory().getName().equals("CR")) {
+                                } else if ("CR".equals(item.getCategory().getTid())) {
                                     item.setColor(ctx.getResources().getColor(R.color.cr1_route));
                                 }
                             }
@@ -498,6 +508,10 @@ public class SplashActivity extends Activity {
 
     }
 
+    //
+
+    //
+
     private static Route fillRoute(String response) {
         Route route = null;
         try {
@@ -709,10 +723,6 @@ public class SplashActivity extends Activity {
         return route;
     }
 
-    //
-
-    //
-
     private static void cargarListaPoisOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt) {
         HashMap<String, String> params = new HashMap<String, String>();
 
@@ -778,7 +788,6 @@ public class SplashActivity extends Activity {
 
     private static ArrayList<Poi> fillPoiList(String response, Application application) {
         Context ctx = application.getApplicationContext();
-
         ArrayList<Poi> listaPois = null;
 
         try {
@@ -884,12 +893,33 @@ public class SplashActivity extends Activity {
         return listaPois;
     }
 
+    //get gps position
+    private Location getLastKnownLocation() {
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_home__activity_splash);
 
         this.app = (MainApp) getApplication();
+
+        Location location = getLastKnownLocation();
+        lon = location.getLongitude();
+        lat = location.getLatitude();
 
         progressBar = (ProgressBar) findViewById(R.id.splash_prograssBar);
         progressBar.setMax(100);

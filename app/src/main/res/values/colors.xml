@@ -22,12 +22,15 @@
 	<color name="progress_bar_end">#ffaab1ae</color>
 	<color name="red_routes">#ffe2001a</color>
 	<color name="blue_routes">#ff004494</color>
-	<color name="gr1_route">#ff004494</color>
-	<color name="gr2_route">#ffe2001a</color>
-	<color name="pr1_route">#fff5883d</color>
-	<color name="pr2_route">#ffddaabb</color>
-	<color name="pr3_route">#fff8ef63</color>
-	<color name="cr1_route">#ff99c7ff</color>
+    <color name="gr2_route">#ffffff</color>
+    <color name="gr1_route">#ffe2001a</color>
+    <color name="pr1_route">#00FF00</color>
+    <color name="pr2_route">#0000FF</color>
+    <color name="pr3_route">#FF7F00</color>
+    <color name="pr4_route">#7F7F7F</color>
+    <color name="pr5_route">#FFFF00</color>
+    <color name="pr6_route">#18ffff</color>
+    <color name="cr1_route">#000205</color>
     <color name="green_routes">#016e01</color>
     <color name="btn_pressed">#fffbc711</color>
 

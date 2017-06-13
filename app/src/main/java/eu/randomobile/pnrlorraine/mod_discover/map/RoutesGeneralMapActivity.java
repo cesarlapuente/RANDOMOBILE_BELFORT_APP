@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -77,23 +76,18 @@ public class RoutesGeneralMapActivity extends Activity implements
 
 	public static final int PARAM_MAPA_GENERAL_MOSTRAR_POIS = 200;
 	public static final int PARAM_MAPA_GENERAL_MOSTRAR_RUTAS = 201;
-
-	private int paramMapaGeneralMostrar;
-
 	MainApp app;
 	ImageMap mImageMap = null;
-	
 	MapView mapa;
 	GraphicsOverlay capaGeometrias;
 	Callout callout;
-
 	Button btnSeleccionarCapaBase;
 	RelativeLayout panelCargando;
 	// Array con los elementos que contendra
 	ArrayList<Route> arrayRoutes = null;
 	// Array con las rutas filtradas
 	ArrayList<Route> arrayFilteredRoutes = null;
-
+	private int paramMapaGeneralMostrar;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -423,7 +417,8 @@ public class RoutesGeneralMapActivity extends Activity implements
 		        //int color = Color.BLUE;
 		        
 		        // Definir el color de la ruta
-		        int color = route.getColorForMap(this);
+				//int color = route.getColorForMap(this);
+				int color = route.getColor();
 				Graphic gr = new Graphic(polylineProyectada, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 6));
 				capaGeometrias.getGraphics().add(gr);
 				
@@ -761,15 +756,23 @@ public class RoutesGeneralMapActivity extends Activity implements
 		this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
 	}
 
-	
-	
-	
-	
+	@Override
+	public void seCargoRoute(Route route) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void producidoErrorAlCargarRoute(String error) {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
 	 * Location listener propio
-	 * 
+	 *
 	 * @author
-	 * 
+	 *
 	 */
 	private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
@@ -798,20 +801,6 @@ public class RoutesGeneralMapActivity extends Activity implements
 			if (locationChangedEvent.getLocation() == null)
 				return;
 		}
-	}
-	
-	
-
-	@Override
-	public void seCargoRoute(Route route) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void producidoErrorAlCargarRoute(String error) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

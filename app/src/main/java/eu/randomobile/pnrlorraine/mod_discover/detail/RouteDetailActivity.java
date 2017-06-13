@@ -185,7 +185,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             paramTitleRoute = b.getString(PARAM_KEY_TITLE_ROUTE);
             paramCategoryRoute = b.getString(PARAM_KEY_CATEGORY_ROUTE);
             paramMapUrl = b.getString(PARAM_KEY_MAP_URL);
-            paramColorRoute = Integer.valueOf(b.getString(PARAM_KEY_COLOR_ROUTE));
+            paramColorRoute = route.getColor();
         }
 
         paramType = app.DRUPAL_TYPE_ROUTE;
@@ -1244,6 +1244,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                             num = "0" + number;
                         }
                         sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_" + num, "drawable", getPackageName())));
+                        claseNombre = this.getResources().getString(R.string.punto_de_direccion);
                     } catch (Exception e) {
                         sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
                     }
