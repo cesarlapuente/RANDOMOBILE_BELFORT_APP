@@ -1,8 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_discover.detail;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -53,6 +50,9 @@ import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_checkin.CheckinActivity;
@@ -74,10 +74,8 @@ import eu.randomobile.pnrlorraine.mod_multi_viewers.imgs.GridImagesActivity;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.vids.ListVideosActivity;
 import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
 import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
-import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute.RoutesModeOfflineInterface;
 import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
-import eu.randomobile.pnrlorraine.mod_discover.detail.RouteDetailActivity;
 
 
 public class PoiDetailActivity extends Activity implements PoisInterface, PoisModeOfflineInterface, LocationListener, OnTaskCompletedInterface {
@@ -99,11 +97,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	// Para el tratamiento del menu
 	ImageMap mImageMap = null;
 	Poi miPoi;
-	private MapView mapa;
 	Callout callout;
 	GraphicsOverlay capaGeometrias;
 	TextView txtTitulo;
-
 	ImageView imageViewPrincipal;
 	RelativeLayout panelImgViewPrincipal;
 	ImageView imgViewCategoria;
@@ -117,11 +113,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	TextView lblDescripcion;
 	TextView lblSectionValoracion;
 	ImageView imgViewValoracion;
-
 	// RelativeLayout layoutVerEnMapa;
 	ImageButton btnValorar;
 	Button btnCompartir;
-
 	ImageButton btnImgs;
 	ImageButton btnVids;
 	ImageButton btnMapa;
@@ -129,12 +123,12 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	Button btnMenuMasTelecarga;
 	Button btnMenuMasValorar;
 	Button btnMenuMasCompartir;
-
 	RelativeLayout panelCargando;
 	RelativeLayout panelCargandoPoi;
 	GeoPoint ultimaUbicacion;
 	GeoPoint ubicacionPunto;
 	ProgressBar pb;
+	private MapView mapa;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -685,8 +679,8 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		//mapa.setScale(scale);
 
 		//mapa.centerAt(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), false);
-		mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
-		//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+		//mapa.setViewpointAsync(new Viewpoint(gp.getLongitude(), gp.getLatitude(), 10000000));
+		mapa.setViewpointCenterAsync(punto, 10000);
 	}
 
 	private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon) {

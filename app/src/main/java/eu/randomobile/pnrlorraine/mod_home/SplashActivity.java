@@ -298,6 +298,7 @@ public class SplashActivity extends Activity {
 
                                         String poi_nid = objPOI.getString("nid");
                                         String poi_title = objPOI.getString("title");
+                                        String poi_body = objPOI.getString("body");
 
                                         Log.d("--------------------", " ------------------------------------------------------------ ");
 
@@ -307,6 +308,7 @@ public class SplashActivity extends Activity {
                                         ResourcePoi poi = new ResourcePoi();
                                         poi.setNid(Integer.parseInt(poi_nid));
                                         poi.setTitle(poi_title);
+                                        poi.setBody(poi_body);
 
                                         arrayTemp.add(poi);
 

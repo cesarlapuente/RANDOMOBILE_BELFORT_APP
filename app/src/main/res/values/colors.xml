@@ -22,7 +22,7 @@
 	<color name="progress_bar_end">#ffaab1ae</color>
 	<color name="red_routes">#ffe2001a</color>
 	<color name="blue_routes">#ff004494</color>
-    <color name="gr2_route">#ffffff</color>
+    <color name="gr2_route">#FFFF00</color>
     <color name="gr1_route">#ffe2001a</color>
     <color name="pr1_route">#00FF00</color>
     <color name="pr2_route">#0000FF</color>

@@ -422,13 +422,16 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                                             callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
                                             View contenidoCallout = null;
 
-                                            if (nid != null) {
+                                            if (!"Point directionnel".equals(cat)) {
                                                 if (!clase.equals(Route.class.getName()))
                                                     contenidoCallout = getViewForCallout(nombre,
                                                             clase, cat, nid);
-                                            }
-                                            else
+                                            } else {
+                                                if (callout != null && callout.isShowing()) {
+                                                    callout.dismiss();
+                                                }
                                                 dialogPoiDescription(nombre, descripcion);
+                                            }
 
                                             if (contenidoCallout != null) {
                                                 callout.setContent(contenidoCallout);
@@ -1366,7 +1369,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
             final HashMap<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("nombre", pois.get(j).getTitle());
-            //attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()));
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody(), Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()).toString());
+            }
             attrs.put("nid", Integer.toString(pois.get(j).getNid()));
             Log.d("EL id del poi es: ", Integer.toString(pois.get(j).getNid()));
             attrs.put("clase", Poi.class.getName());

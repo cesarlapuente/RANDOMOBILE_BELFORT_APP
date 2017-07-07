@@ -5,31 +5,32 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:background="@color/white">
-	
+
 <RelativeLayout
         android:id="@+id/r_map_routelist"
         android:layout_width="fill_parent"
         android:layout_height="130dp"
         android:layout_alignParentTop="true" >
-    	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap 
-	    	android:id="@+id/map_routeList"
-    		android:layout_width="fill_parent" 
-    		android:layout_height="130dp"
-    		alborgis:map="lista_rutas"
-        	alborgis:maxSizeFactor="1.5"
-        	alborgis:scaleFromOriginal="true"
-        	alborgis:fitImageToScreen="false"/>   
-</RelativeLayout>    
+
+	<eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap
+		android:id="@+id/map_routeList"
+		android:layout_width="match_parent"
+		android:layout_height="130dp"
+		alborgis:fitImageToScreen="false"
+		alborgis:map="lista_rutas"
+		alborgis:maxSizeFactor="1.5"
+		alborgis:scaleFromOriginal="true" />
+</RelativeLayout>
     <ListView
    		android:id="@+id/listaRoutes"
    		android:layout_width="fill_parent"
    		android:layout_height="wrap_content"
-   		android:layout_below="@+id/r_map_routelist"
    		android:layout_above="@+id/footer"
-   		android:scrollbars="none"
+		android:layout_below="@+id/r_map_routelist"
    		android:cacheColorHint="#00000000"
    		android:divider="@color/blue_route_value"
-        android:dividerHeight="2dp">
+		android:dividerHeight="2dp"
+		android:scrollbars="none">
    </ListView>
    
     
