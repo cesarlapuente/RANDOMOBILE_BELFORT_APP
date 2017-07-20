@@ -38,7 +38,7 @@ android {
 dependencies {
     compile files('libs/android-async-http-1.4.2.jar')
     compile files('libs/annotations-12.0.jar')
-    compile 'com.esri.arcgisruntime:arcgis-android:100.0.0'
+    compile 'com.esri.arcgisruntime:arcgis-android:100.1.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.google.android.gms:play-services-appindexing:9.8.0'

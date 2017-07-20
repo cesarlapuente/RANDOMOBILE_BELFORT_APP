@@ -326,11 +326,13 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
                 Route routePulsado = null;
 
-                if (arrayFilteredRoutes != null)
+                routePulsado = routeAdaptador.getItem(index);
+
+                /*if (arrayFilteredRoutes != null)
                     routePulsado = arrayFilteredRoutes.get(index);
 
                 else
-                    routePulsado = arrayRoutes.get(index);
+                    routePulsado = arrayRoutes.get(index);*/
 
                 app.setRoutesList(arrayRoutes);
 
@@ -631,8 +633,8 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             }
         }
 
-        public Object getItem(int position) {
-            return position;
+        public Route getItem(int position) {
+            return listaItems.get(position);
         }
 
         public long getItemId(int position) {

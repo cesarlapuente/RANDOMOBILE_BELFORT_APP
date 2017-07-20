@@ -104,9 +104,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 		Bundle b = getIntent().getExtras();
 		if (b != null) {
 			setParamMapaGeneralMostrar(b.getInt(PARAM_KEY_MOSTRAR));
-		}
-
-		// Capturar controles
+		}        // Capturar controles
 		this.capturarControles();
 
 		// Configurar formulario

@@ -46,8 +46,8 @@ public class SplashActivity extends Activity {
     private static boolean splashActivado = true;
     private static int loadedComponents = 0;
     // Coordenadas GPS de Fuerteventura
-    double lat = -14.2789;
-    double lon = 28.1958;
+    double lat = 47.6333;
+    double lon = 6.8667;
     LocationManager mLocationManager;
     //
     //
@@ -897,7 +897,6 @@ public class SplashActivity extends Activity {
 
     //get gps position
     private Location getLastKnownLocation() {
-        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
@@ -908,16 +907,67 @@ public class SplashActivity extends Activity {
             if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
                 bestLocation = l;
             }
-        }
+            }
         return bestLocation;
+    }
+
+    private void createGpsDisabledAlert(String message) {
+        Log.e("thib", "createGpsDisabledAlert: ");
+        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
+        localBuilder
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Activer GPS ",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                showGpsOptions();
+                            }
+                        }
+                );
+        localBuilder.setNegativeButton("Ne pas l'activer ",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        paramDialogInterface.cancel();
+                        finish();
+                    }
+                }
+        );
+        localBuilder.create().show();
+    }
+
+    private void showGpsOptions() {
+        startActivityForResult(new Intent("android.settings.LOCATION_SOURCE_SETTINGS"), 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.e("thib", "onActivityResult:  enable");
+            onCreateBis();
+        } else {
+            Log.e("thib", "onActivityResult:  disable");
+            createGpsDisabledAlert("Le GPS n'est toujours pas actif, voulez-vous l'activer ?");
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("test", "splash");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_home__activity_splash);
 
         this.app = (MainApp) getApplication();
+
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            createGpsDisabledAlert("L'application requiert le GPS, voulez-vous l'activer ?");
+        } else {
+            onCreateBis();
+        }
+    }
+
+    private void onCreateBis() {
 
         Location location = getLastKnownLocation();
         lon = location.getLongitude();
@@ -969,6 +1019,8 @@ public class SplashActivity extends Activity {
 
     protected void onResume() {
         super.onResume();
+        Log.e("thib", "onResume: ");
+        //this.onRestart();
 
         splashActivado = true;
 
