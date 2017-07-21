@@ -18,6 +18,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -38,6 +39,13 @@ import eu.randomobile.pnrlorraine.mod_global.model.Vote;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.PoiCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteDifficultyTerm;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiCategoryDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RessourceFileDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RessourceLinkDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RouteCategoryDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RouteDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.utils.JSONManager;
 
 public class SplashActivity extends Activity {
@@ -54,6 +62,24 @@ public class SplashActivity extends Activity {
     private MainApp app;
 
     //
+    private PoiDAO poiDAO;
+    private PoiCategoryDAO poiCategoryDAO;
+    private RessourceFileDAO ressourceFileDAO;
+
+    //
+
+    //
+    private RessourceLinkDAO ressourceLinkDAO;
+    private RouteCategoryDAO RessourceLink;
+    private RouteDAO routeDAO;
+    private VoteDAO voteDAO;
+    private List<Poi> pois;
+    private List<PoiCategoryTerm> poiCategoryTerms;
+    private List<ResourceFile> resourceFiles;
+    private List<ResourceLink> resourceLinks;
+    private List<RouteCategoryTerm> routeCategoryTerms;
+    private List<Route> routes;
+    private List<Vote> votes;
 
     private static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
         final HashMap<String, String> params = new HashMap<String, String>();
@@ -510,10 +536,6 @@ public class SplashActivity extends Activity {
 
     }
 
-    //
-
-    //
-
     private static Route fillRoute(String response) {
         Route route = null;
         try {
@@ -967,6 +989,117 @@ public class SplashActivity extends Activity {
         }
     }
 
+    private void downloadData() {
+
+        routes = new ArrayList<>();
+        routeCategoryTerms = new ArrayList<>();
+        resourceFiles = new ArrayList<>();
+        resourceLinks = new ArrayList<>();
+        poiCategoryTerms = new ArrayList<>();
+        pois = new ArrayList<>();
+        votes = new ArrayList<>();
+
+        HashMap<String, String> params = new HashMap<String, String>();
+
+        /*params.put("nid", "124");
+
+        app.clienteDrupal.customMethodCallPost("route/get_item", new AsyncHttpResponseHandler() {
+            public void onSuccess(String response) {
+                String[] t = response.split(",");
+                for (String s : t){
+                    Log.e("route_item", s);
+                }
+            }
+
+            public void onFailure(Throwable error) {
+                Log.d("cargarRoute():", error.toString());
+            }
+        }, params);*/
+
+        params = new HashMap<>();
+
+        params.put("lat", String.valueOf(lat));
+        params.put("lon", String.valueOf(lon));
+
+        final MainApp app = (MainApp) getApplication();
+
+        app.clienteDrupal.customMethodCallPost("route/get_list_distance", new AsyncHttpResponseHandler() {
+            public void onSuccess(String response) {
+
+                try {
+                    JSONArray arrayRes = new JSONArray(response);
+
+                    for (int i = 0; i < arrayRes.length(); i++) {
+
+                        JSONObject r = arrayRes.getJSONObject(i);
+                        Route route = new Route();
+
+                        String nid = r.optString("nid", "");
+
+                        if (!"".equals(nid)) {
+                            route.setNid(nid);
+                            route.setTitle(r.optString("title"));
+                            JSONObject cat = r.getJSONObject("cat");
+                            if (cat != null)
+                                route.setCategory(new RouteCategoryTerm(cat.optString("tid", ""),
+                                        cat.optString("title"), cat.optString("image", "")));
+                            route.setBody(r.optString("body", ""));
+                            route.setDifficulty_tid(r.optString("difficulty", ""));
+                            route.setDistanceMeters(r.optDouble("distance", -1L));
+                            route.setRouteLengthMeters(r.optDouble("routedistance", -1L));
+                            route.setEstimatedTime(r.optDouble("time", -1L));
+                            route.setSlope(r.optDouble("alt_max"));
+                            route.setMainImage(r.optString("image"));
+                            route.
+
+                        }
+
+                        Log.e("++", "---------------------");
+                        JSONObject object = arrayRes.getJSONObject(i);
+                        String[] t = object.toString().split(",");
+                        for (String s : t) {
+                            Log.e("++", s);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                /*String[] t = response.split(",");
+                for (String s : t){
+                    Log.e("route_list_distance", s);
+                }*/
+
+            }
+
+            public void onFailure(Throwable error) {
+
+            }
+        }, params);
+
+
+        /*Log.e("---", "---------------------------------------------------------------------------------------------------");
+
+        params = new HashMap<String, String>();
+
+        params.put("lat", String.valueOf(lat));
+        params.put("lon", String.valueOf(lon));
+
+        app.clienteDrupal.customMethodCallPost("poi/get_list_distance", new AsyncHttpResponseHandler() {
+            public void onSuccess(String response) {
+                String[] t = response.split(",");
+                for (String s : t){
+                    Log.e("poi_list_distance", s);
+                }
+            }
+
+            public void onFailure(Throwable error) {
+
+            }
+        }, params);*/
+    }
+
     private void onCreateBis() {
 
         Location location = getLastKnownLocation();
@@ -977,10 +1110,12 @@ public class SplashActivity extends Activity {
         progressBar.setMax(100);
 
         if (app.getNetStatus() != 0) {
-            updateLocalDatabase_Routes();
+            Log.e("+++", "+++++++++++++++++++");
+            downloadData();
+            //updateLocalDatabase_Routes();
             //loadMainActivity();
 
-        } else {
+        } /*else {
             try {
                 app.setRoutesList(app.getDBHandler().getRouteList());
 
@@ -1014,7 +1149,7 @@ public class SplashActivity extends Activity {
             });
 
             builder.show();
-        }
+        }*/
     }
 
     protected void onResume() {
