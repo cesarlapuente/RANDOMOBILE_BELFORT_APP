@@ -85,6 +85,11 @@ public class SplashActivity extends Activity {
         app.clienteDrupal.customMethodCallPost("route/get_list_distance", new AsyncHttpResponseHandler() {
                     public void onSuccess(String response) {
 
+                        String t[] = response.split(",");
+                        for (String s : t) {
+                            Log.e("*-+", s);
+                        }
+
                         ArrayList<Route> listaRutas = null;
                         Log.d("ROUTE: ", response);
 

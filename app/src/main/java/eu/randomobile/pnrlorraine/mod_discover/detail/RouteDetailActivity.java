@@ -1370,7 +1370,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             final HashMap<String, Object> attrs = new HashMap<String, Object>();
             attrs.put("nombre", pois.get(j).getTitle());
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody(), Html.FROM_HTML_MODE_LEGACY));
+                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody(), Html.FROM_HTML_MODE_LEGACY).toString());
             } else {
                 attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()).toString());
             }
