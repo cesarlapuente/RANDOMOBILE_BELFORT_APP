@@ -1035,12 +1035,20 @@ public class SplashActivity extends Activity {
 
                     for (int i = 0; i < arrayRes.length(); i++) {
 
+                        Log.e("123", String.valueOf(i));
+
+                        Log.e("###", "1");
+
                         JSONObject r = arrayRes.getJSONObject(i);
+                        Log.e("###", "2");
                         Route route = new Route();
+                        Log.e("###", "3");
 
                         String nid = r.optString("nid", "");
+                        Log.e("###", "4");
 
                         if (!"".equals(nid)) {
+                            Log.e("###", "5");
                             route.setNid(nid);
                             route.setTitle(r.optString("title"));
                             JSONObject cat = r.getJSONObject("cat");
