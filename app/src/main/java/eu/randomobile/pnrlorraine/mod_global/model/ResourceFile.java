@@ -1,14 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-
-import org.json.JSONObject;
-
-import eu.randomobile.pnrlorraine.MainApp;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,80 +8,72 @@ import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.HashMap;
+
+import eu.randomobile.pnrlorraine.MainApp;
+
 public class ResourceFile extends Resource implements Parcelable {
 
+	public static final Parcelable.Creator<ResourceFile> CREATOR = new Parcelable.Creator<ResourceFile>() {
+
+		public ResourceFile createFromParcel(Parcel in) {
+			ResourceFile complaint = new ResourceFile();
+			complaint.setFid(in.readString());
+			complaint.setFileName(in.readString());
+			complaint.setFileUrl(in.readString());
+			complaint.setFileMime(in.readString());
+			complaint.setFileType(in.readString());
+			complaint.setFileBody(in.readString());
+			complaint.setFileTitle(in.readString());
+			complaint.setCopyright(in.readString());
+			return complaint;
+		}
+
+		@Override
+		public ResourceFile[] newArray(int size) {
+			return new ResourceFile[size];
+		}
+	};
+	// Interface para comunicarse con las llamadas asincronas
+	public static ResourceFileInterface resourceFileInterface;
 	private String fid;
 	private String fileName;
 	private String fileUrl;
 	private String fileBody;
 	private String fileMime;
 	private String fileType;
+
+	// modif thib
 	private String fileTitle;
 	private String copyright;
 
-	public String getFid() {
-		return fid;
+	public ResourceFile() {
 	}
 
-	public void setFid(String fid) {
+	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileMime, String fileType, String fileTitle, String copyright) {
 		this.fid = fid;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
 		this.fileName = fileName;
-	}
-
-	public String getFileMime() {
-		return fileMime;
-	}
-
-	public void setFileMime(String fileMime) {
+		this.fileUrl = fileUrl;
+		this.fileBody = fileBody;
 		this.fileMime = fileMime;
-	}
-
-	public String getFileType() {
-		return fileType;
-	}
-
-	public void setFileType(String fileType) {
 		this.fileType = fileType;
-	}
-
-	public String getFileTitle() {
-		return fileTitle;
-	}
-
-	public void setFileTitle(String fileTitle) {
 		this.fileTitle = fileTitle;
-	}
-
-	public String getCopyright() {
-		return copyright;
-	}
-
-	public void setCopyright(String copyright) {
 		this.copyright = copyright;
 	}
 
-	public String getFileBody() {
-		return fileBody;
-	}
-
-	public void setFileBody(String fileBody) {
+	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileTitle, String copyright) {
+		this.fid = fid;
+		this.fileName = fileName;
+		this.fileUrl = fileUrl;
 		this.fileBody = fileBody;
-	}
-
-	// Interface para comunicarse con las llamadas asincronas
-	public static ResourceFileInterface resourceFileInterface;
-
-	public static interface ResourceFileInterface {
-		public void seSubioFichero(String fid, String uri);
-
-		public void producidoErrorAlSubirFichero(String error);
+		this.fileTitle = fileTitle;
+		this.copyright = copyright;
 	}
 
 	public static void fileUpload(Application application,
@@ -170,6 +153,62 @@ public class ResourceFile extends Resource implements Parcelable {
 		return b64;
 	}
 
+	public String getFid() {
+		return fid;
+	}
+
+	public void setFid(String fid) {
+		this.fid = fid;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getFileMime() {
+		return fileMime;
+	}
+
+	public void setFileMime(String fileMime) {
+		this.fileMime = fileMime;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public String getFileTitle() {
+		return fileTitle;
+	}
+
+	public void setFileTitle(String fileTitle) {
+		this.fileTitle = fileTitle;
+	}
+
+	public String getCopyright() {
+		return copyright;
+	}
+
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
+	}
+
+	public String getFileBody() {
+		return fileBody;
+	}
+
+	public void setFileBody(String fileBody) {
+		this.fileBody = fileBody;
+	}
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -196,24 +235,9 @@ public class ResourceFile extends Resource implements Parcelable {
 		this.fileUrl = fileUrl;
 	}
 
-	public static final Parcelable.Creator<ResourceFile> CREATOR = new Parcelable.Creator<ResourceFile>() {
+	public static interface ResourceFileInterface {
+		public void seSubioFichero(String fid, String uri);
 
-		public ResourceFile createFromParcel(Parcel in) {
-			ResourceFile complaint = new ResourceFile();
-			complaint.setFid(in.readString());
-			complaint.setFileName(in.readString());
-			complaint.setFileUrl(in.readString());
-			complaint.setFileMime(in.readString());
-			complaint.setFileType(in.readString());
-			complaint.setFileBody(in.readString());
-			complaint.setFileTitle(in.readString());
-			complaint.setCopyright(in.readString());
-			return complaint;
-		}
-
-		@Override
-		public ResourceFile[] newArray(int size) {
-			return new ResourceFile[size];
-		}
-	};
+		public void producidoErrorAlSubirFichero(String error);
+	}
 }

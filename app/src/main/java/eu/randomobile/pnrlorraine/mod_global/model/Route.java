@@ -54,9 +54,9 @@ public class Route {
         this.nid = ROUTE_NID;
         this.title = ROUTE_TITLE;
         this.body = ROUTE_BODY;
-
-
     }
+
+    // modif thib
 
     public static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
 
@@ -501,6 +501,10 @@ public class Route {
                     }
                 }, params);
 
+    }
+
+    public String toString() {
+        return "nid : " + getNid();
     }
 
     public int getColorForMap(Context ctx) {

@@ -999,6 +999,8 @@ public class SplashActivity extends Activity {
         pois = new ArrayList<>();
         votes = new ArrayList<>();
 
+        routeDAO = new RouteDAO(getApplicationContext());
+
         HashMap<String, String> params = new HashMap<String, String>();
 
         /*params.put("nid", "124");
@@ -1029,6 +1031,8 @@ public class SplashActivity extends Activity {
                 try {
                     JSONArray arrayRes = new JSONArray(response);
 
+                    Log.e("nb route", String.valueOf(arrayRes.length()));
+
                     for (int i = 0; i < arrayRes.length(); i++) {
 
                         JSONObject r = arrayRes.getJSONObject(i);
@@ -1040,30 +1044,110 @@ public class SplashActivity extends Activity {
                             route.setNid(nid);
                             route.setTitle(r.optString("title"));
                             JSONObject cat = r.getJSONObject("cat");
-                            if (cat != null)
-                                route.setCategory(new RouteCategoryTerm(cat.optString("tid", ""),
-                                        cat.optString("title"), cat.optString("image", "")));
-                            route.setBody(r.optString("body", ""));
+                            if (cat != null) {
+                                RouteCategoryTerm rct = new RouteCategoryTerm(cat.optString("tid", ""),
+                                        cat.optString("title"), cat.optString("image", ""));
+                                route.setBody(r.optString("body", ""));
+                                route.setCategory(rct);
+                                routeCategoryTerms.add(rct);
+                            }
+
                             route.setDifficulty_tid(r.optString("difficulty", ""));
                             route.setDistanceMeters(r.optDouble("distance", -1L));
                             route.setRouteLengthMeters(r.optDouble("routedistance", -1L));
                             route.setEstimatedTime(r.optDouble("time", -1L));
                             route.setSlope(r.optDouble("alt_max"));
                             route.setMainImage(r.optString("image"));
-                            route.
+                            route.setTrack(r.optString("geom", ""));
+                            route.setUrlMap(r.optString("map_tpk", ""));
+
+                            JSONArray images = r.optJSONArray("images");
+                            if (images != null) {
+                                ArrayList<ResourceFile> imagesRoute = new ArrayList<>();
+                                for (int j = 0; j < images.length(); j++) {
+                                    JSONObject im = images.getJSONObject(i);
+                                    resourceFiles.add(generateRessourceFile(im));
+                                    imagesRoute.add(generateRessourceFile(im));
+                                }
+                                route.setImages(imagesRoute);
+                            }
+
+                            JSONArray videos = r.optJSONArray("videos");
+                            if (videos != null) {
+                                ArrayList<ResourceFile> videoRoute = new ArrayList<>();
+                                for (int j = 0; j < images.length(); j++) {
+                                    JSONObject vi = images.getJSONObject(i);
+                                    resourceFiles.add(generateRessourceFile(vi));
+                                    videoRoute.add(generateRessourceFile(vi));
+                                }
+                                route.setVideos(videoRoute);
+                            } else
+                                route.setVideos(new ArrayList<ResourceFile>());
+
+                            JSONArray audios = r.optJSONArray("audios");
+                            if (audios != null) {
+                                ArrayList<ResourceFile> audiosRoute = new ArrayList<>();
+                                for (int j = 0; j < audios.length(); j++) {
+                                    JSONObject im = audios.getJSONObject(i);
+                                    resourceFiles.add(generateRessourceFile(im));
+                                    audiosRoute.add(generateRessourceFile(im));
+                                }
+                                route.setAudios(audiosRoute);
+                            } else
+                                route.setAudios(new ArrayList<ResourceFile>());
+
+                            JSONArray links = r.optJSONArray("links");
+                            if (links != null) {
+                                ArrayList<ResourceLink> linksRoute = new ArrayList<>();
+                                for (int j = 0; j < links.length(); j++) {
+                                    JSONObject li = links.getJSONObject(i);
+                                    ResourceLink rl = new ResourceLink(li.optString("url"), li.optString("title"));
+                                    resourceLinks.add(rl);
+                                    linksRoute.add(rl);
+                                }
+                                route.setEnlaces(linksRoute);
+                            } else
+                                route.setEnlaces(new ArrayList<ResourceLink>());
+
+                            JSONObject v = r.optJSONObject("rate");
+                            if (votes != null) {
+                                Vote vote = new Vote(v.optString("uid"),
+                                        v.optInt("count", 0), v.optInt("resut", 0));
+
+                                route.setVote(vote);
+                            } else {
+                                route.setVote(new Vote());
+                            }
+
+                            route.setPois(new ArrayList<ResourcePoi>());
+
+                            routes.add(route);
+
+                            Log.e("##", "boucle " + i + " " + arrayRes.length());
 
                         }
 
                         Log.e("++", "---------------------");
                         JSONObject object = arrayRes.getJSONObject(i);
-                        String[] t = object.toString().split(",");
+                        /*String[] t = object.toString().split(",");
                         for (String s : t) {
                             Log.e("++", s);
-                        }
+                        }*/
                     }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+
+                Log.e("*****", "*********************** " + routes.size());
+
+                Log.e("route", routes.toString());
+
+                routeDAO.insertListRoute(routes);
+                List<Route> r = routeDAO.getAllRoute();
+                for (Route rt : r) {
+                    Log.e("-->", rt.toString());
                 }
 
                 /*String[] t = response.split(",");
@@ -1077,6 +1161,8 @@ public class SplashActivity extends Activity {
 
             }
         }, params);
+
+
 
 
         /*Log.e("---", "---------------------------------------------------------------------------------------------------");
@@ -1098,6 +1184,14 @@ public class SplashActivity extends Activity {
 
             }
         }, params);*/
+    }
+
+    private ResourceFile generateRessourceFile(JSONObject o) {
+        return new ResourceFile(
+                o.optString("fid"), o.optString("name"),
+                o.optString("url"), o.optString("body"),
+                o.optString("title"), o.optString("copyright")
+        );
     }
 
     private void onCreateBis() {
