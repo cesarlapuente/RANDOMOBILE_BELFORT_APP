@@ -12,8 +12,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourceLink;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
-import eu.randomobile.pnrlorraine.mod_global.model.Vote;
-import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
 
 /**
  * RandomobileBelfort-Android
@@ -32,11 +30,22 @@ public class RouteDAO {
      */
     private SQLiteDatabase db;
 
+    private RessourceLinkDAO linkDAO;
+    private RessourceFileDAO fileDAO;
+    private PoiDAO poiDAO;
+    private RouteCategoryDAO categoryDAO;
+    private VoteDAO voteDAO;
+
     /**
      * Constructor of the DAO
      */
     public RouteDAO(Context context) {
         mDbHandler = new DbHandler(context);
+        //linkDAO = new RessourceLinkDAO(context);
+        //fileDAO = new RessourceFileDAO(context);
+        poiDAO = new PoiDAO(context);
+        //categoryDAO = new RouteCategoryDAO(context);
+//        voteDAO = new VoteDAO(context);
     }
 
     /**
@@ -51,6 +60,7 @@ public class RouteDAO {
 
         for (ResourceFile rf : list) {
             string.append(rf.getFid());
+            string.append(",");
         }
 
         return string.toString();
@@ -61,6 +71,7 @@ public class RouteDAO {
 
         for (ResourceLink rf : list) {
             string.append(rf.getTitle());
+            string.append(",");
         }
 
         return string.toString();
@@ -77,6 +88,7 @@ public class RouteDAO {
 
             for (ResourcePoi rp : r.getPois()) {
                 pois.append(String.valueOf(rp.getNid()));
+                pois.append(",");
             }
 
 
@@ -145,23 +157,22 @@ public class RouteDAO {
             Route r = new Route();
             r.setNid(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_NID)));
             r.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_TITLE)));
-            r.setCategory(null);
             r.setBody(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_BODY)));
             r.setDifficulty_tid(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_DIFFICULTY)));
             r.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_DISTANCE)));
-            r.setTrack("");
+            r.setTrack(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_GEOM)));
             r.setRouteLengthMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE)));
             r.setEstimatedTime(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_TIME)));
-            r.setPois(new ArrayList<ResourcePoi>());
-            r.setCategory(new RouteCategoryTerm());
-            r.setVote(new Vote());
+            r.setPois(poiDAO.getResourcePois(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_POIS))));
+            r.setCategory(RouteCategoryDAO.getRouteCategoryStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)), db));
+            r.setVote(VoteDAO.getVoteStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_RATE)), db));
             r.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGE)));
-            r.setImages(new ArrayList<ResourceFile>());
+            r.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGES)), db));
             r.setUrlMap(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_MAP)));
             r.setSlope(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_SLOPE)));
-            r.setVideos(new ArrayList<ResourceFile>());
-            r.setAudios(new ArrayList<ResourceFile>());
-            r.setEnlaces(new ArrayList<ResourceLink>());
+            r.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_VIDEO)), db));
+            r.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_AUDIOS)), db));
+            r.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ENLACE)), db));
 
             routes.add(r);
         }

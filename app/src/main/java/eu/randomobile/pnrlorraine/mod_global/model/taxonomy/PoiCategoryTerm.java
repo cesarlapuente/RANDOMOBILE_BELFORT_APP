@@ -1,28 +1,31 @@
 package eu.randomobile.pnrlorraine.mod_global.model.taxonomy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.Application;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import eu.randomobile.pnrlorraine.MainApp;
 
 @SuppressWarnings("serial")
 public class PoiCategoryTerm extends Term implements Serializable {
-    private String icon;
-
     public static PoiCategoriesInterface poiCategoriesInterface;
 
-    public static interface PoiCategoriesInterface {
-        public void seCargoListaCategoriasPois(ArrayList<PoiCategoryTerm> pois);
-        public void producidoErrorAlCargarListaCategoriasPois(String error);
+    // modif thib
+    private String icon;
+
+    public PoiCategoryTerm(String tid, String name) {
+        super(tid, name, "");
+    }
+
+    public PoiCategoryTerm() {
     }
 
     public static void cargarListaCategoriasPois(Application application) {
@@ -98,11 +101,22 @@ public class PoiCategoryTerm extends Term implements Serializable {
         Log.d("PoiCategoryTerm sais:", " <----------> Salida detectada <---------->");
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     public String getIcon() {
         return icon;
     }
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public static interface PoiCategoriesInterface {
+        public void seCargoListaCategoriasPois(ArrayList<PoiCategoryTerm> pois);
+
+        public void producidoErrorAlCargarListaCategoriasPois(String error);
     }
 }

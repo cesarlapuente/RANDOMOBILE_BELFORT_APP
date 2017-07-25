@@ -5,15 +5,39 @@ import android.os.Parcelable;
 
 
 public class GeoPoint implements Parcelable {
-	private double latitude;
+    public static final Parcelable.Creator<GeoPoint> CREATOR = new Parcelable.Creator<GeoPoint>() {
+
+        public GeoPoint createFromParcel(Parcel in) {
+            GeoPoint complaint = new GeoPoint();
+            complaint.setLatitude(in.readDouble());
+            complaint.setLongitude(in.readDouble());
+            complaint.setAltitude(in.readDouble());
+            return complaint;
+        }
+
+        @Override
+        public GeoPoint[] newArray(int size) {
+            return new GeoPoint[size];
+        }
+    };
+    private double latitude;
 	private double longitude;
-	private double altitude;
-	
-	
-	public static float calculateDistance(GeoPoint gp1, GeoPoint gp2){
+
+    //modif thib
+    private double altitude;
+
+    public GeoPoint(double latitude, double longitude, double altitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
+    }
+
+    public GeoPoint() {
+    }
+
+    public static float calculateDistance(GeoPoint gp1, GeoPoint gp2){
 		return GeoPoint.calculateDistance( (float)gp1.getLatitude(), (float)gp2.getLatitude(), (float)gp1.getLongitude(), (float)gp2.getLongitude());
 	}
-	
 	
 	public static float calculateDistance(float lat1, float lat2, float lon1, float lon2){
 		double radioTierra = 3958.75;
@@ -37,28 +61,32 @@ public class GeoPoint implements Parcelable {
 	    int meterConversion = 1609;
 	    return (float) (dist * meterConversion);
 	}
-	
+
 	public double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(double latitude) {
+
+    public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
-	public double getLongitude() {
+
+    public double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(double longitude) {
+
+    public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	public double getAltitude() {
+
+    public double getAltitude() {
 		return altitude;
 	}
-	public void setAltitude(double altitude) {
+
+    public void setAltitude(double altitude) {
 		this.altitude = altitude;
 	}
-	
-	
-	@Override
+
+    @Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -70,23 +98,6 @@ public class GeoPoint implements Parcelable {
 		dest.writeDouble(longitude);
 		dest.writeDouble(altitude);
 	}
-
-
-	public static final Parcelable.Creator<GeoPoint> CREATOR = new Parcelable.Creator<GeoPoint>() {
-
-		public GeoPoint createFromParcel(Parcel in) {
-			GeoPoint complaint = new GeoPoint();
-			complaint.setLatitude(in.readDouble());
-			complaint.setLongitude(in.readDouble());
-			complaint.setAltitude(in.readDouble());
-			return complaint;
-		}
-
-		@Override
-		public GeoPoint[] newArray(int size) {
-			return new GeoPoint[size];
-		}
-	};
 	
 	
 	

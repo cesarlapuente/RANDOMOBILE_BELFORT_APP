@@ -2,6 +2,7 @@ package eu.randomobile.pnrlorraine.mod_offline.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
@@ -32,6 +33,39 @@ public class VoteDAO {
         mDbHandler = new DbHandler(context);
     }
 
+    static public Vote getVoteStatic(String id, SQLiteDatabase dbin) {
+        Vote v = new Vote();
+        SQLiteDatabase db = dbin;
+
+        String[] projection = {
+                VoteContract.VoteEntry.COLUM_NAME_NUMVOTE,
+                VoteContract.VoteEntry.COLUM_NAME_VALUE
+        };
+        String selection = VoteContract.VoteEntry._ID + " = ?";
+        String[] arg = {id};
+
+        Cursor cursor = db.query(
+                VoteContract.VoteEntry.TABLE_NAME,
+                projection,
+                selection,
+                arg,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            String idEntity = cursor.getString(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry._ID));
+            int num = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_NUMVOTE));
+            int value = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_VALUE));
+            v = new Vote(idEntity, num, value);
+        }
+
+        cursor.close();
+
+        return v;
+    }
+
     /**
      * Method that close the connection to the database
      */
@@ -53,5 +87,9 @@ public class VoteDAO {
                 db.insert(VoteContract.VoteEntry.TABLE_NAME, null, values);
             }
         }
+    }
+
+    public Vote getVote(String id) {
+        return getVoteStatic(id, db);
     }
 }

@@ -503,8 +503,33 @@ public class Route {
 
     }
 
+    @Override
     public String toString() {
-        return "nid : " + getNid();
+        return "Route{" + "\n" +
+                "nid='" + nid + '\'' + "\n\t" +
+                "title='" + title + '\'' + "\n\t" +
+                "category=" + category + "\n\t" +
+                "body='" + body + '\'' + "\n\t" +
+                "difficulty=" + difficulty + "\n\t" +
+                "difficulty_tid='" + difficulty_tid + '\'' + "\n\t" +
+                "circular=" + circular + "\n\t" +
+                "distanceMeters=" + distanceMeters + "\n\t" +
+                "routeLengthMeters=" + routeLengthMeters + "\n\t" +
+                "estimatedTime=" + estimatedTime + "\n\t" +
+                "slope=" + slope + "\n\t" +
+                "mainImage='" + mainImage + '\'' + "\n\t" +
+                //"track='" + track + '\'' + "\n\t" +
+                "url_map='" + url_map + '\'' + "\n\t" +
+                "local_directory_map='" + local_directory_map + '\'' + "\n\t" +
+                "images=" + images + "\n\t" +
+                "videos=" + videos + "\n\t" +
+                "audios=" + audios + "\n\t" +
+                "enlaces=" + enlaces + "\n\t" +
+                "pois=" + pois + "\n\t" +
+                "tags=" + tags + "\n\t" +
+                "vote=" + vote + "\n\t" +
+                "color=" + color + "\n" +
+                '}';
     }
 
     public int getColorForMap(Context ctx) {

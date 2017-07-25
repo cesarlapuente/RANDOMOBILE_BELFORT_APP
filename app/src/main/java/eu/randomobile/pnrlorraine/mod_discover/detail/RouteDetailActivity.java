@@ -1003,21 +1003,21 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // Poner numero de avis e imagen votos
         String valString = app.getApplicationContext().getResources().getString(
                 R.string.mod_discover__nota);
-        lblValoracion.setText(valString + " (" + String.valueOf(route.getVote().getNumVotes()) + " votos)");
-        if (route.getVote() != null) {
-            if (route.getVote().getValue() <= 10) {
+        lblValoracion.setText(valString + " (" + String.valueOf(route.getVoteStatic().getNumVotes()) + " votos)");
+        if (route.getVoteStatic() != null) {
+            if (route.getVoteStatic().getValue() <= 10) {
                 // Si es menor o igual a 0
                 imgViewValoracion.setImageResource(R.drawable.puntuacion_0_estrellas);
-            } else if (route.getVote().getValue() > 10 && route.getVote().getValue() < 30) {
+            } else if (route.getVoteStatic().getValue() > 10 && route.getVoteStatic().getValue() < 30) {
                 // Si est� entre 1 y 24
                 imgViewValoracion.setImageResource(R.drawable.puntuacion_1_estrellas);
-            } else if (route.getVote().getValue() >= 30 && route.getVote().getValue() < 50) {
+            } else if (route.getVoteStatic().getValue() >= 30 && route.getVoteStatic().getValue() < 50) {
                 // Si est� entre 25 y 49
                 imgViewValoracion.setImageResource(R.drawable.puntuacion_2_estrellas);
-            } else if (route.getVote().getValue() >= 50 && route.getVote().getValue() < 70) {
+            } else if (route.getVoteStatic().getValue() >= 50 && route.getVoteStatic().getValue() < 70) {
                 // Si est� entre 50 y 74
                 imgViewValoracion.setImageResource(R.drawable.puntuacion_3_estrellas);
-            } else if (route.getVote().getValue() >= 70 && route.getVote().getValue() <= 90) {
+            } else if (route.getVoteStatic().getValue() >= 70 && route.getVoteStatic().getValue() <= 90) {
                 // Si est� entre 75 y 90
                 imgViewValoracion.setImageResource(R.drawable.puntuacion_4_estrellas);
             } else {

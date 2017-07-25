@@ -70,7 +70,7 @@ public class SplashActivity extends Activity {
 
     //
     private RessourceLinkDAO ressourceLinkDAO;
-    private RouteCategoryDAO RessourceLink;
+    private RouteCategoryDAO routeCategoryDAO;
     private RouteDAO routeDAO;
     private VoteDAO voteDAO;
     private List<Poi> pois;
@@ -1000,6 +1000,13 @@ public class SplashActivity extends Activity {
         votes = new ArrayList<>();
 
         routeDAO = new RouteDAO(getApplicationContext());
+        poiDAO = new PoiDAO(getApplicationContext());
+        poiCategoryDAO = new PoiCategoryDAO(getApplicationContext());
+        routeCategoryDAO = new RouteCategoryDAO(getApplicationContext());
+        ressourceFileDAO = new RessourceFileDAO(getApplicationContext());
+        ressourceLinkDAO = new RessourceLinkDAO(getApplicationContext());
+        voteDAO = new VoteDAO(getApplicationContext());
+
 
         HashMap<String, String> params = new HashMap<String, String>();
 
@@ -1031,35 +1038,25 @@ public class SplashActivity extends Activity {
                 try {
                     JSONArray arrayRes = new JSONArray(response);
 
-                    Log.e("nb route", String.valueOf(arrayRes.length()));
 
                     for (int i = 0; i < arrayRes.length(); i++) {
 
-                        Log.e("123", String.valueOf(i));
-
-                        Log.e("###", "1");
-
                         JSONObject r = arrayRes.getJSONObject(i);
-                        Log.e("###", "2");
                         Route route = new Route();
-                        Log.e("###", "3");
 
                         String nid = r.optString("nid", "");
-                        Log.e("###", "4");
 
                         if (!"".equals(nid)) {
-                            Log.e("###", "5");
                             route.setNid(nid);
                             route.setTitle(r.optString("title"));
                             JSONObject cat = r.getJSONObject("cat");
                             if (cat != null) {
                                 RouteCategoryTerm rct = new RouteCategoryTerm(cat.optString("tid", ""),
                                         cat.optString("title"), cat.optString("image", ""));
-                                route.setBody(r.optString("body", ""));
                                 route.setCategory(rct);
                                 routeCategoryTerms.add(rct);
                             }
-
+                            route.setBody(r.optString("body", ""));
                             route.setDifficulty_tid(r.optString("difficulty", ""));
                             route.setDistanceMeters(r.optDouble("distance", -1L));
                             route.setRouteLengthMeters(r.optDouble("routedistance", -1L));
@@ -1073,18 +1070,20 @@ public class SplashActivity extends Activity {
                             if (images != null) {
                                 ArrayList<ResourceFile> imagesRoute = new ArrayList<>();
                                 for (int j = 0; j < images.length(); j++) {
-                                    JSONObject im = images.getJSONObject(i);
+                                    JSONObject im = images.getJSONObject(j);
                                     resourceFiles.add(generateRessourceFile(im));
                                     imagesRoute.add(generateRessourceFile(im));
                                 }
                                 route.setImages(imagesRoute);
                             }
+                            route.setImages(new ArrayList<ResourceFile>());
+
 
                             JSONArray videos = r.optJSONArray("videos");
                             if (videos != null) {
                                 ArrayList<ResourceFile> videoRoute = new ArrayList<>();
-                                for (int j = 0; j < images.length(); j++) {
-                                    JSONObject vi = images.getJSONObject(i);
+                                for (int j = 0; j < videos.length(); j++) {
+                                    JSONObject vi = videos.getJSONObject(j);
                                     resourceFiles.add(generateRessourceFile(vi));
                                     videoRoute.add(generateRessourceFile(vi));
                                 }
@@ -1096,7 +1095,7 @@ public class SplashActivity extends Activity {
                             if (audios != null) {
                                 ArrayList<ResourceFile> audiosRoute = new ArrayList<>();
                                 for (int j = 0; j < audios.length(); j++) {
-                                    JSONObject im = audios.getJSONObject(i);
+                                    JSONObject im = audios.getJSONObject(j);
                                     resourceFiles.add(generateRessourceFile(im));
                                     audiosRoute.add(generateRessourceFile(im));
                                 }
@@ -1108,7 +1107,7 @@ public class SplashActivity extends Activity {
                             if (links != null) {
                                 ArrayList<ResourceLink> linksRoute = new ArrayList<>();
                                 for (int j = 0; j < links.length(); j++) {
-                                    JSONObject li = links.getJSONObject(i);
+                                    JSONObject li = links.getJSONObject(j);
                                     ResourceLink rl = new ResourceLink(li.optString("url"), li.optString("title"));
                                     resourceLinks.add(rl);
                                     linksRoute.add(rl);
@@ -1123,20 +1122,27 @@ public class SplashActivity extends Activity {
                                         v.optInt("count", 0), v.optInt("resut", 0));
 
                                 route.setVote(vote);
+                                votes.add(vote);
                             } else {
                                 route.setVote(new Vote());
                             }
 
-                            route.setPois(new ArrayList<ResourcePoi>());
+                            JSONArray poisR = r.optJSONArray("pois");
+                            final ArrayList<ResourcePoi> pois1 = new ArrayList<>();
+                            for (int j = 0; j < poisR.length(); j++) {
+                                JSONObject pj = poisR.optJSONObject(j);
+                                ResourcePoi pTmp = new ResourcePoi();
+                                pTmp.setNid(pj.optInt("nid"));
+                                pois1.add(pTmp);
+                            }
 
+                            route.setPois(pois1);
+
+                            routeCategoryDAO.insertListCategory(routeCategoryTerms);
                             routes.add(route);
 
-                            Log.e("##", "boucle " + i + " " + arrayRes.length());
-
                         }
-
-                        Log.e("++", "---------------------");
-                        JSONObject object = arrayRes.getJSONObject(i);
+                        //JSONObject object = arrayRes.getJSONObject(i);
                         /*String[] t = object.toString().split(",");
                         for (String s : t) {
                             Log.e("++", s);
@@ -1148,15 +1154,7 @@ public class SplashActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                Log.e("*****", "*********************** " + routes.size());
-
-                Log.e("route", routes.toString());
-
                 routeDAO.insertListRoute(routes);
-                List<Route> r = routeDAO.getAllRoute();
-                for (Route rt : r) {
-                    Log.e("-->", rt.toString());
-                }
 
                 /*String[] t = response.split(",");
                 for (String s : t){
@@ -1171,9 +1169,7 @@ public class SplashActivity extends Activity {
         }, params);
 
 
-
-
-        /*Log.e("---", "---------------------------------------------------------------------------------------------------");
+        Log.e("---", "---------------------------------------------------------------------------------------------------");
 
         params = new HashMap<String, String>();
 
@@ -1182,16 +1178,159 @@ public class SplashActivity extends Activity {
 
         app.clienteDrupal.customMethodCallPost("poi/get_list_distance", new AsyncHttpResponseHandler() {
             public void onSuccess(String response) {
-                String[] t = response.split(",");
+
+                JSONArray arrayRes = null;
+                try {
+                    arrayRes = new JSONArray(response);
+
+                    for (int i = 0; i < arrayRes.length(); i++) {
+
+                        JSONObject p = arrayRes.getJSONObject(i);
+
+                        Poi poi = new Poi();
+                        poi.setNid(p.optString("nid"));
+                        poi.setBody(p.optString("body"));
+                        poi.setTitle(p.optString("title"));
+                        poi.setDistanceMeters(p.optDouble("distance"));
+                        poi.setCoordinates(new GeoPoint(p.optDouble("lat"), p.optDouble("lon"),
+                                p.optDouble("altitude")));
+                        poi.setMainImage(p.optString("image"));
+
+                        JSONObject cat = p.getJSONObject("cat");
+                        if (cat != null) {
+                            PoiCategoryTerm pct = new PoiCategoryTerm(cat.optString("tid", ""),
+                                    cat.optString("name"));
+                            poi.setCategory(pct);
+                            Log.e("cat", pct.toString());
+                            poiCategoryTerms.add(pct);
+                        } else
+                            poi.setCategory(new PoiCategoryTerm());
+
+                        JSONArray images = p.optJSONArray("images");
+                        if (images != null) {
+                            ArrayList<ResourceFile> imagesRoute = new ArrayList<>();
+                            for (int j = 0; j < images.length(); j++) {
+                                JSONObject im = images.getJSONObject(j);
+                                resourceFiles.add(generateRessourceFile(im));
+                                imagesRoute.add(generateRessourceFile(im));
+                            }
+                            poi.setImages(imagesRoute);
+                        }
+                        poi.setImages(new ArrayList<ResourceFile>());
+
+
+                        JSONArray videos = p.optJSONArray("videos");
+                        if (videos != null) {
+                            ArrayList<ResourceFile> videoRoute = new ArrayList<>();
+                            for (int j = 0; j < videos.length(); j++) {
+                                JSONObject vi = videos.getJSONObject(j);
+                                resourceFiles.add(generateRessourceFile(vi));
+                                videoRoute.add(generateRessourceFile(vi));
+                            }
+                            poi.setVideos(videoRoute);
+                        } else
+                            poi.setVideos(new ArrayList<ResourceFile>());
+
+                        JSONArray audios = p.optJSONArray("audios");
+                        if (audios != null) {
+                            ArrayList<ResourceFile> audiosRoute = new ArrayList<>();
+                            for (int j = 0; j < audios.length(); j++) {
+                                JSONObject im = audios.getJSONObject(j);
+                                resourceFiles.add(generateRessourceFile(im));
+                                audiosRoute.add(generateRessourceFile(im));
+                            }
+                            poi.setAudios(audiosRoute);
+                        } else
+                            poi.setAudios(new ArrayList<ResourceFile>());
+
+                        JSONArray links = p.optJSONArray("links");
+                        if (links != null) {
+                            ArrayList<ResourceLink> linksRoute = new ArrayList<>();
+                            for (int j = 0; j < links.length(); j++) {
+                                JSONObject li = links.getJSONObject(j);
+                                ResourceLink rl = new ResourceLink(li.optString("url"), li.optString("title"));
+                                resourceLinks.add(rl);
+                                linksRoute.add(rl);
+                            }
+                            poi.setEnlaces(linksRoute);
+                        } else
+                            poi.setEnlaces(new ArrayList<ResourceLink>());
+
+                        JSONObject v = p.optJSONObject("rate");
+                        if (votes != null) {
+                            Vote vote = new Vote(v.optString("uid"),
+                                    v.optInt("count", 0), v.optInt("resut", 0));
+
+                            poi.setVote(vote);
+                        } else {
+                            poi.setVote(new Vote());
+                        }
+                        pois.add(poi);
+                    }
+
+                    Log.e("###", String.valueOf(arrayRes.length()));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                poiCategoryDAO.insertListCategory(poiCategoryTerms);
+                ressourceLinkDAO.insertListRessourceLink(resourceLinks);
+                ressourceFileDAO.insertListRessourceFile(resourceFiles);
+                voteDAO.insertListVote(votes);
+                poiDAO.insertListPoi(pois);
+
+
+                /*List<Poi> r = poiDAO.getAllPois();
+                for (Poi rt : r) {
+                    Log.e("-->", rt.toString());
+                }*/
+
+                /*String[] t = response.split(",");
                 for (String s : t){
                     Log.e("poi_list_distance", s);
-                }
+                }*/
             }
 
             public void onFailure(Throwable error) {
 
             }
-        }, params);*/
+        }, params);
+
+        Log.e("avant insert", "poi cat : " + poiCategoryTerms.size() + " route cat : " + routeCategoryTerms.size() +
+                " rl : " + resourceLinks.size() + " rf : " + resourceFiles.size() + " vote : " + votes.size());
+
+
+        List<Poi> p = poiDAO.getAllPois();
+        for (Poi rt : p) {
+            Log.e(" pois -->", rt.toString());
+        }
+
+        /*List<RouteCategoryTerm> r = routeCategoryDAO.get();
+        for (Route rt : r) {
+            Log.e("-->", rt.toString());
+        }*/
+
+        /*List<ResourceFile> rf = ressourceFileDAO.getAllResourceFiles();
+        for (ResourceFile rt : rf) {
+            Log.e(" rf -->", rt.toString());
+        }
+
+        List<ResourceLink> rl = ressourceLinkDAO.getAllResourceLink();
+        for (ResourceLink rt : rl) {
+            Log.e(" rl -->", rt.toString());
+        }
+
+        List<Route> r = routeDAO.getAllRoute();
+        for (Route rt : r) {
+            Log.e(" route -->", rt.toString());
+        }
+*/
+        /*List<Route> r = routeDAO.getAllRoute();
+        for (Route rt : r) {
+            Log.e("-->", rt.toString());
+        }*/
+
     }
 
     private ResourceFile generateRessourceFile(JSONObject o) {

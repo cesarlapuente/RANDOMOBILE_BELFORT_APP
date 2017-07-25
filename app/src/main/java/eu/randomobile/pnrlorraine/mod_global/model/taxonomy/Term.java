@@ -19,6 +19,15 @@ public class Term implements Serializable {
 	public Term() {
 	}
 
+	@Override
+	public String toString() {
+		return "Term{" +
+				"tid='" + tid + '\'' +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				'}';
+	}
+
 	//
 	
 	public String getTid() {

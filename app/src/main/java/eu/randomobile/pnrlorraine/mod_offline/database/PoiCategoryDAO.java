@@ -2,6 +2,7 @@ package eu.randomobile.pnrlorraine.mod_offline.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
@@ -32,6 +33,37 @@ public class PoiCategoryDAO {
         mDbHandler = new DbHandler(context);
     }
 
+    static public PoiCategoryTerm getPoiCategoryStatic(String id, SQLiteDatabase dbin) {
+        PoiCategoryTerm term = new PoiCategoryTerm();
+        SQLiteDatabase db = dbin;
+
+        String[] projection = {
+                PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_NAME,
+        };
+        String selection = PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_TID + " = ?";
+        String[] arg = {id};
+
+        Cursor cursor = db.query(
+                PoiCategoryContract.PoiCategoryEntry.TABLE_NAME,
+                projection,
+                selection,
+                arg,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            String tid = cursor.getString(cursor.getColumnIndexOrThrow(PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_TID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_NAME));
+            term = new PoiCategoryTerm(tid, name);
+        }
+
+        cursor.close();
+
+        return term;
+    }
+
     /**
      * Method that close the connection to the database
      */
@@ -54,5 +86,9 @@ public class PoiCategoryDAO {
                 db.insert(PoiCategoryContract.PoiCategoryEntry.TABLE_NAME, null, values);
             }
         }
+    }
+
+    public PoiCategoryTerm getPoiCategory(String id) {
+        return getPoiCategoryStatic(id, db);
     }
 }

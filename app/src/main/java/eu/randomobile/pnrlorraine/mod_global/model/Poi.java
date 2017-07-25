@@ -1,26 +1,27 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.Application;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.PoiCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.TagTerm;
-//import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.utils.JSONManager;
+
+//import eu.randomobile.pnrlorraine.R;
 
 public class Poi {
 
+	public static PoisInterface poisInterface;
 	private String nid;
 	private String title;
 	private String body;
@@ -34,15 +35,9 @@ public class Poi {
 	private ArrayList<ResourceLink> enlaces;
 	private ArrayList<TagTerm> tags;
 	private Vote vote;
-	public static PoisInterface poisInterface;
 
-	public static interface PoisInterface {
-		public void seCargoListaPois(ArrayList<Poi> pois);
-		public void producidoErrorAlCargarListaPois(String error);
-		public void seCargoPoi(Poi poi);
-		public void producidoErrorAlCargarPoi(String error);
-	}
-	
+	// modif thib
+
 	public static void cargarListaPoisOrdenadosDistancia(Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt){
 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -63,24 +58,24 @@ public class Poi {
 		if(searchTxt != null && !searchTxt.equals("")){
 			params.put("search", searchTxt);
 		}
-		
+
 		Log.d("Milog", "Parametros enviados a poi/get_list_distance: " + params.toString());
 
 		MainApp app = (MainApp)application;
-		
+
 		app.clienteDrupal.customMethodCallPost("poi/get_list_distance", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
-				
+
 				Log.d("Milog", "Respuesta de cargar pois distance: " + response);
-				
+
 				ArrayList<Poi> listaPois = null;
-				
+
 				if(response != null && !response.equals("")){
-					
+
 					listaPois = fillPoiList(response);
 				}
-				
-				
+
+
 				// Informar al delegate
 	    		if(Poi.poisInterface != null){
 	        		// Informar al delegate
@@ -92,7 +87,7 @@ public class Poi {
 		    		}
 	    		}
 			}
-			
+
 			public void onFailure(Throwable error) {
 				// Informar al delegate
 				if(Poi.poisInterface != null){
@@ -100,15 +95,15 @@ public class Poi {
 	    			Poi.poisInterface.producidoErrorAlCargarListaPois(error.toString());
 	    		}
 			}
-		}, 
+				},
 		params);
-		
+
 	}
 
 	public static void cargarPoi(Application application, String nid) {
 
 		MainApp app = (MainApp) application;
-		
+
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("nid", nid);
 
@@ -118,8 +113,8 @@ public class Poi {
 						Log.d("Milog", "Exito al cargar poi: " + response);
 
 						if(response != null && !response.equals("")){
-						    Poi poi = fillPoiItem(response);	
-			        		// Informar al delegate
+							Poi poi = fillPoiItem(response);
+							// Informar al delegate
 			        		if((poi != null) && (Poi.poisInterface != null)){
 			        			Poi.poisInterface.seCargoPoi(poi);
 			        			return;
@@ -130,7 +125,7 @@ public class Poi {
 			    			Log.d("Milog", "Antes de informar al delegate de un error");
 			    			Poi.poisInterface.producidoErrorAlCargarPoi("Error al cargar poi");
 			    		}
-						
+
 					}
 					public void onFailure(Throwable error) {
 						// Informar al delegate
@@ -155,8 +150,8 @@ public class Poi {
         			Log.d("Milog", "array devuelto contiene al menos 1 elemento");
         			listaPois = new ArrayList<Poi>();
         		}
-        		
-        		for(int i=0; i< arrayRes.length(); i++){
+
+				for(int i=0; i< arrayRes.length(); i++){
         			Object recObj = arrayRes.get(i);
         			if(recObj != null){
         				if(recObj.getClass().getName().equals(JSONObject.class.getName())){
@@ -169,17 +164,17 @@ public class Poi {
         					String alt = recDic.getString("altitude");
         					String distance = recDic.getString("distance");
         					String image = recDic.getString("image");
-        					
-        					Poi item = new Poi();
+
+							Poi item = new Poi();
         					item.setNid(nid);
         					item.setTitle(title);
         					item.setBody(body);
-        					
-        					double distanceKMDouble = Double.valueOf(distance);
+
+							double distanceKMDouble = Double.valueOf(distance);
         					double distanceMDouble = distanceKMDouble * 1000;
         					item.setDistanceMeters(distanceMDouble);
-        					
-        					Object objCat = recDic.get("cat");
+
+							Object objCat = recDic.get("cat");
 	                		if(objCat != null && objCat.getClass().getName().equals(JSONObject.class.getName())){
 	                			JSONObject dicCat = (JSONObject)objCat;
 	                			String tid = dicCat.getString("tid");
@@ -191,8 +186,8 @@ public class Poi {
 	                			poiCatTerm.setIcon(icon);
 	                			item.setCategory(poiCatTerm);
 	                		}
-	                		
-	                		Object objRate = recDic.get("rate");
+
+							Object objRate = recDic.get("rate");
 	                		if(objRate != null && objRate.getClass().getName().equals(JSONObject.class.getName())){
 	                			JSONObject dicRate = (JSONObject)objRate;
 	                			String numVotosStr = dicRate.getString("count");
@@ -217,36 +212,36 @@ public class Poi {
         					}else{
         						item.setMainImage(image);
         					}
-        					
-        					GeoPoint gp = new GeoPoint();
-        					
-        					if(lat != null && !lat.equals("") && !lat.equals("null")){
+
+							GeoPoint gp = new GeoPoint();
+
+							if(lat != null && !lat.equals("") && !lat.equals("null")){
         						gp.setLatitude( Double.parseDouble(lat) );
         					}
-        					
-        					if(lon != null && !lon.equals("") && !lon.equals("null")){
+
+							if(lon != null && !lon.equals("") && !lon.equals("null")){
         						gp.setLongitude( Double.parseDouble(lon) );
         					}
-        					
-        					if(alt != null && !alt.equals("") && !alt.equals("null")){
+
+							if(alt != null && !alt.equals("") && !alt.equals("null")){
         						gp.setAltitude( Double.parseDouble(alt) );
         					}
         					item.setCoordinates(gp);
-        					
-        					listaPois.add(item);
+
+							listaPois.add(item);
         				}
         			}
-        		} //for	
-        	} //arrayRes
-        	
+				} //for
+			} //arrayRes
 
-        } catch (Exception e) {
+
+		} catch (Exception e) {
 			Log.d("Milog", "Excepcion en lista pois: " + e.toString());
 			listaPois = null;
 		}
 		return listaPois;
 	}
-	
+
 	public static Poi fillPoiItem (String response) {
 		Poi poi = null;
 		try {
@@ -258,16 +253,15 @@ public class Poi {
         		String lat = dicRes.getString("lat");
         		String lon = dicRes.getString("lon");
         		String altitude = dicRes.getString("altitude");
-        		
-        		
-        		
-        		poi = new Poi();
+
+
+				poi = new Poi();
         		poi.setNid(nid);
         		poi.setTitle(title);
         		poi.setBody(body);
-        		
-        		
-        		double latDouble = Double.parseDouble(lat);
+
+
+				double latDouble = Double.parseDouble(lat);
         		double lonDouble = Double.parseDouble(lon);
         		double altDouble = Double.parseDouble(altitude);
         		GeoPoint gp = new GeoPoint();
@@ -275,8 +269,8 @@ public class Poi {
         		gp.setLongitude(lonDouble);
         		gp.setAltitude(altDouble);
         		poi.setCoordinates(gp);
-        		
-        		Object objCat = dicRes.get("type");
+
+				Object objCat = dicRes.get("type");
         		if(objCat != null && objCat.getClass().getName().equals(JSONObject.class.getName())){
         			JSONObject dicCat = (JSONObject)objCat;
         			String tid = dicCat.getString("tid");
@@ -288,9 +282,9 @@ public class Poi {
         			poiCatTerm.setIcon(icon);
         			poi.setCategory(poiCatTerm);
         		}
-        		
-        		
-        		ArrayList<ResourceFile> arrayResourceImages = new ArrayList<ResourceFile>();
+
+
+				ArrayList<ResourceFile> arrayResourceImages = new ArrayList<ResourceFile>();
         		Object objImages = dicRes.get("images");
         		if(objImages != null && objImages.getClass().getName().equals(JSONArray.class.getName())){
         			JSONArray array = (JSONArray)objImages;
@@ -311,8 +305,8 @@ public class Poi {
         			}
         		}
         		poi.setImages(arrayResourceImages);
-        		
-        		ArrayList<ResourceFile> arrayResourceAudios = new ArrayList<ResourceFile>();
+
+				ArrayList<ResourceFile> arrayResourceAudios = new ArrayList<ResourceFile>();
         		Object objAudios = dicRes.get("audios");
         		if(objAudios != null && objAudios.getClass().getName().equals(JSONArray.class.getName())){
         			JSONArray array = (JSONArray)objAudios;
@@ -330,8 +324,8 @@ public class Poi {
         			}
         		}
         		poi.setAudios(arrayResourceAudios);
-        		
-        		ArrayList<ResourceFile> arrayResourceVideos = new ArrayList<ResourceFile>();
+
+				ArrayList<ResourceFile> arrayResourceVideos = new ArrayList<ResourceFile>();
         		Object objVideos = dicRes.get("videos");
         		if(objVideos != null && objVideos.getClass().getName().equals(JSONArray.class.getName())){
         			JSONArray array = (JSONArray)objVideos;
@@ -349,8 +343,8 @@ public class Poi {
         			}
         		}
         		poi.setVideos(arrayResourceVideos);
-        		
-        		ArrayList<ResourceLink> arrayResourceLinks = new ArrayList<ResourceLink>();
+
+				ArrayList<ResourceLink> arrayResourceLinks = new ArrayList<ResourceLink>();
         		Object objLinks = dicRes.get("links");
         		if(objLinks != null && objLinks.getClass().getName().equals(JSONArray.class.getName())){
         			JSONArray array = (JSONArray)objLinks;
@@ -369,14 +363,15 @@ public class Poi {
         		}
         		poi.setEnlaces(arrayResourceLinks);
         	}
-        	
 
-        } catch (Exception e) {
+
+		} catch (Exception e) {
 			Log.d("Milog", "Excepcion cargar poi: " + e.toString());
 			return null;
 		}
 		return poi;
 	}
+
 	public static int getResourceIconForPoiCategoryTid(String tid){
 		if(tid != null){
 			if(tid.equals("7")){
@@ -402,8 +397,8 @@ public class Poi {
 				return R.drawable.btn_poi_pueblo_normal;
 			}
 		}
-		
-		
+
+
 		return R.drawable.ic_launcher;
 	}
 	
@@ -413,6 +408,25 @@ public class Poi {
 		return imageName;
 	}
 
+	@Override
+	public String toString() {
+		return "Poi{" + "\n\t" +
+				"nid='" + nid + '\'' + "\n\t" +
+				"title='" + title + '\'' + "\n\t" +
+				"body='" + body + '\'' + "\n\t" +
+				"distanceMeters=" + distanceMeters + "\n\t" +
+				"category=" + category + "\n\t" +
+				"coordinates=" + coordinates + "\n\t" +
+				"mainImage='" + mainImage + '\'' + "\n\t" +
+				"images=" + images + "\n\t" +
+				"videos=" + videos + "\n\t" +
+				"audios=" + audios + "\n\t" +
+				"enlaces=" + enlaces + "\n\t" +
+				"tags=" + tags + "\n\t" +
+				"vote=" + vote + "\n" +
+				'}';
+	}
+	
 	public String getBody() {
 		return body;
 	}
@@ -493,40 +507,39 @@ public class Poi {
 		this.tags = tags;
 	}
 
-
-
 	public double getDistanceMeters() {
 		return distanceMeters;
 	}
-
-
 
 	public void setDistanceMeters(double distanceMeters) {
 		this.distanceMeters = distanceMeters;
 	}
 
-
-
 	public String getMainImage() {
 		return mainImage;
 	}
-
-
 
 	public void setMainImage(String mainImage) {
 		this.mainImage = mainImage;
 	}
 
-
-
 	public Vote getVote() {
 		return vote;
 	}
 
-
-
 	public void setVote(Vote vote) {
 		this.vote = vote;
+	}
+
+
+	public static interface PoisInterface {
+		public void seCargoListaPois(ArrayList<Poi> pois);
+
+		public void producidoErrorAlCargarListaPois(String error);
+
+		public void seCargoPoi(Poi poi);
+
+		public void producidoErrorAlCargarPoi(String error);
 	}
 
 }

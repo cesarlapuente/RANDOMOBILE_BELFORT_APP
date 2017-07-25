@@ -2,13 +2,18 @@ package eu.randomobile.pnrlorraine.mod_offline.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourceLink;
+import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 
 /**
  * RandomobileBelfort-Android
@@ -26,11 +31,22 @@ public class PoiDAO {
      */
     private SQLiteDatabase db;
 
+    private RessourceLinkDAO linkDAO;
+    private RessourceFileDAO fileDAO;
+    private PoiDAO poiDAO;
+    private PoiCategoryDAO categoryDAO;
+    private VoteDAO voteDAO;
+
     /**
      * Constructor of the DAO
      */
     public PoiDAO(Context context) {
         mDbHandler = new DbHandler(context);
+        /*linkDAO = new RessourceLinkDAO(context);
+        fileDAO = new RessourceFileDAO(context);
+        poiDAO = new PoiDAO(context);
+        categoryDAO = new PoiCategoryDAO(context);
+        voteDAO = new VoteDAO(context);*/
     }
 
     /**
@@ -45,6 +61,7 @@ public class PoiDAO {
 
         for (ResourceFile rf : list) {
             string.append(rf.getFid());
+            string.append(",");
         }
 
         return string.toString();
@@ -55,6 +72,7 @@ public class PoiDAO {
 
         for (ResourceLink rf : list) {
             string.append(rf.getTitle());
+            string.append(",");
         }
 
         return string.toString();
@@ -75,6 +93,7 @@ public class PoiDAO {
             values.put(PoiContract.PoiEntry.COLUM_NAME_CAT, p.getCategory().getTid());
             values.put(PoiContract.PoiEntry.COLUM_NAME_LON, p.getCoordinates().getLongitude());
             values.put(PoiContract.PoiEntry.COLUM_NAME_LAT, p.getCoordinates().getLatitude());
+            values.put(PoiContract.PoiEntry.COLUM_NAME_ALT, p.getCoordinates().getAltitude());
             values.put(PoiContract.PoiEntry.COLUM_NAME_IMAGE, p.getMainImage());
             values.put(PoiContract.PoiEntry.COLUM_NAME_IMAGES, getListRessourceFile(p.getImages()));
             values.put(PoiContract.PoiEntry.COLUM_NAME_VIDEO, getListRessourceFile(p.getVideos()));
@@ -87,5 +106,79 @@ public class PoiDAO {
                 db.insert(PoiContract.PoiEntry.TABLE_NAME, null, values);
             }
         }
+    }
+
+    public ArrayList<ResourcePoi> getResourcePois(String listId) {
+        ArrayList<ResourcePoi> pois = new ArrayList<>();
+        List<Poi> tmp = getAllPois();
+        List<String> ids = new ArrayList<>(Arrays.asList(listId.split(",")));
+
+        if (tmp != null && !tmp.isEmpty()) {
+            for (Poi rf : tmp) {
+                if (ids.contains(rf.getNid())) {
+                    pois.add(new ResourcePoi(rf.getBody(), rf.getTitle(),
+                            rf.getCoordinates().getLongitude(), rf.getCoordinates().getLatitude(),
+                            (rf.getCategory().getTid() != null) ?
+                                    Integer.valueOf(rf.getCategory().getTid()) : -1
+                            , Integer.valueOf(rf.getNid())));
+                }
+            }
+        }
+        return pois;
+    }
+
+    public List<Poi> getAllPois() {
+        List<Poi> pois = new ArrayList<>();
+        db = mDbHandler.getWritableDatabase();
+
+        String[] projection = {
+                PoiContract.PoiEntry.COLUM_NAME_NID,
+                PoiContract.PoiEntry.COLUM_NAME_TITLE,
+                PoiContract.PoiEntry.COLUM_NAME_CAT,
+                PoiContract.PoiEntry.COLUM_NAME_BODY,
+                PoiContract.PoiEntry.COLUM_NAME_DISTANCE,
+                PoiContract.PoiEntry.COLUM_NAME_RATE,
+                PoiContract.PoiEntry.COLUM_NAME_IMAGE,
+                PoiContract.PoiEntry.COLUM_NAME_IMAGES,
+                PoiContract.PoiEntry.COLUM_NAME_VIDEO,
+                PoiContract.PoiEntry.COLUM_NAME_AUDIOS,
+                PoiContract.PoiEntry.COLUM_NAME_ENLACE,
+                PoiContract.PoiEntry.COLUM_NAME_LON,
+                PoiContract.PoiEntry.COLUM_NAME_LAT,
+                PoiContract.PoiEntry.COLUM_NAME_ALT,
+        };
+
+        Cursor cursor = db.query(
+                PoiContract.PoiEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            Poi p = new Poi();
+            p.setNid(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NID)));
+            p.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_TITLE)));
+            p.setCategory(PoiCategoryDAO.getPoiCategoryStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)), db));
+            p.setBody(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_BODY)));
+            p.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_DISTANCE)));
+            p.setVote(VoteDAO.getVoteStatic(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_RATE)), db));
+            p.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGE)));
+            p.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGES)), db));
+            p.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_VIDEO)), db));
+            p.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_AUDIOS)), db));
+            p.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ENLACE)), db));
+            Double lon = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LON));
+            Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LAT));
+            Double alt = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ALT));
+            p.setCoordinates(new GeoPoint(lat, lon, alt));
+            pois.add(p);
+        }
+        cursor.close();
+
+        return pois;
     }
 }

@@ -25,6 +25,7 @@ public final class PoiContract {
                     PoiEntry.COLUM_NAME_CAT + TEXT +
                     PoiEntry.COLUM_NAME_LON + INTEGER +
                     PoiEntry.COLUM_NAME_LAT + INTEGER +
+                    PoiEntry.COLUM_NAME_ALT + INTEGER +
                     PoiEntry.COLUM_NAME_IMAGE + TEXT +
                     PoiEntry.COLUM_NAME_IMAGES + TEXT +
                     PoiEntry.COLUM_NAME_VIDEO + TEXT +
@@ -51,6 +52,8 @@ public final class PoiContract {
         static final String COLUM_NAME_CAT = "cat";
 
         static final String COLUM_NAME_LAT = "lat";
+
+        static final String COLUM_NAME_ALT = "alt";
 
         static final String COLUM_NAME_LON = "lon";
 

@@ -153,6 +153,20 @@ public class ResourceFile extends Resource implements Parcelable {
 		return b64;
 	}
 
+	@Override
+	public String toString() {
+		return "ResourceFile{" + "\n\t" +
+				"fid='" + fid + '\'' + "\n\t" +
+				"fileName='" + fileName + '\'' + "\n\t" +
+				"fileUrl='" + fileUrl + '\'' + "\n\t" +
+				"fileBody='" + fileBody + '\'' + "\n\t" +
+				"fileMime='" + fileMime + '\'' + "\n\t" +
+				"fileType='" + fileType + '\'' + "\n\t" +
+				"fileTitle='" + fileTitle + '\'' + "\n\t" +
+				"copyright='" + copyright + '\'' + "\n" +
+				'}';
+	}
+
 	public String getFid() {
 		return fid;
 	}
