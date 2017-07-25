@@ -1390,7 +1390,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 }
 
             } else
-                geometricPOIsLayer.getGraphics().add(gr);
+                try {
+                    geometricPOIsLayer.getGraphics().add(gr);
+                } catch (Exception e) {
+                    onRestart();
+                }
+
         }
         // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
     }
