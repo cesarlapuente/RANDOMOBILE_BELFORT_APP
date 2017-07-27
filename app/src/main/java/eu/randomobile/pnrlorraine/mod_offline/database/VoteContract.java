@@ -18,8 +18,9 @@ public final class VoteContract {
 
     static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + VoteEntry.TABLE_NAME + "(" +
-                    VoteEntry._ID + " TEXT PRIMARY KEY," +
+                    VoteEntry.COLUM_NAME_IDP + " TEXT PRIMARY KEY," +
                     VoteEntry.COLUM_NAME_NUMVOTE + INTEGER +
+                    VoteEntry._ID + TEXT +
                     VoteEntry.COLUM_NAME_VALUE + " INTEGER)";
 
     private VoteContract() {
@@ -30,6 +31,7 @@ public final class VoteContract {
         static final String TABLE_NAME = "vote";
 
         static final String COLUM_NAME_NUMVOTE = "numvote";
+        static final String COLUM_NAME_IDP = "idp";
 
         static final String COLUM_NAME_VALUE = "value";
 

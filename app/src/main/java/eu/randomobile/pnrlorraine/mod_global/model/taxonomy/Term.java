@@ -9,20 +9,31 @@ public class Term implements Serializable {
 	private String description;
 
 	//Modif Thibault
+	private String idParent;
 
-	public Term(String tid, String name, String description) {
+	public Term(String tid, String name, String description, String idParent) {
 		this.tid = tid;
 		this.name = name;
 		this.description = description;
+		this.idParent = idParent;
 	}
 
 	public Term() {
+	}
+
+	public String getIdParent() {
+		return idParent;
+	}
+
+	public void setIdParent(String idParent) {
+		this.idParent = idParent;
 	}
 
 	@Override
 	public String toString() {
 		return "Term{" +
 				"tid='" + tid + '\'' +
+				"idp='" + getIdParent() + '\'' +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				'}';

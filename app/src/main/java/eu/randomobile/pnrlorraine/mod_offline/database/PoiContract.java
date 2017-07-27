@@ -31,7 +31,7 @@ public final class PoiContract {
                     PoiEntry.COLUM_NAME_VIDEO + TEXT +
                     PoiEntry.COLUM_NAME_AUDIOS + TEXT +
                     PoiEntry.COLUM_NAME_ENLACE + TEXT +
-                    PoiEntry.COLUM_NAME_RATE + " TEXT)";
+                    PoiEntry.COLUM_NAME_NUMBER + " INTEGER)";
 
     private PoiContract() {
 
@@ -67,7 +67,7 @@ public final class PoiContract {
 
         static final String COLUM_NAME_ENLACE = "enlace";
 
-        static final String COLUM_NAME_RATE = "rate";
+        static final String COLUM_NAME_NUMBER = "number";
 
         private PoiEntry() {
         }

@@ -42,6 +42,9 @@ import eu.randomobile.pnrlorraine.mod_global.model.Route.RoutesInterface;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute.RoutesModeOfflineInterface;
+import eu.randomobile.pnrlorraine.mod_offline.database.RouteCategoryDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RouteDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 import eu.randomobile.pnrlorraine.mod_search.RouteSearch;
 import eu.randomobile.pnrlorraine.mod_search.RouteSearchActivity;
@@ -67,9 +70,17 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
     private Context ctxList;
     private int filtroPois = 0;
 
+    private RouteDAO routeDAO;
+    private VoteDAO voteDAO;
+    private RouteCategoryDAO categoryDAO;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_discover__layout_lista_routes_2);
+
+        routeDAO = new RouteDAO(getApplicationContext());
+        voteDAO = new VoteDAO(getApplicationContext());
+        categoryDAO = new RouteCategoryDAO(getApplicationContext());
 
 
         // Comprobamos si hay parametros en el Bundle.
@@ -134,7 +145,13 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         // Obtener la app
         this.app = (MainApp) getApplication();
 
-        arrayRoutes = app.getRoutesList();
+        //arrayRoutes = app.getRoutesList();
+
+        arrayRoutes = routeDAO.getAllRoute();
+        for (Route r : arrayRoutes) {
+            r.setCategory(categoryDAO.getRouteCategory(r.getNid()));
+            r.setVote(voteDAO.getVote(r.getNid()));
+        }
 
 //        Log.d("JmLOg","Array ROutas ::::::: !!!!! "+arrayRoutes.size());
 
@@ -151,7 +168,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         inicializarForm();
         recargarForm();
 
-        app.setRoutesList(arrayRoutes);
+        //app.setRoutesList(arrayRoutes);
         panelCargando.setVisibility(View.GONE);
     }
 
@@ -195,9 +212,9 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
     }
 
     private void filterRoutes() {
-        for (int i = 0; i < app.getRoutesList().size(); i++) {
-            if (RouteSearch.checkCriteria(app.getRoutesList().get(i), this))
-                arrayFilteredRoutes.add(app.getRoutesList().get(i));
+        for (int i = 0; i < arrayRoutes.size(); i++) {
+            if (RouteSearch.checkCriteria(arrayRoutes.get(i), this))
+                arrayFilteredRoutes.add(arrayRoutes.get(i));
         }
     }
 
@@ -210,7 +227,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         String name = data.getStringExtra("name");
 
         if (arrayFilteredRoutes == null)
-            arrayFilteredRoutes = new ArrayList<Route>();
+            arrayFilteredRoutes = new ArrayList<>();
 
         arrayFilteredRoutes.clear();
         listaRoutes.invalidateViews();
@@ -226,8 +243,13 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
 
     private ArrayList<Route> filterList(String filter) {
         ArrayList<Route> listeFiltered = new ArrayList<>();
+        ArrayList<Route> liste = routeDAO.getAllRoute();
+        for (Route r : liste) {
+            r.setCategory(categoryDAO.getRouteCategory(r.getNid()));
+            r.setVote(voteDAO.getVote(r.getNid()));
+        }
 
-        for (Route r : app.getRoutesList()) {
+        for (Route r : liste) {
             switch (filter) {
                 case "GR":
                     if ("32".equals(r.getCategory().getTid())) {
@@ -334,7 +356,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
                 else
                     routePulsado = arrayRoutes.get(index);*/
 
-                app.setRoutesList(arrayRoutes);
+                //app.setRoutesList(arrayRoutes);
 
                 Intent intent = new Intent(RoutesListActivity.this, RouteDetailActivity.class);
 

@@ -35,14 +35,15 @@ public class RessourceLinkDAO {
         mDbHandler = new DbHandler(context);
     }
 
-    static public List<ResourceLink> getAllResourceLinkStatic(SQLiteDatabase dbin) {
+    public List<ResourceLink> getAllResourceLink() {
         List<ResourceLink> resourceLinks = new ArrayList<>();
 
-        SQLiteDatabase db = dbin;
+        db = mDbHandler.getWritableDatabase();
 
         String[] projection = {
                 RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_URL,
                 RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_TITLE,
+                RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_IDP,
         };
 
         Cursor cursor = db.query(
@@ -58,17 +59,18 @@ public class RessourceLinkDAO {
         while (cursor.moveToNext()) {
             String url = cursor.getString(cursor.getColumnIndexOrThrow(RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_URL));
             String title = cursor.getString(cursor.getColumnIndexOrThrow(RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_TITLE));
+            String idp = cursor.getString(cursor.getColumnIndexOrThrow(RessourceLinkContract.RessourceLinkEntry.COLUM_NAME_IDP));
 
-            resourceLinks.add(new ResourceLink(url, title));
+            resourceLinks.add(new ResourceLink(url, title, idp));
         }
         cursor.close();
 
         return resourceLinks;
     }
 
-    static public ArrayList<ResourceLink> getListResourceLinks(String listId, SQLiteDatabase dbin) {
+    public ArrayList<ResourceLink> getListResourceLinks(String listId) {
         ArrayList<ResourceLink> resourceLinks = new ArrayList<>();
-        List<ResourceLink> tmp = getAllResourceLinkStatic(dbin);
+        List<ResourceLink> tmp = getAllResourceLink();
         List<String> ids = new ArrayList<>(Arrays.asList(listId.split(",")));
 
         for (ResourceLink rf : tmp) {
@@ -99,9 +101,5 @@ public class RessourceLinkDAO {
                 db.insert(RessourceLinkContract.RessourceLinkEntry.TABLE_NAME, null, values);
             }
         }
-    }
-
-    public List<ResourceLink> getAllResourceLink() {
-        return getAllResourceLinkStatic(db);
     }
 }

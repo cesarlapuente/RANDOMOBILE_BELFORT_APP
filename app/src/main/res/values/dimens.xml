@@ -6,4 +6,5 @@
     <dimen name="height_main_image_especie">300dp</dimen>
     <dimen name="margin_main_image_especie">20dp</dimen>
     <dimen name="height_botonera_especies">70dp</dimen>
+    <dimen name="viewpoint_padding">32dp</dimen>
 </resources>

@@ -48,15 +48,18 @@ public class ResourceFile extends Resource implements Parcelable {
 	private String fileBody;
 	private String fileMime;
 	private String fileType;
+	private String type;
 
 	// modif thib
 	private String fileTitle;
 	private String copyright;
 
 	public ResourceFile() {
+		super("", "");
 	}
 
-	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileMime, String fileType, String fileTitle, String copyright) {
+	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileMime, String fileType, String fileTitle, String copyright, String idParent, String type) {
+		super(idParent, fid + idParent + type);
 		this.fid = fid;
 		this.fileName = fileName;
 		this.fileUrl = fileUrl;
@@ -65,15 +68,18 @@ public class ResourceFile extends Resource implements Parcelable {
 		this.fileType = fileType;
 		this.fileTitle = fileTitle;
 		this.copyright = copyright;
+		this.type = type;
 	}
 
-	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileTitle, String copyright) {
+	public ResourceFile(String fid, String fileName, String fileUrl, String fileBody, String fileTitle, String copyright, String idParent, String type) {
+		super(idParent, fid + idParent + type);
 		this.fid = fid;
 		this.fileName = fileName;
 		this.fileUrl = fileUrl;
 		this.fileBody = fileBody;
 		this.fileTitle = fileTitle;
 		this.copyright = copyright;
+		this.type = type;
 	}
 
 	public static void fileUpload(Application application,
@@ -153,6 +159,14 @@ public class ResourceFile extends Resource implements Parcelable {
 		return b64;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "ResourceFile{" + "\n\t" +
@@ -163,7 +177,10 @@ public class ResourceFile extends Resource implements Parcelable {
 				"fileMime='" + fileMime + '\'' + "\n\t" +
 				"fileType='" + fileType + '\'' + "\n\t" +
 				"fileTitle='" + fileTitle + '\'' + "\n\t" +
-				"copyright='" + copyright + '\'' + "\n" +
+				"idp='" + getIdParent() + '\'' + "\n\t" +
+				"copyright='" + copyright + '\'' + "\n\t" +
+				"id='" + getId() + '\'' + "\n\t" +
+				"type='" + type + '\'' + "\n" +
 				'}';
 	}
 

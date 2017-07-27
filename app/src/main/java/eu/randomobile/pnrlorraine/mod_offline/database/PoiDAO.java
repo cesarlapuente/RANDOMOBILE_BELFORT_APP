@@ -90,16 +90,16 @@ public class PoiDAO {
             values.put(PoiContract.PoiEntry.COLUM_NAME_TITLE, p.getTitle());
             values.put(PoiContract.PoiEntry.COLUM_NAME_BODY, p.getBody());
             values.put(PoiContract.PoiEntry.COLUM_NAME_DISTANCE, p.getDistanceMeters());
-            values.put(PoiContract.PoiEntry.COLUM_NAME_CAT, p.getCategory().getTid());
+            values.put(PoiContract.PoiEntry.COLUM_NAME_CAT, p.getCat());
             values.put(PoiContract.PoiEntry.COLUM_NAME_LON, p.getCoordinates().getLongitude());
             values.put(PoiContract.PoiEntry.COLUM_NAME_LAT, p.getCoordinates().getLatitude());
             values.put(PoiContract.PoiEntry.COLUM_NAME_ALT, p.getCoordinates().getAltitude());
             values.put(PoiContract.PoiEntry.COLUM_NAME_IMAGE, p.getMainImage());
-            values.put(PoiContract.PoiEntry.COLUM_NAME_IMAGES, getListRessourceFile(p.getImages()));
+            /*values.put(PoiContract.PoiEntry.COLUM_NAME_IMAGES, getListRessourceFile(p.getImages()));
             values.put(PoiContract.PoiEntry.COLUM_NAME_VIDEO, getListRessourceFile(p.getVideos()));
             values.put(PoiContract.PoiEntry.COLUM_NAME_AUDIOS, getListRessourceFile(p.getAudios()));
-            values.put(PoiContract.PoiEntry.COLUM_NAME_ENLACE, getListRessourceLink(p.getEnlaces()));
-            values.put(PoiContract.PoiEntry.COLUM_NAME_RATE, p.getVote().getEntity_id());
+            values.put(PoiContract.PoiEntry.COLUM_NAME_ENLACE, getListRessourceLink(p.getEnlaces()));*/
+            values.put(PoiContract.PoiEntry.COLUM_NAME_NUMBER, p.getNumber());
             update = db.update(PoiContract.PoiEntry.TABLE_NAME, values, PoiContract.PoiEntry.COLUM_NAME_NID + " = ?", new String[]{String.valueOf(p.getNid())});
             if (update == 0) {
                 values.put(PoiContract.PoiEntry.COLUM_NAME_NID, p.getNid());
@@ -118,9 +118,7 @@ public class PoiDAO {
                 if (ids.contains(rf.getNid())) {
                     pois.add(new ResourcePoi(rf.getBody(), rf.getTitle(),
                             rf.getCoordinates().getLongitude(), rf.getCoordinates().getLatitude(),
-                            (rf.getCategory().getTid() != null) ?
-                                    Integer.valueOf(rf.getCategory().getTid()) : -1
-                            , Integer.valueOf(rf.getNid())));
+                            rf.getCat(), Integer.valueOf(rf.getNid()), rf.getNumber()));
                 }
             }
         }
@@ -137,12 +135,12 @@ public class PoiDAO {
                 PoiContract.PoiEntry.COLUM_NAME_CAT,
                 PoiContract.PoiEntry.COLUM_NAME_BODY,
                 PoiContract.PoiEntry.COLUM_NAME_DISTANCE,
-                PoiContract.PoiEntry.COLUM_NAME_RATE,
+                PoiContract.PoiEntry.COLUM_NAME_NUMBER,
                 PoiContract.PoiEntry.COLUM_NAME_IMAGE,
-                PoiContract.PoiEntry.COLUM_NAME_IMAGES,
+                /*PoiContract.PoiEntry.COLUM_NAME_IMAGES,
                 PoiContract.PoiEntry.COLUM_NAME_VIDEO,
                 PoiContract.PoiEntry.COLUM_NAME_AUDIOS,
-                PoiContract.PoiEntry.COLUM_NAME_ENLACE,
+                PoiContract.PoiEntry.COLUM_NAME_ENLACE,*/
                 PoiContract.PoiEntry.COLUM_NAME_LON,
                 PoiContract.PoiEntry.COLUM_NAME_LAT,
                 PoiContract.PoiEntry.COLUM_NAME_ALT,
@@ -162,15 +160,15 @@ public class PoiDAO {
             Poi p = new Poi();
             p.setNid(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NID)));
             p.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_TITLE)));
-            p.setCategory(PoiCategoryDAO.getPoiCategoryStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)), db));
+            p.setCat(cursor.getInt(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)));
             p.setBody(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_BODY)));
             p.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_DISTANCE)));
-            p.setVote(VoteDAO.getVoteStatic(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_RATE)), db));
+            p.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NUMBER)));
             p.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGE)));
-            p.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGES)), db));
+           /* p.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGES)), db));
             p.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_VIDEO)), db));
             p.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_AUDIOS)), db));
-            p.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ENLACE)), db));
+            p.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ENLACE)), db));*/
             Double lon = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LON));
             Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LAT));
             Double alt = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ALT));

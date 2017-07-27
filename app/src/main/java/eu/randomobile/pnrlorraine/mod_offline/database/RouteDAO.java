@@ -30,22 +30,11 @@ public class RouteDAO {
      */
     private SQLiteDatabase db;
 
-    private RessourceLinkDAO linkDAO;
-    private RessourceFileDAO fileDAO;
-    private PoiDAO poiDAO;
-    private RouteCategoryDAO categoryDAO;
-    private VoteDAO voteDAO;
-
     /**
      * Constructor of the DAO
      */
     public RouteDAO(Context context) {
         mDbHandler = new DbHandler(context);
-        //linkDAO = new RessourceLinkDAO(context);
-        //fileDAO = new RessourceFileDAO(context);
-        poiDAO = new PoiDAO(context);
-        //categoryDAO = new RouteCategoryDAO(context);
-//        voteDAO = new VoteDAO(context);
     }
 
     /**
@@ -101,15 +90,16 @@ public class RouteDAO {
             values.put(RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE, r.getRouteLengthMeters());
             values.put(RouteContract.RouteEntry.COLUM_NAME_TIME, r.getEstimatedTime());
             values.put(RouteContract.RouteEntry.COLUM_NAME_POIS, pois.toString());
-            values.put(RouteContract.RouteEntry.COLUM_NAME_CAT, r.getCategory().getTid());
-            values.put(RouteContract.RouteEntry.COLUM_NAME_RATE, r.getVote().getEntity_id());
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_CAT, r.getCategory().getTid());
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_NUMBER, r.getVote().getEntity_id());
             values.put(RouteContract.RouteEntry.COLUM_NAME_IMAGE, r.getMainImage());
-            values.put(RouteContract.RouteEntry.COLUM_NAME_IMAGES, getListRessourceFile(r.getImages()));
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_IMAGES, getListRessourceFile(r.getImages()));
             values.put(RouteContract.RouteEntry.COLUM_NAME_MAP, r.getUrlMap());
             values.put(RouteContract.RouteEntry.COLUM_NAME_SLOPE, r.getSlope());
-            values.put(RouteContract.RouteEntry.COLUM_NAME_VIDEO, getListRessourceFile(r.getVideos()));
-            values.put(RouteContract.RouteEntry.COLUM_NAME_AUDIOS, getListRessourceFile(r.getAudios()));
-            values.put(RouteContract.RouteEntry.COLUM_NAME_ENLACE, getListRessourceLink(r.getEnlaces()));
+            values.put(RouteContract.RouteEntry.COLUM_NAME_COLOR, r.getColor());
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_VIDEO, getListRessourceFile(r.getVideos()));
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_AUDIOS, getListRessourceFile(r.getAudios()));
+            //values.put(RouteContract.RouteEntry.COLUM_NAME_ENLACE, getListRessourceLink(r.getEnlaces()));
             update = db.update(RouteContract.RouteEntry.TABLE_NAME, values, RouteContract.RouteEntry.COLUM_NAME_NID + " = ?", new String[]{String.valueOf(r.getNid())});
             if (update == 0) {
                 values.put(RouteContract.RouteEntry.COLUM_NAME_NID, r.getNid());
@@ -118,8 +108,8 @@ public class RouteDAO {
         }
     }
 
-    public List<Route> getAllRoute() {
-        List<Route> routes = new ArrayList<>();
+    public Route getRoute(String nid) {
+        Route r = new Route();
         db = mDbHandler.getWritableDatabase();
 
         String[] projection = {
@@ -132,15 +122,77 @@ public class RouteDAO {
                 RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE,
                 RouteContract.RouteEntry.COLUM_NAME_TIME,
                 RouteContract.RouteEntry.COLUM_NAME_POIS,
-                RouteContract.RouteEntry.COLUM_NAME_CAT,
-                RouteContract.RouteEntry.COLUM_NAME_RATE,
+                RouteContract.RouteEntry.COLUM_NAME_COLOR,
+                //RouteContract.RouteEntry.COLUM_NAME_CAT,
+                //RouteContract.RouteEntry.COLUM_NAME_NUMBER,
                 RouteContract.RouteEntry.COLUM_NAME_IMAGE,
-                RouteContract.RouteEntry.COLUM_NAME_IMAGES,
+                //RouteContract.RouteEntry.COLUM_NAME_IMAGES,
                 RouteContract.RouteEntry.COLUM_NAME_MAP,
                 RouteContract.RouteEntry.COLUM_NAME_SLOPE,
-                RouteContract.RouteEntry.COLUM_NAME_VIDEO,
+                /*RouteContract.RouteEntry.COLUM_NAME_VIDEO,
                 RouteContract.RouteEntry.COLUM_NAME_AUDIOS,
-                RouteContract.RouteEntry.COLUM_NAME_ENLACE,
+                RouteContract.RouteEntry.COLUM_NAME_ENLACE,*/
+        };
+
+        String selection = RouteContract.RouteEntry.COLUM_NAME_NID + " = ?";
+        String[] arg = {nid};
+
+        Cursor cursor = db.query(
+                RouteContract.RouteEntry.TABLE_NAME,
+                projection,
+                selection,
+                arg,
+                null,
+                null,
+                null
+        );
+
+
+        if (cursor.moveToNext()) {
+            r.setNid(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_NID)));
+            r.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_TITLE)));
+            r.setBody(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_BODY)));
+            r.setDifficulty_tid(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_DIFFICULTY)));
+            r.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_DISTANCE)));
+            r.setTrack(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_GEOM)));
+            r.setRouteLengthMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE)));
+            r.setEstimatedTime(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_TIME)));
+            r.setIdsPois(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_POIS)));
+            r.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGE)));
+            r.setUrlMap(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_MAP)));
+            r.setSlope(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_SLOPE)));
+            r.setColor(cursor.getInt(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_COLOR)));
+        }
+
+        cursor.close();
+
+        return r;
+    }
+
+    public ArrayList<Route> getAllRoute() {
+        ArrayList<Route> routes = new ArrayList<>();
+        db = mDbHandler.getWritableDatabase();
+
+        String[] projection = {
+                RouteContract.RouteEntry.COLUM_NAME_NID,
+                RouteContract.RouteEntry.COLUM_NAME_TITLE,
+                RouteContract.RouteEntry.COLUM_NAME_BODY,
+                RouteContract.RouteEntry.COLUM_NAME_DIFFICULTY,
+                RouteContract.RouteEntry.COLUM_NAME_DISTANCE,
+                RouteContract.RouteEntry.COLUM_NAME_GEOM,
+                RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE,
+                RouteContract.RouteEntry.COLUM_NAME_TIME,
+                RouteContract.RouteEntry.COLUM_NAME_POIS,
+                RouteContract.RouteEntry.COLUM_NAME_COLOR,
+                //RouteContract.RouteEntry.COLUM_NAME_CAT,
+                //RouteContract.RouteEntry.COLUM_NAME_NUMBER,
+                RouteContract.RouteEntry.COLUM_NAME_IMAGE,
+                //RouteContract.RouteEntry.COLUM_NAME_IMAGES,
+                RouteContract.RouteEntry.COLUM_NAME_MAP,
+                RouteContract.RouteEntry.COLUM_NAME_SLOPE,
+                /*RouteContract.RouteEntry.COLUM_NAME_VIDEO,
+                RouteContract.RouteEntry.COLUM_NAME_AUDIOS,
+                RouteContract.RouteEntry.COLUM_NAME_ENLACE,*/
         };
 
         Cursor cursor = db.query(
@@ -163,16 +215,17 @@ public class RouteDAO {
             r.setTrack(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_GEOM)));
             r.setRouteLengthMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ROUTE_DISTANCE)));
             r.setEstimatedTime(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_TIME)));
-            r.setPois(poiDAO.getResourcePois(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_POIS))));
-            r.setCategory(RouteCategoryDAO.getRouteCategoryStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)), db));
-            r.setVote(VoteDAO.getVoteStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_RATE)), db));
+            r.setIdsPois(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_POIS)));
+            //r.setCategory(RouteCategoryDAO.getRouteCategoryStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)), db));
+            //r.setVote(VoteDAO.getVoteStatic(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_NUMBER)), db));
             r.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGE)));
-            r.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGES)), db));
+            //r.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_IMAGES)), db));
             r.setUrlMap(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_MAP)));
             r.setSlope(cursor.getDouble(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_SLOPE)));
-            r.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_VIDEO)), db));
-            r.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_AUDIOS)), db));
-            r.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ENLACE)), db));
+            r.setColor(cursor.getInt(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_COLOR)));
+            //r.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_VIDEO)), db));
+            //r.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_AUDIOS)), db));
+            //r.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_ENLACE)), db));
 
             routes.add(r);
         }

@@ -33,7 +33,17 @@ public class ResourcePoi extends Resource implements Parcelable {
 	//modif thib
 	private int nid;
 
+	public ResourcePoi(String body, String title, double longitude, double latitude, int type, int nid, String idp) {
+		super(idp, "");
+		this.body = body;
+		this.title = title;
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.type = type;
+		this.nid = nid;
+	}
 	public ResourcePoi(String body, String title, double longitude, double latitude, int type, int nid) {
+		super("", "");
 		this.body = body;
 		this.title = title;
 		this.longitude = longitude;
@@ -42,7 +52,28 @@ public class ResourcePoi extends Resource implements Parcelable {
 		this.nid = nid;
 	}
 
+	public ResourcePoi(String body, String title, double longitude, double latitude, int type, int nid, int number) {
+		super("", "");
+		this.body = body;
+		this.title = title;
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.type = type;
+		this.nid = nid;
+		this.numberInRoute = number;
+	}
+
+	public ResourcePoi(String body, String title, double longitude, double latitude, int nid) {
+		super("", "");
+		this.body = body;
+		this.title = title;
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.nid = nid;
+	}
+
 	public ResourcePoi() {
+		super("", "");
 	}
 
 	@Override
@@ -55,6 +86,7 @@ public class ResourcePoi extends Resource implements Parcelable {
 				"latitude=" + latitude + "\n\t" +
 				"type=" + type + "\n\t" +
 				"nid=" + nid + "\n" +
+				"number=" + numberInRoute + "\n" +
 				'}';
 	}
 

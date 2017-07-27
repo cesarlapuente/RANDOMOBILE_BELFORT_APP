@@ -60,8 +60,6 @@ import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,34 +71,28 @@ import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.WKTUtil;
 import eu.randomobile.pnrlorraine.mod_global.data_access.DownloadAndSaveTPK;
 import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.libraries.download.DownloadUrl.OnTaskCompletedInterface;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa.ComboCapasMapaInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi.PoisInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
-import eu.randomobile.pnrlorraine.mod_global.model.Route.RoutesInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.User;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.imgs.GridImagesActivity;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.vids.ListVideosActivity;
-import eu.randomobile.pnrlorraine.mod_notification.Cache;
-import eu.randomobile.pnrlorraine.mod_offline.Offline;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
-import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute;
-import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute.RoutesModeOfflineInterface;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RessourceFileDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RouteDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
-import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
 import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
-public class RouteDetailActivity extends Activity implements RoutesInterface, RoutesModeOfflineInterface,
-        ComboCapasMapaInterface, PoisInterface, PoisModeOfflineInterface, OnTaskCompletedInterface {
+public class RouteDetailActivity extends Activity implements /*RoutesInterface, RoutesModeOfflineInterface,
+        */ComboCapasMapaInterface/*, PoisInterface, PoisModeOfflineInterface, OnTaskCompletedInterface */ {
     public static final String PARAM_KEY_NID = "nid";
     public static final String PARAM_KEY_DISTANCE = "distance";
     public static final String PARAM_KEY_NID_MOSTRAR = "mapa_nid_mostrar";
@@ -160,9 +152,19 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     private Dialog dialogPoi = null;
     private String TAG;
 
+    private RouteDAO routeDAO;
+    private PoiDAO poiDAO;
+    private VoteDAO voteDAO;
+    private RessourceFileDAO fileDAO;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_detail);
+
+        routeDAO = new RouteDAO(getApplicationContext());
+        poiDAO = new PoiDAO((getApplicationContext()));
+        voteDAO = new VoteDAO(getApplicationContext());
+        fileDAO = new RessourceFileDAO(getApplicationContext());
 
         this.app = (MainApp) getApplication();
 
@@ -174,12 +176,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
         if (b != null) {
             paramNid = b.getString(PARAM_KEY_NID);
-            for (Route route : app.getRoutesList()) {
-                if (route.getNid().equals(paramNid)) {
-                    this.route = route;
-                    Log.d("JmLog","Objet route : "+route.getTitle()+" "+route.getUrlMap()+" "+route.getImages());
-            }
-            }
+
+            route = routeDAO.getRoute(paramNid);
+            route.setPois(poiDAO.getResourcePois(route.getIdsPois()));
+            route.setVote(voteDAO.getVote(route.getNid()));
+            route.setImages(fileDAO.getListResourceFiles(route.getNid(), "images"));
 
             paramDistanceMeters = b.getDouble(PARAM_KEY_DISTANCE);
             paramTitleRoute = b.getString(PARAM_KEY_TITLE_ROUTE);
@@ -191,11 +192,16 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         paramType = app.DRUPAL_TYPE_ROUTE;
         Log.d("JmLog","La route main est : "+route.getTitle()+" si elle a image :"+route.getMainImage()+" gallery : "+route.getImages());
 
+        //inicializarMapa();
+        map = (MapView) findViewById(R.id.mapa);
+        ArcGISMap mapArgis = new ArcGISMap(Basemap.Type.IMAGERY, 47.6333, 6.8667, 16);
+        //Point pt = new Point(34.056295, -117.195800, SpatialReferences.getWgs84());
+        map.setMap(mapArgis);
         initializeComponents();
-        inicializarMapa();
-        inicializarForm();
+        //
+        //inicializarForm();
         setData();
-        chekcOfflineMapState();
+        //chekcOfflineMapState();
     }
 
     private void initializeComponents() {
@@ -280,8 +286,8 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
         // <----------------->_MAP_DECLARATIONS_<----------------->
 
-        map = (MapView) findViewById(R.id.mapa);
-        map.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
+        /*map = (MapView) findViewById(R.id.mapa);
+        map.setMap(new ArcGISMap(Basemap.createImagery())); //Todo change init for arcgis 100.0.0*/
         map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map) {
             @Override
             public boolean onSingleTapConfirmed(final MotionEvent e) {
@@ -490,10 +496,12 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         map.getMap().addDoneLoadingListener(new Runnable() {
             @Override
             public void run() {
-                LocationDisplay ls = map.getLocationDisplay();
+                /*LocationDisplay ls = map.getLocationDisplay();
                 ls.addLocationChangedListener(new MyLocationListener());
                 ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
-                ls.startAsync();
+                ls.startAsync();*/
+                geometricLayer = new GraphicsOverlay();
+                geometricPOIsLayer = new GraphicsOverlay();
                 representarGeometrias();
             }
         });
@@ -797,7 +805,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         imageMap.mBubbleMap.clear();
         imageMap.postInvalidate();
         // Activar GPS
-        LocationDisplay ls = map.getLocationDisplay();
+        /*LocationDisplay ls = map.getLocationDisplay();
 
         if (ls.isShowLocation() == false) {
             ls.addLocationChangedListener(new MyLocationListener());
@@ -807,7 +815,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         ls.startAsync();
         if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.parseInt(this.paramNid)) == false)
             //showDialog();
-            Log.d("Dialod here", "Info descarga");
+            Log.d("Dialod here", "Info descarga");*/
     }
 
     @Override
@@ -1037,7 +1045,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         finish();
     }
 
-    @Override
+    /*@Override
     public void seCargoListaRoutes(ArrayList<Route> routes) {
         // TODO Auto-generated method stub
 
@@ -1047,11 +1055,11 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     public void producidoErrorAlCargarListaRoutes(String error) {
         // TODO Auto-generated method stub
 
-    }
+    }*/
 
 
     public void inicializarMapa() {
-        ponerCapaBase();
+        //ponerCapaBase();
 
 
         geometricLayer = new GraphicsOverlay();
@@ -1062,28 +1070,105 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     }
 
     private void representarGeometrias() {
-        if (DataConection.hayConexion(this)) {
-            Log.d("Milog", "Voy a cargar los datos");
 
-            if (paramType != null) {
-                if (paramType.equals(app.DRUPAL_TYPE_ROUTE)) {
-                    Route.routesInterface = this;
-                    Route.cargarRoute(app, paramNid);
-                }
+        GraphicsOverlay gr = new GraphicsOverlay();
+        if (route != null) {
+            Polyline polylineProyectado = null;
+            double latmin = 180;
+            double latmax = -180;
+            double lonmin = 180;
+            double lonmax = -180;
+            if (route.getTrack() != null) {
+                polylineProyectado = WKTUtil.getPolylineFromWKTLineStringField(app, route.getTrack());
+                Log.e("****", "representarGeometrias: " + "if");
             }
-        } else {
-            // panelCargando.setVisibility(View.GONE);
-            if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.valueOf(paramNid))) {
-                OfflineRoute.routesInterface = this;
-                OfflineRoute.cargarRouteOffline(app, paramNid);
-            } else
-                Util.mostrarMensaje(
-                        this,
-                        getResources().getString(
-                                R.string.mod_global__sin_conexion_a_internet),
-                        getResources()
-                                .getString(
-                                        R.string.mod_global__no_dispones_de_conexion_a_internet));
+
+
+            SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, route.getColor(), 6);
+
+            gr.getGraphics().add(new Graphic(polylineProyectado, lineSymbol));
+
+
+            for (ResourcePoi p : route.getPois()) {
+                PictureMarkerSymbol sym;
+                int type = p.getType();
+                int number = p.getNumber();
+                if (p.getLatitude() < latmin)
+                    latmin = p.getLatitude();
+                if (p.getLatitude() > latmax)
+                    latmax = p.getLatitude();
+                if (p.getLongitude() < lonmin)
+                    lonmin = p.getLongitude();
+                if (p.getLongitude() > lonmax)
+                    lonmax = p.getLongitude();
+                Point puntoProyectado = new Point(p.getLongitude(),
+                        p.getLatitude(), SpatialReferences.getWgs84());
+                String claseNombre = "";
+                switch (type) {
+                    case 52:
+                        try {
+                            String num = String.valueOf(number);
+                            if (number == 1) {
+                                firstPoint = puntoProyectado;
+                            }
+                            if (number < 10) {
+                                num = "0" + number;
+                            }
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_" + num, "drawable", getPackageName())));
+                            claseNombre = this.getResources().getString(R.string.punto_de_direccion);
+                        } catch (Exception e) {
+                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
+                        }
+                        break;
+                    case 26:
+                    case 47:
+                    case 48:
+                    case 49:
+                    case 50:
+                    case 51: // Hébergements
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
+                        claseNombre = this.getResources().getString(R.string.alojamientos);
+                        firstPoint = puntoProyectado;
+                        break;
+                    case 30: //Patrimoine naturel
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_naturaleza));
+                        claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
+                        break;
+                    case 36:  //Monuments
+                    case 28:
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
+                        claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
+                        break;
+                    case 27: //Restauracion
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
+                        claseNombre = this.getResources().getString(R.string.restauracion);
+                        break;
+                    case 25: //Offices de tourisme
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
+                        claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
+                        break;
+                    default:
+                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
+                        claseNombre = this.getResources().getString(R.string.punto_de_interes);
+                }
+
+                final HashMap<String, Object> attrs = new HashMap<String, Object>();
+                attrs.put("nombre", p.getTitle());
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    attrs.put("descripcion", Html.fromHtml(p.getBody(), Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    attrs.put("descripcion", Html.fromHtml(p.getBody()).toString());
+                }
+                attrs.put("nid", Integer.toString(p.getNid()));
+                attrs.put("clase", Poi.class.getName());
+                attrs.put("cat", claseNombre);
+
+                gr.getGraphics().add(new Graphic(puntoProyectado, attrs, sym));
+            }
+
+            map.getGraphicsOverlays().add(gr);
+
+            map.setViewpointGeometryAsync(new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84()), 60);
         }
     }
 
@@ -1251,89 +1336,6 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                     } catch (Exception e) {
                         sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
                     }
-                    /*switch (number) {
-                        case 1:
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_01));
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_01","drawable", getPackageName())));
-
-                            firstPoint = puntoProyectado;
-                            break;
-                        case 2:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_02));
-                            break;
-                        case 3:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_03));
-                            break;
-                        case 4:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_04));
-                            break;
-                        case 5:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_05));
-                            break;
-                        case 6:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_06));
-                            break;
-                        case 7:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_07));
-                            break;
-                        case 8:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_08));
-                            break;
-                        case 9:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_09));
-                            break;
-                        case 10:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_10));
-                            break;
-                        case 11:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_11));
-                            break;
-                        case 12:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_12));
-                            break;
-                        case 13:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_13));
-                            break;
-                        case 14:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_14));
-                            break;
-                        case 15:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_15));
-                            break;
-                        case 16:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_16));
-                            break;
-                        case 17:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_17));
-                            break;
-                        case 18:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_18));
-                            break;
-                        case 19:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_19));
-                            break;
-                        case 20:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_20));
-                            break;
-                        case 21:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_21));
-                            break;
-                        case 22:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_22));
-                            break;
-                        case 23:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_23));
-                            break;
-                        case 24:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_24));
-                            break;
-                        case 25:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.mapa_ruta_num_25));
-                            break;
-
-                        default:
-                            sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
-                    }*/
                     break;
                 case 26:
                 case 47:
@@ -1412,6 +1414,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Polygon.class.getName())) {
+                    Log.e("***", "polygon");
                     Polygon polygon = (Polygon) geomObj;
                     SimpleFillSymbol sym = new SimpleFillSymbol();
                     sym.setColor(
@@ -1423,6 +1426,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 } else if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Point.class.getName())) {
+                    Log.e("***", "point");
 
                     final Point point = (Point) geomObj;
 
@@ -1454,17 +1458,18 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
                             // Centrar en el poi y hacer zoom
                             double scale = 5000.0;
-                            map.setViewpointCenterAsync(point, scale);
+                            // map.setViewpointCenterAsync(point, scale);
                         }
                     }.execute(1);
 
                 } else if (geomObj != null
                         && geomObj.getClass().getName()
                         .equals(Polyline.class.getName())) {
+                    Log.e("***", "polyline");
                     Polyline polyline = (Polyline) geomObj;
                     //int color = paramColorRoute;
                     //TOTO
-                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 6));
+                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.CYAN, 6));
                     geometricLayer.getGraphics().add(gr);
                 }
             }
@@ -1483,10 +1488,10 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
             //NewEnv.merge(env);
         }
 
-        this.map.setViewpointGeometryAsync(NewEnv, 100);
+        //this.map.setViewpointGeometryAsync(NewEnv, 100);
     }
 
-    private void copyMapFileInAppFileDir(String fileOutput, String fileAssetsInput) {
+   /* private void copyMapFileInAppFileDir(String fileOutput, String fileAssetsInput) {
         FileOutputStream destinationFileStream = null;
         InputStream assetsOriginFileStream = null;
         try {
@@ -1509,7 +1514,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
     public void ponerCapaBase() {
         /* Codigo de prueba */
@@ -1616,7 +1621,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         }
     }
 
-    @Override
+    /*@Override
     public void seCargoListaRoutesOffline(ArrayList<Route> routes) {
         // TODO Auto-generated method stub
 
@@ -1641,14 +1646,14 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
     public void producidoErrorAlCargarRouteOffline(String error) {
         // TODO Auto-generated method stub
         // panelCargando.setVisibility(View.GONE);
-    }
+    }*/
 
     @Override
     public void seCerroComboCapas() {
         // TODO Auto-generated method stub
         ponerCapaBase();
     }
-
+/*
     // El interface de Pois es solo para el filtrado de pois.
     private void cargaActivitySearch() {
         Intent intent = new Intent(RouteDetailActivity.this,
@@ -1658,7 +1663,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         startActivityForResult(intent, 1);
     }
 
-    @Override
+    /*@Override
     public void seCargoListaPois(ArrayList<Poi> pois) {
         // TODO Auto-generated method stub
         if (pois != null) {
@@ -1727,7 +1732,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
         // Poner el texto al bot�n que hace de combo
         //this.btnCategorias.setText(this.categoryName);
-    }
+    }*/
 
     private void filterPois() {
         if (arrayPois != null) {
@@ -1860,7 +1865,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
 
     }
 */
-    @Override
+   /* @Override
     public void seCargoListaPoisOffline(ArrayList<Poi> pois) {
         // TODO Auto-generated method stub
         if (pois != null) {
@@ -1913,7 +1918,7 @@ public class RouteDetailActivity extends Activity implements RoutesInterface, Ro
         // TODO Auto-generated method stub
         // RouteDetailActivity.this.panelCargandoMapas.setVisibility(View.VISIBLE);
 
-    }
+    }*/
 
     /**
      * Location listener propio

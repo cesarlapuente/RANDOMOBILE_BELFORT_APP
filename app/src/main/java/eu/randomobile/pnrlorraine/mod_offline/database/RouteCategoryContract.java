@@ -15,10 +15,10 @@ public final class RouteCategoryContract {
     private static final String TEXT = " TEXT, ";
     static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + RouteCategoryEntry.TABLE_NAME + "(" +
-                    RouteCategoryEntry.COLUM_NAME_TID + " TEXT PRIMARY KEY," +
+                    RouteCategoryEntry.COLUM_NAME_IDP + " TEXT PRIMARY KEY," +
                     RouteCategoryEntry.COLUM_NAME_NAME + TEXT +
                     RouteCategoryEntry.COLUM_NAME_DESCRIPTION + TEXT +
-                    RouteCategoryEntry.COLUM_NAME_COLOR + " TEXT)";
+                    RouteCategoryEntry.COLUM_NAME_TID + " TEXT)";
     private static final String INTEGER = " INTEGER, ";
 
     private RouteCategoryContract() {
@@ -34,7 +34,7 @@ public final class RouteCategoryContract {
 
         static final String COLUM_NAME_DESCRIPTION = "description";
 
-        static final String COLUM_NAME_COLOR = "color";
+        static final String COLUM_NAME_IDP = "idp";
 
         private RouteCategoryEntry() {
         }

@@ -17,6 +17,7 @@ public final class PoiCategoryContract {
             "CREATE TABLE " + PoiCategoryEntry.TABLE_NAME + "(" +
                     PoiCategoryEntry.COLUM_NAME_TID + " TEXT PRIMARY KEY," +
                     PoiCategoryEntry.COLUM_NAME_NAME + TEXT +
+                    PoiCategoryEntry.COLUM_NAME_IDP + TEXT +
                     PoiCategoryEntry.COLUM_NAME_DESCRIPTION + TEXT +
                     PoiCategoryEntry.COLUM_NAME_ICON + " TEXT)";
     private static final String INTEGER = " INTEGER, ";
@@ -29,6 +30,8 @@ public final class PoiCategoryContract {
         static final String TABLE_NAME = "poiCategory";
 
         static final String COLUM_NAME_TID = "tid";
+
+        static final String COLUM_NAME_IDP = "idp";
 
         static final String COLUM_NAME_NAME = "name";
 

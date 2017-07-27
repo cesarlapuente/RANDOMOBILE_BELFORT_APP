@@ -18,10 +18,13 @@ public class Vote {
 	private int numVotes;
 	private int value;
 
-	public Vote(String entity_id, int numVotes, int value) {
+	private String idParent;
+
+	public Vote(String entity_id, int numVotes, int value, String idParent) {
 		this.entity_id = entity_id;
 		this.numVotes = numVotes;
 		this.value = value;
+		this.idParent = idParent;
 	}
 
 	public Vote() {
@@ -197,6 +200,24 @@ public class Vote {
 			}
 				},
 		params);
+	}
+
+	public String getIdParent() {
+		return idParent;
+	}
+
+	public void setIdParent(String idParent) {
+		this.idParent = idParent;
+	}
+
+	@Override
+	public String toString() {
+		return "Vote{" +
+				"entity_id='" + entity_id + '\'' +
+				"idp='" + idParent + '\'' +
+				", numVotes=" + numVotes +
+				", value=" + value +
+				'}';
 	}
 
 	public String getEntity_id() {

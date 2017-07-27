@@ -20,8 +20,8 @@ public class RouteCategoryTerm extends Term {
 	private Color color;
 
 	// Modif Thibault
-	public RouteCategoryTerm(String tid, String name, String description) {
-		super(tid, name, description);
+	public RouteCategoryTerm(String tid, String name, String description, String idp) {
+		super(tid, name, description, idp);
 	}
 
 	//

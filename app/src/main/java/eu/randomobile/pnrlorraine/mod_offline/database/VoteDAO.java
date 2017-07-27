@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.randomobile.pnrlorraine.mod_global.model.Vote;
@@ -33,15 +34,17 @@ public class VoteDAO {
         mDbHandler = new DbHandler(context);
     }
 
-    static public Vote getVoteStatic(String id, SQLiteDatabase dbin) {
+    public Vote getVote(String id) {
         Vote v = new Vote();
-        SQLiteDatabase db = dbin;
+        db = mDbHandler.getWritableDatabase();
 
         String[] projection = {
                 VoteContract.VoteEntry.COLUM_NAME_NUMVOTE,
-                VoteContract.VoteEntry.COLUM_NAME_VALUE
+                VoteContract.VoteEntry.COLUM_NAME_VALUE,
+                VoteContract.VoteEntry.COLUM_NAME_IDP,
+                VoteContract.VoteEntry._ID
         };
-        String selection = VoteContract.VoteEntry._ID + " = ?";
+        String selection = VoteContract.VoteEntry.COLUM_NAME_IDP + " = ?";
         String[] arg = {id};
 
         Cursor cursor = db.query(
@@ -58,12 +61,47 @@ public class VoteDAO {
             String idEntity = cursor.getString(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry._ID));
             int num = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_NUMVOTE));
             int value = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_VALUE));
-            v = new Vote(idEntity, num, value);
+            String idp = cursor.getString(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_IDP));
+            v = new Vote(idEntity, num, value, idp);
         }
 
         cursor.close();
 
         return v;
+    }
+
+    public List<Vote> getAllVote() {
+        List<Vote> votes = new ArrayList<>();
+
+        SQLiteDatabase db = mDbHandler.getWritableDatabase();
+
+        String[] projection = {
+                VoteContract.VoteEntry.COLUM_NAME_NUMVOTE,
+                VoteContract.VoteEntry.COLUM_NAME_VALUE,
+                VoteContract.VoteEntry.COLUM_NAME_IDP,
+                VoteContract.VoteEntry._ID
+        };
+
+        Cursor cursor = db.query(
+                VoteContract.VoteEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            String idEntity = cursor.getString(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry._ID));
+            int num = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_NUMVOTE));
+            int value = cursor.getInt(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_VALUE));
+            String idp = cursor.getString(cursor.getColumnIndexOrThrow(VoteContract.VoteEntry.COLUM_NAME_IDP));
+            votes.add(new Vote(idEntity, num, value, idp));
+        }
+        cursor.close();
+
+        return votes;
     }
 
     /**
@@ -81,15 +119,13 @@ public class VoteDAO {
             ContentValues values = new ContentValues();
             values.put(VoteContract.VoteEntry.COLUM_NAME_NUMVOTE, v.getNumVotes());
             values.put(VoteContract.VoteEntry.COLUM_NAME_VALUE, v.getValue());
-            update = db.update(VoteContract.VoteEntry.TABLE_NAME, values, VoteContract.VoteEntry._ID + " = ?", new String[]{String.valueOf(v.getEntity_id())});
+            values.put(VoteContract.VoteEntry._ID, v.getEntity_id());
+            update = db.update(VoteContract.VoteEntry.TABLE_NAME, values, VoteContract.VoteEntry.COLUM_NAME_IDP + " = ?", new String[]{String.valueOf(v.getIdParent())});
             if (update == 0) {
-                values.put(VoteContract.VoteEntry._ID, v.getEntity_id());
+                values.put(VoteContract.VoteEntry.COLUM_NAME_IDP, v.getIdParent());
                 db.insert(VoteContract.VoteEntry.TABLE_NAME, null, values);
             }
         }
     }
 
-    public Vote getVote(String id) {
-        return getVoteStatic(id, db);
-    }
 }

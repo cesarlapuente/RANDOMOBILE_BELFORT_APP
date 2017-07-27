@@ -33,12 +33,13 @@ public class PoiCategoryDAO {
         mDbHandler = new DbHandler(context);
     }
 
-    static public PoiCategoryTerm getPoiCategoryStatic(String id, SQLiteDatabase dbin) {
+    public PoiCategoryTerm getPoiCategory(String id) {
         PoiCategoryTerm term = new PoiCategoryTerm();
-        SQLiteDatabase db = dbin;
+        db = mDbHandler.getWritableDatabase();
 
         String[] projection = {
                 PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_NAME,
+                PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_IDP,
         };
         String selection = PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_TID + " = ?";
         String[] arg = {id};
@@ -56,7 +57,8 @@ public class PoiCategoryDAO {
         while (cursor.moveToNext()) {
             String tid = cursor.getString(cursor.getColumnIndexOrThrow(PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_TID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_NAME));
-            term = new PoiCategoryTerm(tid, name);
+            String idp = cursor.getString(cursor.getColumnIndexOrThrow(PoiCategoryContract.PoiCategoryEntry.COLUM_NAME_IDP));
+            term = new PoiCategoryTerm(tid, name, idp);
         }
 
         cursor.close();
@@ -86,9 +88,5 @@ public class PoiCategoryDAO {
                 db.insert(PoiCategoryContract.PoiCategoryEntry.TABLE_NAME, null, values);
             }
         }
-    }
-
-    public PoiCategoryTerm getPoiCategory(String id) {
-        return getPoiCategoryStatic(id, db);
     }
 }

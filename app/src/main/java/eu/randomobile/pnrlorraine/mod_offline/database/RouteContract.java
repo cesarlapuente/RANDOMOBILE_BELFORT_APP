@@ -26,15 +26,10 @@ public final class RouteContract {
                     RouteEntry.COLUM_NAME_ROUTE_DISTANCE + INTEGER +
                     RouteEntry.COLUM_NAME_TIME + INTEGER +
                     RouteEntry.COLUM_NAME_POIS + TEXT +
-                    RouteEntry.COLUM_NAME_CAT + TEXT +
-                    RouteEntry.COLUM_NAME_RATE + TEXT +
                     RouteEntry.COLUM_NAME_MAP + TEXT +
                     RouteEntry.COLUM_NAME_IMAGE + TEXT +
-                    RouteEntry.COLUM_NAME_IMAGES + TEXT +
                     RouteEntry.COLUM_NAME_SLOPE + INTEGER +
-                    RouteEntry.COLUM_NAME_VIDEO + TEXT +
-                    RouteEntry.COLUM_NAME_AUDIOS + TEXT +
-                    RouteEntry.COLUM_NAME_ENLACE + TEXT +
+                    RouteEntry.COLUM_NAME_COLOR + INTEGER +
                     RouteEntry.COLUM_NAME_BODY + " TEXT)";
 
     private RouteContract() {

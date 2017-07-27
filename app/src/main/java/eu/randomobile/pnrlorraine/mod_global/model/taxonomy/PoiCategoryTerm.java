@@ -21,8 +21,8 @@ public class PoiCategoryTerm extends Term implements Serializable {
     // modif thib
     private String icon;
 
-    public PoiCategoryTerm(String tid, String name) {
-        super(tid, name, "");
+    public PoiCategoryTerm(String tid, String name, String idParent) {
+        super(tid, name, "", idParent);
     }
 
     public PoiCategoryTerm() {

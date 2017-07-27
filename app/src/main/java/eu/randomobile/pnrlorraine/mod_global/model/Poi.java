@@ -35,8 +35,8 @@ public class Poi {
 	private ArrayList<ResourceLink> enlaces;
 	private ArrayList<TagTerm> tags;
 	private Vote vote;
-
-	// modif thib
+	private int number;
+	private int cat;
 
 	public static void cargarListaPoisOrdenadosDistancia(Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt){
 
@@ -99,6 +99,8 @@ public class Poi {
 		params);
 
 	}
+
+	// modif thib
 
 	public static void cargarPoi(Application application, String nid) {
 
@@ -401,11 +403,27 @@ public class Poi {
 
 		return R.drawable.ic_launcher;
 	}
-	
+
 	public static String getImageNameForCategoryTid(Application app, String tid){
 		int resId = Poi.getResourceIconForPoiCategoryTid(tid);
 		String imageName = app.getResources().getResourceEntryName(resId) + ".png";
 		return imageName;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public int getCat() {
+		return cat;
+	}
+
+	public void setCat(int cat) {
+		this.cat = cat;
 	}
 
 	@Override
@@ -415,7 +433,7 @@ public class Poi {
 				"title='" + title + '\'' + "\n\t" +
 				"body='" + body + '\'' + "\n\t" +
 				"distanceMeters=" + distanceMeters + "\n\t" +
-				"category=" + category + "\n\t" +
+				"cat=" + cat + "\n\t" +
 				"coordinates=" + coordinates + "\n\t" +
 				"mainImage='" + mainImage + '\'' + "\n\t" +
 				"images=" + images + "\n\t" +
@@ -424,6 +442,7 @@ public class Poi {
 				"enlaces=" + enlaces + "\n\t" +
 				"tags=" + tags + "\n\t" +
 				"vote=" + vote + "\n" +
+				"number=" + number + "\n" +
 				'}';
 	}
 	

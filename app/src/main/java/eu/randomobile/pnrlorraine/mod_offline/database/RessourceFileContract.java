@@ -13,15 +13,19 @@ public final class RessourceFileContract {
             "DROP TABLE IF EXISTS " + RessourceFileEntry.TABLE_NAME;
 
     private static final String TEXT = " TEXT, ";
+
     static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + RessourceFileEntry.TABLE_NAME + "(" +
-                    RessourceFileEntry.COLUM_NAME_FID + " TEXT PRIMARY KEY," +
+                    RessourceFileEntry._ID + " TEXT PRIMARY KEY," +
+                    RessourceFileEntry.COLUM_NAME_FID + TEXT +
+                    RessourceFileEntry.COLUM_NAME_IDP + TEXT +
                     RessourceFileEntry.COLUM_NAME_FILENAME + TEXT +
                     RessourceFileEntry.COLUM_NAME_URL + TEXT +
                     RessourceFileEntry.COLUM_NAME_BODY + TEXT +
                     RessourceFileEntry.COLUM_NAME_MIME + TEXT +
                     RessourceFileEntry.COLUM_NAME_TYPE + TEXT +
                     RessourceFileEntry.COLUM_NAME_TITLE + TEXT +
+                    RessourceFileEntry.COLUM_NAME_TYPER + TEXT +
                     RessourceFileEntry.COLUM_NAME_COPYRIGHT + " TEXT)";
     private static final String INTEGER = " INTEGER, ";
 
@@ -33,6 +37,8 @@ public final class RessourceFileContract {
         static final String TABLE_NAME = "ressourceFile";
 
         static final String COLUM_NAME_FID = "fid";
+
+        static final String COLUM_NAME_IDP = "idp";
 
         static final String COLUM_NAME_FILENAME = "filename";
 
@@ -47,6 +53,7 @@ public final class RessourceFileContract {
         static final String COLUM_NAME_TITLE = "title";
 
         static final String COLUM_NAME_COPYRIGHT = "copyright";
+        static final String COLUM_NAME_TYPER = "typeR";
 
         private RessourceFileEntry() {
         }

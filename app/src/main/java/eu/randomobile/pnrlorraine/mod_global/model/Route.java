@@ -45,8 +45,11 @@ public class Route {
     private ArrayList<TagTerm> tags;
     private Vote vote;
     private int color;
+    private String idsPois;
 
     public Route(){}
+
+    // modif thib
 
     public Route(String ROUTE_NID, String ROUTE_TITLE, String ROUTE_BODY, String ROUTE_DIFFICULTY_TID, double ROUTE_DISTANCE,
                  double ROUTE_LENGTH, double ROUTE_TIME, double ROUTE_SLOPE, String ROUTE_MAIN_PICTURE, String ROUTE_TRACK,
@@ -55,8 +58,6 @@ public class Route {
         this.title = ROUTE_TITLE;
         this.body = ROUTE_BODY;
     }
-
-    // modif thib
 
     public static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
 
@@ -501,6 +502,14 @@ public class Route {
                     }
                 }, params);
 
+    }
+
+    public String getIdsPois() {
+        return idsPois;
+    }
+
+    public void setIdsPois(String idsPois) {
+        this.idsPois = idsPois;
     }
 
     @Override

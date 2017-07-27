@@ -21,12 +21,23 @@ public class ResourceLink extends Resource implements Parcelable {
 	private String url;
 	private String title;
 
-	public ResourceLink(String url, String title) {
+	public ResourceLink(String url, String title, String idp) {
+		super(idp, "");
 		this.url = url;
 		this.title = title;
 	}
 
 	public ResourceLink() {
+		super("", "");
+	}
+
+	@Override
+	public String toString() {
+		return "ResourceLink{" +
+				"url='" + url + '\'' +
+				", title='" + title + '\'' +
+				"idp='" + super.getIdParent() + '\'' +
+				'}';
 	}
 
 	public String getUrl() {
