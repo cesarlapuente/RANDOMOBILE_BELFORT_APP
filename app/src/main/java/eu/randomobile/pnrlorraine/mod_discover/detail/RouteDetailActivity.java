@@ -286,108 +286,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         // <----------------->_MAP_DECLARATIONS_<----------------->
 
-        /*map = (MapView) findViewById(R.id.mapa);
-        map.setMap(new ArcGISMap(Basemap.createImagery())); //Todo change init for arcgis 100.0.0*/
-        map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map) {
-            @Override
-            public boolean onSingleTapConfirmed(final MotionEvent e) {
-                // Si el mapa no est� cargado, salir
-                if (map.getMap().getLoadStatus() == LoadStatus.NOT_LOADED) {
-                    return false;
-                }
-                final android.graphics.Point point = new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()));
-                final double tolerance = 8;
-                final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsIDS = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
-                graphicsIDS.addDoneListener(new Runnable() {
-                    @Override
-                    public void run() {
-                        final ListenableFuture<List<IdentifyGraphicsOverlayResult>> graphicsPoisSearch = map.identifyGraphicsOverlaysAsync(point, tolerance, false);
-                        graphicsPoisSearch.addDoneListener(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
-
-                                        List lr = graphicsIDS.get();
-                                        Graphic gr = (Graphic) lr.get(0);
-
-                                        if (gr != null) {
-                                            String nombre = (String) gr.getAttributes().get("nombre");
-                                            String clase = (String) gr.getAttributes().get("clase");
-                                            String nid = (String) gr.getAttributes().get("nid");
-                                            String descripcion = (String) gr.getAttributes().get("descripcion");
-                                            String cat = (String) gr.getAttributes().get("cat");
-
-                                            callout = map.getCallout();
-                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
-                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-                                            View contenidoCallout = null;
-
-                                            if (nid != null) {
-                                                if (!clase.equals(Route.class.getName()))
-                                                    contenidoCallout = getViewForCallout(nombre,
-                                                            clase, cat, nid);
-                                            }
-                                            else
-                                                dialogPoiDescription(nombre, descripcion);
-
-                                            if (contenidoCallout != null) {
-                                                callout.setContent(contenidoCallout);
-                                                callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
-                                                callout.show();
-                                            }
-                                        }
-
-                                    } else if (graphicsPoisSearch != null && graphicsPoisSearch.get().size() > 0) {
-                                        List lrPoiSearch = graphicsPoisSearch.get();
-
-                                        Graphic gr = (Graphic) lrPoiSearch.get(0);
-
-                                        if (gr != null) {
-                                            String nombre = (String) gr.getAttributes().get("nombre");
-                                            String clase = (String) gr.getAttributes().get("clase");
-                                            String nid = (String) gr.getAttributes().get("nid");
-                                            String descripcion = (String) gr.getAttributes().get("descripcion");
-                                            String cat = (String) gr.getAttributes().get("cat");
-
-                                            callout = map.getCallout();
-                                            callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
-                                            callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
-                                            View contenidoCallout;
-
-                                            if (nid != null) {
-                                                contenidoCallout = getViewForCallout(nombre, clase, cat, nid);
-
-                                            } else {
-                                                contenidoCallout = getViewForPoiCallout(nombre, descripcion);
-                                            }
-
-                                            callout.setContent(contenidoCallout);
-                                            callout.setLocation(map.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY()))));
-                                            callout.show();
-                                        }
-
-
-
-                                    } else {
-                                        if (callout != null && callout.isShowing()) {
-                                            callout.dismiss();
-                                        }
-                                    }
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                } catch (ExecutionException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-                });
-                return true;
-            }
-        });
-
-
         map.setOnTouchListener(new DefaultMapViewOnTouchListener(this, map){
             @Override
             public boolean onSingleTapConfirmed(final MotionEvent e) {
@@ -406,7 +304,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                             @Override
                             public void run() {
                                 try {
-                                    if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
+                                    if (graphicsIDS != null && !graphicsIDS.get().isEmpty()) {
                                         List<IdentifyGraphicsOverlayResult> lr = graphicsIDS.get();
                                         List<Graphic> listGraphic = new ArrayList<Graphic>();
                                         Graphic gr = null;
@@ -414,7 +312,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                                             listGraphic = lr.get(0).getGraphics();
                                         if (!listGraphic.isEmpty())
                                             gr = listGraphic.get(0);
-                                        //gr = geometricLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lr.get(0)));
 
                                         if (gr != null) {
                                             String nombre = (String) gr.getAttributes().get("nombre");
@@ -433,7 +330,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                                                     contenidoCallout = getViewForCallout(nombre,
                                                             clase, cat, nid);
                                             } else {
-                                                if (callout != null && callout.isShowing()) {
+                                                if (callout.isShowing()) {
                                                     callout.dismiss();
                                                 }
                                                 dialogPoiDescription(nombre, descripcion);
@@ -446,7 +343,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                                             }
                                         }
 
-                                    } else if (graphicsPoisSearch != null && graphicsPoisSearch.get().size() > 0) {
+                                    } else if (graphicsPoisSearch != null && !graphicsPoisSearch.get().isEmpty()) {
                                         List lrSearch = graphicsPoisSearch.get();
 
                                         Graphic gr = geometricPOIsLayer.getGraphics().get(geometricLayer.getGraphics().indexOf(lrSearch.get(0)));
@@ -1078,16 +975,11 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             double latmax = -180;
             double lonmin = 180;
             double lonmax = -180;
-            if (route.getTrack() != null) {
-                polylineProyectado = WKTUtil.getPolylineFromWKTLineStringField(app, route.getTrack());
-                Log.e("****", "representarGeometrias: " + "if");
-            }
-
+            polylineProyectado = WKTUtil.getPolylineFromWKTLineStringField(app, route.getTrack());
 
             SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, route.getColor(), 6);
 
             gr.getGraphics().add(new Graphic(polylineProyectado, lineSymbol));
-
 
             for (ResourcePoi p : route.getPois()) {
                 PictureMarkerSymbol sym;

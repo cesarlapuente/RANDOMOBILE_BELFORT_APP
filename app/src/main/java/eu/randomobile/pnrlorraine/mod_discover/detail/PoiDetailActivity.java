@@ -3,13 +3,10 @@ package eu.randomobile.pnrlorraine.mod_discover.detail;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Html;
@@ -27,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
@@ -60,25 +56,24 @@ import eu.randomobile.pnrlorraine.mod_events.EventsListActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
 import eu.randomobile.pnrlorraine.mod_global.libraries.bitmap_manager.BitmapManager;
-import eu.randomobile.pnrlorraine.mod_global.libraries.download.DownloadUrl;
-import eu.randomobile.pnrlorraine.mod_global.libraries.download.DownloadUrl.OnTaskCompletedInterface;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi.PoisInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
 import eu.randomobile.pnrlorraine.mod_global.model.User;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.imgs.GridImagesActivity;
 import eu.randomobile.pnrlorraine.mod_multi_viewers.vids.ListVideosActivity;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RessourceFileDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.RessourceLinkDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
 
-public class PoiDetailActivity extends Activity implements PoisInterface, PoisModeOfflineInterface, LocationListener, OnTaskCompletedInterface {
+public class PoiDetailActivity extends Activity /*implements PoisInterface, PoisModeOfflineInterface, LocationListener, OnTaskCompletedInterface*/ {
 	public static final String PARAM_KEY_NID = "nid";
 	public static final String PARAM_KEY_DISTANCE = "distance";
 	public static final String PARAM_KEY_DESNIVEL = "desnivel";
@@ -129,6 +124,11 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	GeoPoint ubicacionPunto;
 	ProgressBar pb;
 	private MapView mapa;
+
+	private PoiDAO poiDAO;
+	private RessourceFileDAO fileDAO;
+	private RessourceLinkDAO linkDAO;
+	private VoteDAO voteDAO;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -136,6 +136,11 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 
 		// Obtener la app
 		this.app = (MainApp) getApplication();
+
+		poiDAO = new PoiDAO(getApplicationContext());
+		fileDAO = new RessourceFileDAO(getApplicationContext());
+		linkDAO = new RessourceLinkDAO(getApplicationContext());
+		voteDAO = new VoteDAO(getApplicationContext());
 
 		// Recoger par�metros
 		Bundle b = getIntent().getExtras();
@@ -146,8 +151,19 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 			paramNumberVotes = b.getInt(PARAM_KEY_NUMBERVOTES);
 			paramValoration = b.getInt(PARAM_KEY_VALORATION);
 		}
-		
+
+		miPoi = poiDAO.getPoi(paramNid);
+		miPoi.setImages(fileDAO.getListResourceFiles(paramNid, "images"));
+		miPoi.setAudios(fileDAO.getListResourceFiles(paramNid, "audios"));
+		miPoi.setVideos(fileDAO.getListResourceFiles(paramNid, "videos"));
+		//miPoi.setEnlaces(linkDAO.getListResourceLinks());
+		miPoi.setVote(voteDAO.getVote(paramNid));
+
+		Log.e("########", miPoi.toString());
+
+
 		capturarControles();
+		seCargoPoi(miPoi);
 		escucharEventos();
 		inicializarForm();
 		inicializarMapa();
@@ -164,10 +180,10 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	//		ls.setLocationListener(new MyLocationListener());
 	//		ls.setAutoPanMode(AutoPanMode.OFF);
 			ls.startAsync();
-			if(locationManager == null){
+			/*if(locationManager == null){
 				locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			}
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);*/
 		}
 		
 	}
@@ -185,16 +201,16 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		    ls.stop();		 
 		}
 		
-	   	if (locationManager != null) {
+	   	/*if (locationManager != null) {
 			locationManager.removeUpdates(PoiDetailActivity.this);
 			locationManager = null;
-		}		
+		}*/
 		
 	}
 	
 	private void capturarControles() {
 		mapa = (MapView) findViewById(R.id.mapa);
-		mapa.setMap(new ArcGISMap(Basemap.Type.TOPOGRAPHIC, 34.056295, -117.195800, 16));
+		mapa.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 47.6333, 6.8667, 16));
 
 
 		// Para el tratamiento del menu
@@ -245,15 +261,15 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 						mImageMap.showBubble(id);
 						switch (mImageMap.getAreaAttribute(id, "name")) {
 						case "HOME":
-							if (locationManager != null)
+							/*if (locationManager != null)
 								locationManager.removeUpdates(PoiDetailActivity.this);
-							locationManager = null;
+							locationManager = null;*/
 							cargaActivityHome();
 							break;
 						case "BACK":
-							if (locationManager != null)
+							/*if (locationManager != null)
 								locationManager.removeUpdates(PoiDetailActivity.this);
-							locationManager = null;
+							locationManager = null;*/
 							finish();
 							break;
 						case "CHECK-IN":
@@ -278,18 +294,6 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 
 					}
 				});
-
-		// layoutVerEnMapa.setOnClickListener(new OnClickListener() {
-		// public void onClick(View arg0) {
-		// Intent intent = new Intent(PoiDetailActivity.this,
-		// ConcreteMapActivity.class);
-		// intent.putExtra(ConcreteMapActivity.PARAM_KEY_NID_MOSTRAR,
-		// miPoi.getNid());
-		// intent.putExtra(ConcreteMapActivity.PARAM_KEY_TYPE_DRUPAL,
-		// app.DRUPAL_TYPE_POI);
-		// startActivity(intent);
-		// }
-		// });
 
 		btnValorar.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
@@ -367,9 +371,9 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 			public void onClick(View arg0) {
 				//layoutBotonesMenuMas.setVisibility(View.GONE);
 				panelCargando.setVisibility(View.VISIBLE);
-				DownloadUrl.completedInterface = PoiDetailActivity.this;
+				/*DownloadUrl.completedInterface = PoiDetailActivity.this;
 				OfflinePoi.poisInterface = PoiDetailActivity.this;
-				OfflinePoi.fillPoisItem(app, miPoi.getNid());
+				OfflinePoi.fillPoisItem(app, miPoi.getNid());*/
 			}
 		});
 		btnMenuMasValorar.setOnClickListener(new OnClickListener() {
@@ -400,11 +404,11 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 				mapa.getLocationDisplay().startAsync();
 				mapa.getLocationDisplay().setAutoPanMode(LocationDisplay.AutoPanMode.OFF);//.setAutoPan(false);
 
-				if(locationManager == null){
+				/*if(locationManager == null){
 					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 				}
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);
-				//mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+				*///mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
 				mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
 			}
 		});
@@ -461,7 +465,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 	}
 
 	private void recargarDatos() {
-		if (DataConection.hayConexion(this)) {
+		/*if (DataConection.hayConexion(this)) {
 			// Si hay conexi�n, recargar los datos
 			panelCargando.setVisibility(View.VISIBLE);
 			Poi.poisInterface = this;
@@ -474,7 +478,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 			Util.mostrarMensaje(this,
 					getResources().getString(R.string.mod_global__sin_conexion_a_internet),
 					getResources().getString(R.string.mod_global__no_dispones_de_conexion_a_internet));
-		}
+		}*/
 	}
 
 	private void cargaActivityHome() {
@@ -508,27 +512,27 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 
 	public void seCargoPoi(Poi poi) {
 		if (poi != null) {
-			this.miPoi = poi;
+
 
 			// Poner el t�tulo
-			this.txtTitulo.setText(this.miPoi.getTitle());
+			this.txtTitulo.setText(miPoi.getTitle());
 
 			// Poner la categor�a
-			if (this.miPoi.getCategory() != null) {
+			/*if (this.miPoi.getCategory() != null) {
 				this.lblCategoria.setText(this.miPoi.getCategory().getName());
 
 			} else {
 				this.lblCategoria.setText(getResources().getString(R.string.mod_global__sin_datos));
-			}
+			}*/
 
 			// Poner la imagen de categoria
-			if (miPoi.getCategory() != null) {
+			if (miPoi.getCat() != -1) {
 				// BitmapManager.INSTANCE.loadBitmap(item.getCategory().getIcon(),
 				// holder.imgView, 36, 40);
 				String category;
-				category = miPoi.getCategory().getName();
+				//category = miPoi.getCategory().getName();
 
-				int clase =Integer.valueOf(miPoi.getCategory().getTid());
+				int clase = Integer.valueOf(miPoi.getCat());
 
 				switch (clase) {
 					case 25: //Offices de tourisme
@@ -558,9 +562,8 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 						imgViewCategoria.setBackgroundResource(R.drawable.poi_icono);
 				}
 
-			} else {
-				//imgViewCategoria.setImageResource(R.drawable.ic_launcher);
 			}
+
 
 			// Poner la distancia
 			String strDistance = "";
@@ -670,16 +673,10 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 			icon = poi.getCategory().getIcon();
 		}
 
-		dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(), poi.getNid(), poi.getCategory().getTid(), icon);
+		dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(), poi.getNid(), String.valueOf(poi.getCat()), icon);
 
 		Object geomObj = geometrias.get(0);
 		final Point punto = (Point) geomObj;
-		//double scale = 5000.0;
-		//mapa.centerAt(punto, true);
-		//mapa.setScale(scale);
-
-		//mapa.centerAt(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), false);
-		//mapa.setViewpointAsync(new Viewpoint(gp.getLongitude(), gp.getLatitude(), 10000000));
 		mapa.setViewpointCenterAsync(punto, 10000);
 	}
 
@@ -850,7 +847,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		}
 	}
 
-	@Override
+	/*@Override
 	public void seCargoListaPois(ArrayList<Poi> pois) {
 
 	}
@@ -1011,7 +1008,7 @@ public class PoiDetailActivity extends Activity implements PoisInterface, PoisMo
 		// TODO Auto-generated method stub
 		PoiDetailActivity.this.panelCargandoPoi.setVisibility(View.VISIBLE);
 		
-	}
+	}*/
 
 
 }

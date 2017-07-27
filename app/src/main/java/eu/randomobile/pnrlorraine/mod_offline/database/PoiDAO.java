@@ -17,7 +17,7 @@ import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 
 /**
  * RandomobileBelfort-Android
- * Created by Thibault on 21/07/2017.
+ * Created by Thibault Nougues on 21/07/2017.
  */
 
 public class PoiDAO {
@@ -54,6 +54,56 @@ public class PoiDAO {
      */
     public void destroy() {
         mDbHandler.close();
+    }
+
+    public Poi getPoi(String nid) {
+        Poi poi = new Poi();
+
+        db = mDbHandler.getWritableDatabase();
+
+        String[] projection = {
+                PoiContract.PoiEntry.COLUM_NAME_NID,
+                PoiContract.PoiEntry.COLUM_NAME_TITLE,
+                PoiContract.PoiEntry.COLUM_NAME_CAT,
+                PoiContract.PoiEntry.COLUM_NAME_BODY,
+                PoiContract.PoiEntry.COLUM_NAME_DISTANCE,
+                PoiContract.PoiEntry.COLUM_NAME_NUMBER,
+                PoiContract.PoiEntry.COLUM_NAME_IMAGE,
+                PoiContract.PoiEntry.COLUM_NAME_LON,
+                PoiContract.PoiEntry.COLUM_NAME_LAT,
+                PoiContract.PoiEntry.COLUM_NAME_ALT,
+        };
+
+        String selection = PoiContract.PoiEntry.COLUM_NAME_NID + " = ?";
+        String[] arg = {nid};
+
+        Cursor cursor = db.query(
+                PoiContract.PoiEntry.TABLE_NAME,
+                projection,
+                selection,
+                arg,
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToNext()) {
+            poi.setNid(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NID)));
+            poi.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_TITLE)));
+            poi.setCat(cursor.getInt(cursor.getColumnIndexOrThrow(RouteContract.RouteEntry.COLUM_NAME_CAT)));
+            poi.setBody(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_BODY)));
+            poi.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_DISTANCE)));
+            poi.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NUMBER)));
+            poi.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGE)));
+            Double lon = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LON));
+            Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LAT));
+            Double alt = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ALT));
+            poi.setCoordinates(new GeoPoint(lat, lon, alt));
+        }
+
+        cursor.close();
+
+        return poi;
     }
 
     private String getListRessourceFile(List<ResourceFile> list) {
@@ -137,10 +187,6 @@ public class PoiDAO {
                 PoiContract.PoiEntry.COLUM_NAME_DISTANCE,
                 PoiContract.PoiEntry.COLUM_NAME_NUMBER,
                 PoiContract.PoiEntry.COLUM_NAME_IMAGE,
-                /*PoiContract.PoiEntry.COLUM_NAME_IMAGES,
-                PoiContract.PoiEntry.COLUM_NAME_VIDEO,
-                PoiContract.PoiEntry.COLUM_NAME_AUDIOS,
-                PoiContract.PoiEntry.COLUM_NAME_ENLACE,*/
                 PoiContract.PoiEntry.COLUM_NAME_LON,
                 PoiContract.PoiEntry.COLUM_NAME_LAT,
                 PoiContract.PoiEntry.COLUM_NAME_ALT,
@@ -165,10 +211,6 @@ public class PoiDAO {
             p.setDistanceMeters(cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_DISTANCE)));
             p.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_NUMBER)));
             p.setMainImage(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGE)));
-           /* p.setImages(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_IMAGES)), db));
-            p.setVideos(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_VIDEO)), db));
-            p.setAudios(RessourceFileDAO.getListResourceFiles(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_AUDIOS)), db));
-            p.setEnlaces(RessourceLinkDAO.getListResourceLinks(cursor.getString(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ENLACE)), db));*/
             Double lon = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LON));
             Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_LAT));
             Double alt = cursor.getDouble(cursor.getColumnIndexOrThrow(PoiContract.PoiEntry.COLUM_NAME_ALT));

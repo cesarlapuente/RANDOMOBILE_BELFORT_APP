@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,24 +24,15 @@ import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 
 public class PoisSearchActivity extends Activity {
     public static final String PARAM_KEY_HIDE_EVENTS = "hide_events";
-
-    private MainApp app;
-    private ImageMap mImageMap = null;
     //private ImageButton btnSearch = null;
     Button btnSearch = null;
-    private Boolean paramHideEvents = false;
-
-    private CheckBox cb1 = null, cb2 = null, cb3 = null, cb4 = null, cb5 = null;
-    private TextView lb1 = null, lb2 = null, lb3 = null, lb4 = null, lb5 = null;
-
-    // ajout sauvage
-
-
     Button btnEvents = null;
     CheckBox cbADescubrir = null;
     CheckBox cbOTurismo = null;
     CheckBox cbSMonumentos = null;
     CheckBox cbMuseos = null;
+
+    // ajout sauvage
     CheckBox cbPatrimonio = null;
     CheckBox cbParques = null;
     CheckBox cbHebergement = null;
@@ -66,8 +57,14 @@ public class PoisSearchActivity extends Activity {
     TextView lbAmueblado = null;
     TextView lbResidencias = null;
     TextView lbRestaurantes = null;
+    private MainApp app;
+    private ImageMap mImageMap = null;
+    private Boolean paramHideEvents = false;
+    private CheckBox cb1 = null, cb2 = null, cb3 = null, cb4 = null, cb5 = null;
+    private TextView lb1 = null, lb2 = null, lb3 = null, lb4 = null, lb5 = null;
 
     // fin ajout
+    private ArrayList<Integer> filtre;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -518,10 +515,8 @@ public class PoisSearchActivity extends Activity {
                 Intent intent = new Intent(PoisSearchActivity.this, PoisListActivity.class);
 
                 if (applyFilter()) {
-                    Bundle bundle = new Bundle();
-
-                    bundle.putString("serchActive", "true");
-                    intent.putExtras(bundle);
+                    intent.putIntegerArrayListExtra("filtre", filtre);
+                    Log.e("----->", "ok ");
                 }
 
                 startActivity(intent);
@@ -540,87 +535,52 @@ public class PoisSearchActivity extends Activity {
     }
 
     private boolean applyFilter() {
-        ArrayList<Integer> listaFiltros = new ArrayList<Integer>();
-
-        /*if (cb1.isChecked()) {
-            listaFiltros.add(36);
-        }
-
-        if (cb2.isChecked()) {
-            listaFiltros.add(30);
-        }
-
-        if (cb3.isChecked()) {
-            listaFiltros.add(33);
-        }
-
-        if (cb4.isChecked()) {
-            listaFiltros.add(25);
-        }
-
-        if (cb5.isChecked()) {
-            listaFiltros.add(28);
-        }*/
+        filtre = new ArrayList<>();
 
         if (cbOTurismo.isChecked()) {
-            listaFiltros.add(25);
+            filtre.add(25);
         }
 
         if (cbSMonumentos.isChecked()) {
-            listaFiltros.add(36);
+            filtre.add(36);
         }
         if (cbMuseos.isChecked()) {
-            listaFiltros.add(28);
+            filtre.add(28);
         }
         if (cbPatrimonio.isChecked()) {
-            listaFiltros.add(30);
+            filtre.add(30);
         }
         if (cbParques.isChecked()) {
-            listaFiltros.add(45);
+            filtre.add(45);
         }
         if (cbADescubrir.isChecked()) {
-            listaFiltros.add(20000);
+            filtre.add(20000);
         }
         if (cbHebergement.isChecked()) {
-            listaFiltros.add(30000);
+            filtre.add(30000);
         }
         if (cbHabitacionesHotel.isChecked()) {
-            listaFiltros.add(47);
+            filtre.add(47);
         }
         if (cbColectivos.isChecked()) {
-            listaFiltros.add(26);
+            filtre.add(26);
         }
         if (cbHostales.isChecked()) {
-            listaFiltros.add(48);
+            filtre.add(48);
         }
         if (cbHostalesAire.isChecked()) {
-            listaFiltros.add(49);
+            filtre.add(49);
         }
         if (cbAmueblado.isChecked()) {
-            listaFiltros.add(50);
+            filtre.add(50);
         }
         if (cbResidencias.isChecked()) {
-            listaFiltros.add(51);
+            filtre.add(51);
         }
         if (cbRestaurantes.isChecked()) {
-            listaFiltros.add(27);
+            filtre.add(27);
         }
 
-
-        int filtroCategoriasPOIs[] = new int[listaFiltros.size()];
-
-        for (int i = 0; i < listaFiltros.size(); i++) {
-            filtroCategoriasPOIs[i] = listaFiltros.get(i);
-        }
-
-        app.setFiltroCategoriasPOIs(filtroCategoriasPOIs);
-
-        // Si se ha almacenado, al menos, un elemento en el arraylist de filtros;
-        if (listaFiltros.size() > 0) {
-            return true;
-
-        } else {
-            return false;
-        }
+        return (!filtre.isEmpty());
     }
 }

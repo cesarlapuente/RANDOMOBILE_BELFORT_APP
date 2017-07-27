@@ -38,6 +38,39 @@ public class Poi {
 	private int number;
 	private int cat;
 
+	public static String getCategoryName(int cat) {
+		switch (cat) {
+			case 47:
+				return "Chambres d'h?tes";
+			case 48:
+				return "Hotellerie";
+			case 26:
+				return "H?bergements collectifs";
+			case 49:
+				return "Hotellerie de plein air";
+			case 50:
+				return "Meubl?s";
+			case 51:
+				return "R?sidences";
+			case 28:
+				return "Patrimoine naturel";
+			case 30:
+				return "Patrimoine naturel";
+			case 36:
+				return "Sites et monuments";
+			case 25:
+				return "Offices de tourisme";
+			case 45:
+				return "Sites de Loisirs";
+			case 27:
+				return "Restauration";
+			case 52:
+				return "Point Directionnel";
+			default:
+				return null;
+		}
+	}
+
 	public static void cargarListaPoisOrdenadosDistancia(Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt){
 
 		HashMap<String, String> params = new HashMap<String, String>();

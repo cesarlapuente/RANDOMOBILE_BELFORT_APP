@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 
 /**
  * RandomobileBelfort-Android
- * Created by Thibault on 21/07/2017.
+ * Created by Thibault Nougues on 21/07/2017.
  */
 
 public final class PoiCategoryContract {

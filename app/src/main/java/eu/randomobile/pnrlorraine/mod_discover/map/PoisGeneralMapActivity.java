@@ -69,6 +69,7 @@ import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
 import eu.randomobile.pnrlorraine.mod_notification.Cache;
 import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
 import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
@@ -99,6 +100,7 @@ public class PoisGeneralMapActivity extends Activity implements
     PictureMarkerSymbol icono;
     PictureMarkerSymbol naturaleza;
     private int paramMapaGeneralMostrar;
+    private PoiDAO poiDAO;
 
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;

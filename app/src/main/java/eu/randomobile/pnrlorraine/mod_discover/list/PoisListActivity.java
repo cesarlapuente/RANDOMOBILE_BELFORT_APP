@@ -26,66 +26,72 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.detail.PoiDetailActivity;
-import eu.randomobile.pnrlorraine.mod_discover.filter.combos.SimpleComboPOICategories;
-import eu.randomobile.pnrlorraine.mod_discover.list.adapter.PoisAdapter;
 import eu.randomobile.pnrlorraine.mod_discover.map.PoisGeneralMapActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
 import eu.randomobile.pnrlorraine.mod_global.environment.GPS;
 import eu.randomobile.pnrlorraine.mod_global.libraries.bitmap_manager.BitmapManager;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi.PoisInterface;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
-import eu.randomobile.pnrlorraine.mod_notification.Cache;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
+import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
+import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
-import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
 
-public class PoisListActivity extends Activity implements PoisInterface, PoisModeOfflineInterface,
-        LocationListener {
+public class PoisListActivity extends Activity implements LocationListener {
     public static final String PARAM_KEY_LAST_NEAREST_POI_NID = "last_nearest_poi_nid";
     private MainApp app;
 
     private ImageMap mImageMap = null;
 
-    private String categoryTid = null;
-    private String categoryName = null;
-
     private ListView listaPois;
 
     // Array con los elementos que contendra
     private List<Poi> arrayPois = null;
-    // Array con las pois filtrados por categoria
-    private ArrayList<Poi> arrayFilteredPois = null;
     // Adaptador para la lista de items
     private ListPoisAdapter poiAdaptador;
-
-    // Array con TODAS las categorias.
-    private int filtroCategoriasPOIs[] = null; // = {25, 26, 27, 28, 30, 33, 36};
-
-    private TextView txtTitulo;
 
     private RelativeLayout panelCargando;
 
     private GPS gps;
 
-    private SimpleComboPOICategories comboCategoriasPOIS;
-
     private TextView noresults;
+
+    private PoiDAO poiDAO;
+    private VoteDAO voteDAO;
+
+    private List<Integer> filtre;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_discover__layout_lista_pois);
+
+        poiDAO = new PoiDAO(getApplicationContext());
+        voteDAO = new VoteDAO(getApplicationContext());
+
+        arrayPois = poiDAO.getAllPois();
+        for (Poi p : arrayPois) {
+            p.setVote(voteDAO.getVote(p.getNid()));
+        }
+
+        Intent intent = getIntent();
+        filtre = intent.getIntegerArrayListExtra("filtre");
+        if (filtre == null)
+            filtre = getFiltre(new int[]{25, 36, 28, 30, 45, 20000, 30000, 48, 26, 47, 49, 50, 51, 27});
+
+        arrayPois = filterPois();
+
+
+        capturarControles();
+
+        poiAdaptador = new ListPoisAdapter(this, arrayPois);
+        listaPois.setAdapter(poiAdaptador);
 
         // Set GPS
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -132,34 +138,28 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
         mImageMap.setAttributes(true, false, (float) 1.0, "lista_pois");
         mImageMap.setImageResource(R.drawable.lista_pois);
 
-        // Recoger par�metros del bundle
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            if (bundle.get("serchActive").equals("true")) {
-                Log.d("onCreate sais:", " Filtro de POIs detectado. Aplicando filtro.");
-
-                filtroCategoriasPOIs = app.getFiltroCategoriasPOIs();
-            }
-        }
-
-        capturarControles();
-
-        // Recoger filtros
-        categoryTid = app.preferencias.getString(app.FILTER_KEY_POI_CATEGORY_TID, null);
-        String txtBuscarSaved = app.preferencias.getString(app.FILTER_KEY_POI_TEXT, null);
-
-        Log.d("Milog", "Texto de b�squeda guardado: '" + txtBuscarSaved + "'");
-        // editTxtBuscar.setText(txtBuscarSaved);
-
-        categoryName = this.getResources().getString(
-                R.string.mod_discover__todas_las_categorias);
-
         escucharEventos();
         inicializarForm();
-        recargarForm();
 
         panelCargando.setVisibility(View.GONE);
+    }
+
+    private List<Integer> getFiltre(int[] i) {
+        List<Integer> list = new ArrayList<>();
+        for (Integer itg : i) {
+            list.add(itg);
+        }
+        return list;
+    }
+
+    private List<Poi> filterPois() {
+        List<Poi> list = new ArrayList<>();
+        for (Poi poi : arrayPois) {
+            if (filtre.contains(poi.getCat())) {
+                list.add(poi);
+            }
+        }
+        return list;
     }
 
     public void onResume() {
@@ -176,89 +176,10 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
     private void capturarControles() {
         listaPois = (ListView) findViewById(R.id.listaPois);
-        txtTitulo = (TextView) findViewById(R.id.txtNombre);
         panelCargando = (RelativeLayout) findViewById(R.id.panelCargando);
         noresults = (TextView) findViewById(R.id.noresults);
     }
 
-    private void filterPois() {
-        Log.d("filterPois() sais:", " Entrada al metodo detectada.");
-
-        if (arrayPois != null) {
-            if (arrayFilteredPois == null) {
-                arrayFilteredPois = new ArrayList<Poi>();
-
-            } else {
-                arrayFilteredPois.clear();
-            }
-
-            for (int i = 0; i < arrayPois.size(); i++) {
-                if (PoisSearch.checkCriteria(arrayPois.get(i), this))
-                    arrayFilteredPois.add(arrayPois.get(i));
-            }
-        }
-
-        if (filtroCategoriasPOIs != null) {
-            Log.d("filterPois() sais:", " filtroCategoriasPOIs != null");
-
-            for (int i = 0; i< filtroCategoriasPOIs.length; i++){
-                Log.d("Listado de categorias:", "Categoria de Poi: " + String.valueOf(filtroCategoriasPOIs[i]));
-            }
-
-            if (arrayFilteredPois == null) {
-                arrayFilteredPois = new ArrayList<Poi>();
-            } else {
-                arrayFilteredPois.clear();
-            }
-
-            for (int i = 0; i < filtroCategoriasPOIs.length; i++) {
-                int categoria = filtroCategoriasPOIs[i];
-
-                for (int j = 0; j < arrayPois.size(); j++){
-                    Log.d("", String.valueOf(arrayPois.get(j).getCategory().getTid()));
-
-                     if(arrayPois.get(j).getCategory().getTid().equals(String.valueOf(categoria))){
-                         arrayFilteredPois.add(arrayPois.get(j));
-                         Log.d("Categoria itroducida: ", arrayPois.get(j).getTitle());
-                    }
-                }
-
-            }
-
-
-        } else {
-            Log.d("filterPois() sais:", " filtroCategoriasPOIs == null");
-            filtroCategoriasPOIs = new int[] {25, 36, 28, 30, 45, 20000, 30000, 48, 26, 47, 49, 50, 51, 27};
-            filterPois();
-        }
-        if(arrayFilteredPois.size() == 0) {
-            noresults.setVisibility(View.VISIBLE);
-        } else{
-            noresults.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return;
-        }
-
-        String name = data.getStringExtra("name");
-
-        if (arrayFilteredPois == null)
-            arrayFilteredPois = new ArrayList<Poi>();
-
-        arrayFilteredPois.clear();
-        listaPois.invalidateViews();
-
-        // filterPois();
-
-        Cache.filteredPois = arrayFilteredPois;
-
-        poiAdaptador = new ListPoisAdapter(this, arrayFilteredPois);
-        listaPois.setAdapter(poiAdaptador);
-    }
 
     private void escucharEventos() {
         mImageMap.addOnImageMapClickedHandler(new ImageMap.OnImageMapClickedHandler() {
@@ -282,9 +203,6 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
                     case "PLUS":
                         cargaActivityOptions();
                         break;
-                    /*case "RA":
-                        cargaPoisGeneralMapActivity();
-                        break;*/
                     case "BACK":
                         finish();
                         break;
@@ -301,13 +219,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
         listaPois.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
-                Poi poiPulsado = null;
-
-                if (arrayFilteredPois != null)
-                    poiPulsado = arrayFilteredPois.get(index);
-
-                else
-                    poiPulsado = arrayPois.get(index);
+                Poi poiPulsado = poiAdaptador.getItem(index);
 
                 Intent intent = new Intent(PoisListActivity.this, PoiDetailActivity.class);
 
@@ -316,10 +228,8 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
                 int desnivel = 0;
 
-                if (gps != null) {
-                    if (gps.getLastLocation() != null) {
-                        desnivel = (int) (poiPulsado.getCoordinates().getAltitude() - gps.getLastLocation().getAltitude());
-                    }
+                if (gps != null && (gps.getLastLocation() != null)) {
+                    desnivel = (int) (poiPulsado.getCoordinates().getAltitude() - gps.getLastLocation().getAltitude());
                 }
 
                 intent.putExtra(PoiDetailActivity.PARAM_KEY_DESNIVEL, desnivel);
@@ -358,6 +268,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
         Intent intent = new Intent(PoisListActivity.this, PoisSearchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 1);
+        finish();
     }
 
     private void cargaActivityOptions() {
@@ -372,136 +283,48 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
         startActivity(intent);
     }
 
-    private void recargarForm() {
-        if (this.gps.getLastLocation() == null) {
-            // Si la �ltima posici�n es nula, es que nunca ha localizado.
-            // Arrancarlo
-            panelCargando.setVisibility(View.VISIBLE);
-            this.gps.startLocating();
+    public void onLocationChanged(Location location) {
+        if (this.gps.getLastLocation() != null) {
 
-        } else {
-            // Si la �ltima posici�n existe, ya ha localizado alguna vez.
-            // Recargar los datos
-            panelCargando.setVisibility(View.VISIBLE);
-            this.recargarDatos();
+            // Parar el gps si ya tenemos una coordenada
+            this.gps.stopLocating();
+
+            // Guardar la coordenada en las preferencias
+            SharedPreferences.Editor editor = app.preferencias.edit();
+            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_LATITUDE, (float) this.gps.getLastLocation().getLatitude());
+            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_LONGITUDE, (float) this.gps.getLastLocation().getLongitude());
+            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_ALTITUDE, (float) this.gps.getLastLocation().getAltitude());
+            editor.apply();
         }
-
-
-        Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-
-        arrayPois = app.getPoisList();
-
-        filterPois();
-
-        PoisAdapter adapter = new PoisAdapter(this, arrayFilteredPois, this.gps);
-        listaPois.setAdapter(adapter);
-
-        panelCargando.setVisibility(View.GONE);
     }
 
-    private void recargarDatos() {
-        /*
-        Log.d("PoiListActivity sais:", "Entrada en recargarDatos() detectada.");
+    @Override
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
 
-        if (Cache.filteredPois != null) {
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en primera condición detectada.");
+    }
 
-            this.arrayFilteredPois = (ArrayList<Poi>) Cache.filteredPois;
-            //Cache.arrayPois = Cache.filteredPois;
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
 
-            // filterPois();
+    }
 
-            PoisAdapter adapter = new PoisAdapter(this, arrayFilteredPois, this.gps);
-            listaPois.setAdapter(adapter);
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
 
-            if (arrayPois == null)
-                arrayPois = Cache.arrayPois;
-
-            panelCargando.setVisibility(View.GONE);
-
-        } else if (DataConection.hayConexion(this)) {
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en segunda condición detectada.");
-
-            arrayPois = app.getPoisList();
-            panelCargando.setVisibility(View.GONE);
-
-            // Si hay conexi�n, recargar los datos
-            /*
-            panelCargando.setVisibility(View.VISIBLE);
-            Poi.poisInterface = this;
-            Poi.cargarListaPoisOrdenadosDistancia(getApplication(), // Aplicacion
-                    gps.getLastLocation().getLatitude(), // Latitud
-                    gps.getLastLocation().getLongitude(), // Longitud
-                    0, // Radio en Kms
-                    0, // N�mero de elementos por p�gina
-                    0, // P�gina
-                    null, // Tid de la categor�a que queremos filtrar
-                    null // Texto a buscar
-            );
-            *
-        } else {
-            Log.d("PoiListActivity sais:", "recargarDatos() sais:: Entrada en tercera condición detectada.");
-
-            OfflinePoi.poisInterface = this;
-            OfflinePoi.cargaListaPoisOffline(getApplication());
-            // Si no hay conexi�n a Internet
-            Util.mostrarMensaje(
-                    this,
-                    getResources().getString(
-                            R.string.mod_global__sin_conexion_a_internet),
-                    getResources()
-                            .getString(
-                                    R.string.mod_global__no_dispones_de_conexion_a_internet));
-            panelCargando.setVisibility(View.GONE);
-        }
-
-        // Poner el texto al bot�n que hace de combo
-        // this.btnCategorias.setText(this.categoryName);
-        Log.d("PoiListActivity sais:", "Salida de recargarDatos() detectada.");
-        */
     }
 
     public class ListPoisAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         private Context ctx;
-        private ArrayList<Poi> listaItems;
+        private List<Poi> listaItems;
 
-        public class ViewHolder {
-            RelativeLayout layoutFondo;
-            ImageView imgView;
-            TextView lblTitulo;
-            TextView lblDetalle;
-            ImageView imgViewFrame;
-            ImageView imgViewCategory;
-            TextView lblDistancia;
-            TextView lblDistanciaNum;
-            TextView lblDesnivel;
-            TextView lblDesnivelNum;
-            TextView lblValoracion;
-            ImageView imgViewValoracion;
-            int index;
-        }
-
-        public ListPoisAdapter(Context _ctx, ArrayList<Poi> _items) {
-            this.listaItems = _items;
-            this.ctx = _ctx;
-            mInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ListPoisAdapter(Context ctx, List<Poi> items) {
+            this.listaItems = items;
+            this.ctx = ctx;
+            mInflater = (LayoutInflater) this.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         public int getCount() {
@@ -512,8 +335,8 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
             }
         }
 
-        public Object getItem(int position) {
-            return position;
+        public Poi getItem(int position) {
+            return listaItems.get(position);
         }
 
         public long getItemId(int position) {
@@ -555,9 +378,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
                 // Poner fuentes
                 Typeface tfScalaBold = Util.fontScala_Bold(ctx);
-                Typeface tfBentonMedium = Util.fontBenton_Medium(ctx);
                 Typeface tfBentonBoo = Util.fontBenton_Boo(ctx);
-                Typeface tfBentonBold = Util.fontBenton_Bold(ctx);
                 holder.lblTitulo.setTypeface(tfScalaBold);
                 holder.lblDetalle.setTypeface(tfBentonBoo);
                 holder.lblDistancia.setTypeface(tfBentonBoo);
@@ -579,8 +400,8 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
             holder.lblTitulo.setText(item.getTitle());
 
             // Body con el tipo de categoria
-            if ((item.getCategory() != null) && !item.getCategory().getName().equals("null")) {
-                holder.lblDetalle.setText(item.getCategory().getName());
+            if ((item.getCat() != -1) && Poi.getCategoryName(item.getCat()) != null) {
+                holder.lblDetalle.setText(Poi.getCategoryName(item.getCat()));
 
             } else {
                 String strVacio = ctx.getResources().getString(
@@ -601,11 +422,9 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
             // Desnivel
             int desnivel = 0;
 
-            if (gps != null) {
-                if (gps.getLastLocation() != null) {
+            if (gps != null && (gps.getLastLocation() != null)) {
                     desnivel = (int) (item.getCoordinates().getAltitude() - gps
                             .getLastLocation().getAltitude());
-                }
             }
 
             String strDesnivel = "";
@@ -621,47 +440,11 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
             // Imagen
             if (item.getMainImage() != null) {
-				/*Log.d("Adapter Especies",item.getImage());*/
 				BitmapManager.INSTANCE.loadBitmap(item.getMainImage(),holder.imgView, 80, 60);
-                //ImageLoader.getInstance().displayImage(item.getMainImage(), holder.imgView);
             } else {
 
                 holder.imgView.setImageDrawable(ctx.getResources().getDrawable(R.drawable.no_picture_2));
             }
-
-            /*
-            if (item.getMainImage() != null) {
-                BitmapManager.INSTANCE.loadBitmap(item.getMainImage(), holder.imgView, 80, 60);
-
-            } else {
-                if (item.getCategory() != null && item.getCategory().getIcon() != null) {
-                    String category;
-
-                    category = item.getCategory().getName();
-
-                    if (category.equals("Chambre d'h�tes")
-                            || category.equals("H�tellerie")
-                            || category.equals("H�bergement collectif")
-                            || category.equals("H�tellerie de plein air")
-                            || category.equals("Meubl�")
-                            || category.equals("R�sidence")) {
-                        holder.imgView.setBackgroundResource(R.drawable.icono_hotel);
-
-                    } else if (category.equals("Mus�e")
-                            || category.equals("Patrimoine Naturel")
-                            || category.equals("Site et Monument")
-                            || category.equals("Office de Tourisme")
-                            || category.equals("Parc et Jardin")) {
-                        holder.imgView.setBackgroundResource(R.drawable.icono_descubrir);
-
-                    } else if (category.equals("Restauration"))
-                        holder.imgView.setBackgroundResource(R.drawable.icono_restaurante);
-
-                } else {
-                    holder.imgView.setImageResource(R.drawable.ic_launcher);
-                }
-            }
-            */
 
             // Poner la valoraci�n
             if (item.getVote() != null) {
@@ -700,7 +483,7 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
             String valString = ctx.getResources().getString(
                     R.string.mod_discover__nota);
             holder.lblValoracion.setText(valString + " ("
-                    + String.valueOf(item.getVote().getNumVotes()) + " avis)");
+                    + item.getVote().getNumVotes() + " avis)");
             // Poner la flechita de la derecha en funci�n de si la celda es par
             // o no
             if (position % 2 == 0) {
@@ -713,143 +496,53 @@ public class PoisListActivity extends Activity implements PoisInterface, PoisMod
 
             // Poner la categoria
             // Poner la imagen de categoria
-            String category;
-            if (item.getCategory() != null) {
-                category = item.getCategory().getName();
-                if (category.equals("Chambre d'h�tes")
-                        || category.equals("H�tellerie")
-                        || category.equals("H�bergement collectif")
-                        || category.equals("H�tellerie de plein air")
-                        || category.equals("Meubl�")
-                        || category.equals("R�sidence")) {
-                    holder.imgViewCategory
-                            .setBackgroundResource(R.drawable.icono_hotel);
-                } else if (category.equals("Mus�e")
-                        || category.equals("Patrimoine Naturel")
-                        || category.equals("Site et Monument")
-                        || category.equals("Office de Tourisme")
-                        || category.equals("Parc et Jardin")) {
-                    holder.imgViewCategory
-                            .setBackgroundResource(R.drawable.icono_descubrir);
-                } else if (category.equals("Restauration"))
-                    holder.imgViewCategory
-                            .setBackgroundResource(R.drawable.icono_restaurante);
-
+            int category;
+            if (item.getCat() != -1) {
+                category = item.getCat();
+                switch (category) {
+                    case 47:
+                    case 48:
+                    case 26:
+                    case 49:
+                    case 50:
+                    case 51:
+                        holder.imgViewCategory
+                                .setBackgroundResource(R.drawable.icono_hotel);
+                        holder.lblDetalle.setText(Poi.getCategoryName(item.getCat()));
+                        break;
+                    case 28:
+                    case 30:
+                    case 36:
+                    case 25:
+                    case 45:
+                        holder.imgViewCategory
+                                .setBackgroundResource(R.drawable.icono_descubrir);
+                        break;
+                    case 27:
+                        holder.imgViewCategory
+                                .setBackgroundResource(R.drawable.icono_restaurante);
+                        break;
+                }
             }
 
             return convertView;
         }
-    }
 
-    public void onLocationChanged(Location location) {
-        if (this.gps.getLastLocation() != null) {
-
-            // Parar el gps si ya tenemos una coordenada
-            this.gps.stopLocating();
-
-            // Guardar la coordenada en las preferencias
-            SharedPreferences.Editor editor = app.preferencias.edit();
-            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_LATITUDE, (float) this.gps.getLastLocation().getLatitude());
-            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_LONGITUDE, (float) this.gps.getLastLocation().getLongitude());
-            editor.putFloat(app.FILTER_KEY_LAST_LOCATION_ALTITUDE, (float) this.gps.getLastLocation().getAltitude());
-            editor.commit();
-
-            // Recargar los datos
-            this.recargarDatos();
+        public class ViewHolder {
+            RelativeLayout layoutFondo;
+            ImageView imgView;
+            TextView lblTitulo;
+            TextView lblDetalle;
+            ImageView imgViewFrame;
+            ImageView imgViewCategory;
+            TextView lblDistancia;
+            TextView lblDistanciaNum;
+            TextView lblDesnivel;
+            TextView lblDesnivelNum;
+            TextView lblValoracion;
+            ImageView imgViewValoracion;
+            int index;
         }
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCargoListaPois(ArrayList<Poi> pois) {
-        if (pois != null) {
-            this.arrayPois = pois;
-            Cache.arrayPois = pois;
-
-            if (Cache.hashMapPois == null) {
-                Cache.iniHashMapPois();
-            }
-
-            filterPois();
-
-            PoisAdapter adapter = new PoisAdapter(this, arrayFilteredPois, this.gps);
-            listaPois.setAdapter(adapter);
-        }
-        panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaPois");
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaPois(String error) {
-        Log.d("Milog", "producidoErrorAlCargarListaPois: " + error);
-        panelCargando.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void seCargoPoi(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoi(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-
-    @Override
-    public void producidoErrorAlCargarListaPoisOffline(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCargoPoiOffline(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoiOffline(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCargoListaPoisOffline(ArrayList<Poi> pois) {
-        // TODO Auto-generated method stub
-        if (pois != null) {
-            this.arrayPois = pois;
-            Cache.arrayPois = pois;
-            if (Cache.hashMapPois == null) {
-                Cache.iniHashMapPois();
-            }
-            // poiAdaptador = new ListPoisAdapter(this, arrayPois);
-            // listaPois.setAdapter(poiAdaptador);
-            PoisAdapter adapter = new PoisAdapter(this, arrayPois, this.gps);
-            listaPois.setAdapter(adapter);
-        }
-        panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaPois");
-
     }
 
 }

@@ -30,22 +30,6 @@ public class PoisAdapter extends BaseAdapter {
 
 	}
 
-	public class ViewHolder {
-		RelativeLayout layoutFondo;
-		ImageView imgView;
-		TextView lblTitulo;
-		TextView lblDetalle;
-		ImageView imgViewFrame;
-		ImageView imgViewCategory;
-		TextView lblDistancia;
-		TextView lblDistanciaNum;
-		TextView lblDesnivel;
-		TextView lblDesnivelNum;
-		TextView lblValoracion;
-		ImageView imgViewValoracion;
-		int index;
-	}
-
 	@Override
 	public int getCount() {
 		if (pois != null) {
@@ -56,8 +40,8 @@ public class PoisAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
-		return position;
+	public Poi getItem(int position) {
+		return pois.get(position);
 	}
 
 	@Override
@@ -139,7 +123,7 @@ public class PoisAdapter extends BaseAdapter {
 			} else {
 				Context ctx = v.getContext();
 				holder.imgView.setImageDrawable(ctx.getResources().getDrawable(R.drawable.no_picture_2));
-				
+
 //				if (item.getCategory() != null
 //						&& item.getCategory().getIcon() != null) {
 //					// BitmapManager.INSTANCE.loadBitmap(item.getCategory().getIcon(),
@@ -249,5 +233,21 @@ public class PoisAdapter extends BaseAdapter {
 		} catch (Exception ex) {
 		}
 		return v;
+	}
+
+	public class ViewHolder {
+		RelativeLayout layoutFondo;
+		ImageView imgView;
+		TextView lblTitulo;
+		TextView lblDetalle;
+		ImageView imgViewFrame;
+		ImageView imgViewCategory;
+		TextView lblDistancia;
+		TextView lblDistanciaNum;
+		TextView lblDesnivel;
+		TextView lblDesnivelNum;
+		TextView lblValoracion;
+		ImageView imgViewValoracion;
+		int index;
 	}
 }

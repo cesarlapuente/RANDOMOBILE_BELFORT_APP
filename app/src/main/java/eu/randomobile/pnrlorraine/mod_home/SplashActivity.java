@@ -1320,9 +1320,9 @@ public class SplashActivity extends Activity {
         for (Poi rt : p) {
             rt.setCategory(poiCategoryDAO.getPoiCategory(rt.getNid()));
             Log.e(" pois -->", rt.toString());
-        }
+        }*/
 
-        List<ResourcePoi> p2 = poiDAO.getResourcePois("123");
+        /*List<ResourcePoi> p2 = poiDAO.getResourcePois("123");
         for (ResourcePoi rt : p2) {
             //rt.setCategory(poiCategoryDAO.getPoiCategory(rt.getNid()));
             Log.e(" Rpois -->", rt.toString());
@@ -1338,10 +1338,10 @@ public class SplashActivity extends Activity {
             Log.e(" votes -->", rt.toString());
         }*/
 
-        List<ResourceFile> rf = ressourceFileDAO.getAllResourceFiles();
+        /*List<ResourceFile> rf = ressourceFileDAO.getAllResourceFiles();
         for (ResourceFile rt : rf) {
             Log.e(" rf -->", rt.toString());
-        }
+        }*/
 
         /*List<ResourceLink> rl = ressourceLinkDAO.getAllResourceLink();
         for (ResourceLink rt : rl) {

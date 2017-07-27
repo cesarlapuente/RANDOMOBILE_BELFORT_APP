@@ -2,7 +2,6 @@ package eu.randomobile.pnrlorraine.mod_search;
 
 import android.content.Context;
 
-import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 
 
@@ -15,6 +14,23 @@ public class PoisSearch {
 	private static Boolean check5 = true;
 	private static Boolean check6 = true;
 	private static Boolean check7 = true;
+	private static Boolean checkADescubrir = true;
+	private static Boolean checkOTurismo = true;
+	private static Boolean checkSMonumentos = true;
+	private static Boolean checkMuseos = true;
+	private static Boolean checkPatrimonio = true;
+	private static Boolean checkParques = true;
+	private static Boolean checkHebergement = true;
+	private static Boolean checkHabitacionesHotel = true;
+	private static Boolean checkColectivos = true;
+	private static Boolean checkHostales = true;
+	private static Boolean checkHostalesAire = true;
+	private static Boolean checkAmueblado = true;
+	private static Boolean checkResidencias = true;
+	private static Boolean checkRestaurantes = true;
+
+
+	// ajout sauvage
 
 	public static Boolean getCheck1() {
 		return check1;
@@ -72,95 +88,76 @@ public class PoisSearch {
 		PoisSearch.check7 = check7;
 	}
 
-
-
-	// ajout sauvage
-
-	private static Boolean checkADescubrir = true;
-	private static Boolean checkOTurismo = true;
-	private static Boolean checkSMonumentos = true;
-	private static Boolean checkMuseos = true;
-	private static Boolean checkPatrimonio = true;
-	private static Boolean checkParques = true;
-	private static Boolean checkHebergement = true;
-	private static Boolean checkHabitacionesHotel = true;
-	private static Boolean checkColectivos = true;
-	private static Boolean checkHostales = true;
-	private static Boolean checkHostalesAire = true;
-	private static Boolean checkAmueblado = true;
-	private static Boolean checkResidencias = true;
-	private static Boolean checkRestaurantes = true;
+	public static Boolean getCheckADescubrir() {
+		return checkADescubrir;
+	}
 
 	public static void setCheckADescubrir (Boolean check) {
 		PoisSearch.checkADescubrir = check;
 	}
-	public static Boolean getCheckADescubrir () {
-		return checkADescubrir;
-	}
-	public static void setCheckOTurismo (Boolean check) {
-		PoisSearch.checkOTurismo = check;
-	}
-	public static Boolean getCheckOTurismo () {
+
+	public static Boolean getCheckOTurismo() {
 		return checkOTurismo;
 	}
-	public static void setCheckSMonumentos (Boolean check) {
-		PoisSearch.checkSMonumentos = check;
+
+	public static void setCheckOTurismo (Boolean check) {
+		PoisSearch.checkOTurismo = check;
 	}
 
 	public static Boolean getCheckSMonumentos () {
 		return checkSMonumentos;
 	}
 
-	public static void setCheckMuseos (Boolean check) {
-		PoisSearch.checkMuseos = check;
+	public static void setCheckSMonumentos(Boolean check) {
+		PoisSearch.checkSMonumentos = check;
 	}
 
 	public static Boolean getCheckMuseos () {
 		return checkMuseos;
 	}
 
-	public static void setCheckPatrimonio (Boolean check) {
-		PoisSearch.checkPatrimonio = check;
+	public static void setCheckMuseos(Boolean check) {
+		PoisSearch.checkMuseos = check;
 	}
 
 	public static Boolean getCheckPatrimonio () {
 		return checkPatrimonio;
 	}
 
-	public static void setCheckParques (Boolean check) {
-		PoisSearch.checkParques = check;
+	public static void setCheckPatrimonio(Boolean check) {
+		PoisSearch.checkPatrimonio = check;
 	}
 
 	public static Boolean getCheckParques () {
 		return checkParques;
 	}
 
-	public static void setCheckHebergement (Boolean check) {
-		PoisSearch.checkHebergement = check;
+	public static void setCheckParques(Boolean check) {
+		PoisSearch.checkParques = check;
 	}
 
 	public static Boolean getCheckHebergement () {
 		return checkHebergement;
 	}
 
-	public static void setCheckHabitacionesHotel (Boolean check) {
-		PoisSearch.checkHabitacionesHotel = check;
+	public static void setCheckHebergement(Boolean check) {
+		PoisSearch.checkHebergement = check;
 	}
 
 	public static Boolean getCheckHabitacionesHotel () {
 		return checkHabitacionesHotel;
 	}
 
-	public static void setCheckColectivos (Boolean check) {
-		PoisSearch.checkColectivos = check;
+	public static void setCheckHabitacionesHotel(Boolean check) {
+		PoisSearch.checkHabitacionesHotel = check;
 	}
 
 	public static Boolean getCheckColectivos () {
 		return checkColectivos;
 	}
 
-	public static void setCheckHostales (Boolean check) {
-		PoisSearch.checkHostales = check;
+	public static void setCheckColectivos(Boolean check) {
+		PoisSearch.checkColectivos = check;
 	}
 
 	public static Boolean getCheckHostales () {
@@ -168,36 +165,40 @@ public class PoisSearch {
 		return checkHostales;
 	}
 
-	public static void setCheckHostalesAire (Boolean check) {
-		PoisSearch.checkHostalesAire = check;
+	public static void setCheckHostales(Boolean check) {
+		PoisSearch.checkHostales = check;
 	}
 
 	public static Boolean getCheckHostalesAire () {
 		return checkHostalesAire;
 	}
-	public static void setCheckAmueblado (Boolean check) {
-		PoisSearch.checkAmueblado = check;
+
+	public static void setCheckHostalesAire(Boolean check) {
+		PoisSearch.checkHostalesAire = check;
 	}
 
 	public static Boolean getCheckAmueblado () {
 		return checkAmueblado;
 	}
 
-	public static void setCheckResidencias (Boolean check) {
-		PoisSearch.checkResidencias = check;
+	public static void setCheckAmueblado(Boolean check) {
+		PoisSearch.checkAmueblado = check;
 	}
 
 	public static Boolean getCheckResidencias () {
 		return checkResidencias;
 	}
 
-
-	public static void setCheckRestaurantes (Boolean check) {
-		PoisSearch.checkRestaurantes = check;
+	public static void setCheckResidencias(Boolean check) {
+		PoisSearch.checkResidencias = check;
 	}
 
 	public static Boolean getCheckRestaurantes () {
 		return checkRestaurantes;
+	}
+
+	public static void setCheckRestaurantes(Boolean check) {
+		PoisSearch.checkRestaurantes = check;
 	}
 
 	// fin ajout
@@ -205,8 +206,8 @@ public class PoisSearch {
 	// Nos dice si el poi cumple con los criterios actuales del filtrado
 	public static Boolean checkCriteria(Poi poi, Context ctx) {
     	Boolean result = false;
-    	String category = poi.getCategory().getName();
-    	/*if (getCheck1() && category.equals(ctx.getResources().getString(R.string.lugar_de_interes_cultural)))
+		int category = poi.getCat();
+		/*if (getCheck1() && category.equals(ctx.getResources().getString(R.string.lugar_de_interes_cultural)))
     		return true;
     	if (getCheck2() && category.equals(ctx.getResources().getString(R.string.lugar_de_interes_natural)))
     		return true;
@@ -222,29 +223,29 @@ public class PoisSearch {
     		return true;*/
 
 		// ajout sauvage
-		if (getCheckRestaurantes() && category.equals("Restauration"))
+		if (getCheckRestaurantes() && category == 27)
 			return true;
-		if (getCheckMuseos() && category.equals("Mus?e"))
+		if (getCheckMuseos() && category == 28)
 			return true;
-		if (getCheckResidencias() && category.equals("R?sidence"))
+		if (getCheckResidencias() && category == 51)
 			return true;
-		if (getCheckAmueblado() && category.equals("Meubl?"))
+		if (getCheckAmueblado() && category == 50)
 			return true;
-		if (getCheckHostalesAire() && category.equals("H?tellerie de plein air"))
+		if (getCheckHostalesAire() && category == 49)
 			return true;
-		if (getCheckHostales() && category.equals("H?tellerie"))
+		if (getCheckHostales() && category == 48)
 			return true;
-		if (getCheckColectivos() && category.equals("H?bergement collectif"))
+		if (getCheckColectivos() && category == 26)
 			return true;
-		if (getCheckHabitacionesHotel() && category.equals("Chambre d'h?tes"))
+		if (getCheckHabitacionesHotel() && category == 47)
 			return true;
-		if (getCheckParques() && category.equals("Sites de Loisirs"))
+		if (getCheckParques() && category == 45)
 			return true;
-		if (getCheckPatrimonio() && category.equals("Patrimoine Naturel"))
+		if (getCheckPatrimonio() && category == 29)
 			return true;
-		if (getCheckSMonumentos() && category.equals("Site et Monument"))
+		if (getCheckSMonumentos() && category == 36)
 			return true;
-		if (getCheckOTurismo() && category.equals("Office de Tourisme"))
+		if (getCheckOTurismo() && category == 25)
 			return true;
 
 		//fin ajout
