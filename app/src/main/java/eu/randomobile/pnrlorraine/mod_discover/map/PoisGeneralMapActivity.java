@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,29 +18,20 @@ import android.widget.TextView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Polygon;
-import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.loadable.LoadStatusChangedEvent;
 import com.esri.arcgisruntime.loadable.LoadStatusChangedListener;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
-import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
-import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,8 +43,6 @@ import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.detail.PoiDetailActivity;
 import eu.randomobile.pnrlorraine.mod_discover.list.PoisListActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa.ComboCapasMapaInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
@@ -621,7 +608,7 @@ public class PoisGeneralMapActivity extends Activity implements
         return view;
     }
 
-    private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon, final String distanceMeters) {
+    /*private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon, final String distanceMeters) {
 
         int polygonFillColor = Color.rgb(55, 132, 218);
         int polygonBorderColor = Color.rgb(27, 87, 187);
@@ -646,8 +633,8 @@ public class PoisGeneralMapActivity extends Activity implements
                     SimpleFillSymbol sym = new SimpleFillSymbol();
                     sym.setColor(polygonFillColor);
                     sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
-                    /*Graphic gr = new Graphic(polygon, attrs, sym);
-                    capaGeometrias.getGraphics().add(gr);*/
+                    *//*Graphic gr = new Graphic(polygon, attrs, sym);
+                    capaGeometrias.getGraphics().add(gr);*//*
 
                     geo = polygon;
                     symb = sym;
@@ -715,8 +702,8 @@ public class PoisGeneralMapActivity extends Activity implements
                             attrs.put("cat", "Point d'interet");
                             //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
                     }
-                    /*Graphic gr = new Graphic(point, attrs, sym );
-                    capaGeometrias.getGraphics().add(gr);*/
+                    *//*Graphic gr = new Graphic(point, attrs, sym );
+                    capaGeometrias.getGraphics().add(gr);*//*
 
                     geo = point;
                     symb = sym;
@@ -730,8 +717,8 @@ public class PoisGeneralMapActivity extends Activity implements
 
                     int color = Color.BLUE;
 
-                    /*Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
-                    capaGeometrias.getGraphics().add(gr);*/
+                    *//*Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
+                    capaGeometrias.getGraphics().add(gr);*//*
 
                     geo = polyline;
                     symb = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10);
@@ -751,18 +738,18 @@ public class PoisGeneralMapActivity extends Activity implements
                     Log.e("Error Graphics", "dibujarGeometrias: ", e);
                     this.onRestart();
 
-                    /*capaGeometrias.getGraphics().remove(gr);
+                    *//*capaGeometrias.getGraphics().remove(gr);
                     Log.e("thib", "echec add " + gr.getAttributes().toString() + "\n"
                             + symb.equals(hotel) + "\n" + symb.equals(restaurante) + "\n"
                             + symb.equals(descubrir) + "\n" + symb.equals(icono) + "\n"
-                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);*/
+                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);*//*
                 }
                 //capaGeometrias.getGraphics().add(gr);
             }
         }
-    }
+    }*/
 
-    private void centrarEnExtentCapa(GraphicsOverlay capa) {
+    /*private void centrarEnExtentCapa(GraphicsOverlay capa) {
         // Hacer zoom a la capa de geometrias
         Envelope env ;
         Envelope NewEnv = capa.getExtent();
@@ -776,11 +763,11 @@ public class PoisGeneralMapActivity extends Activity implements
             }
         this.mapa.setViewpointGeometryAsync(NewEnv, 100);
         //this.mapa.setExtent(NewEnv, 100);
-    }
+    }*/
 
 
-    public void ponerCapaBase() {
-        /* Codigo de prueba */
+    /*public void ponerCapaBase() {
+        *//* Codigo de prueba *//*
         if (!DataConection.hayConexion(this)) {
             String basemapurl = Util.getUrlGeneralBaseLayerOffline(app);
             ArcGISTiledLayer baseLayer;
@@ -789,7 +776,7 @@ public class PoisGeneralMapActivity extends Activity implements
             mapa.getMap().setMaxScale(1000);
             return;
         }
-		/* Fin de codigo de prueba */
+		*//* Fin de codigo de prueba *//*
         CapaBase capaSeleccionada = app.capaBaseSeleccionada;
         Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
         Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
@@ -813,7 +800,7 @@ public class PoisGeneralMapActivity extends Activity implements
                         .equals(capa0.getClass().getName())) {
                     Log.d("Milog",
                             "La clase de la capa base es igual que la clase de la capa0");
-                    /*if (capaBase.getClass() == BingMapsLayer.class) {
+                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
                         Log.d("Milog", "capaBase es de tipo BING");
                         BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
                         BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
@@ -828,7 +815,7 @@ public class PoisGeneralMapActivity extends Activity implements
                                             + mapa.getLayers().length
                                             + " capas");
                         }
-                    } else*/ if (capaBase.getClass() == ArcGISTiledLayer.class) {
+                    } else*//* if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo TiledMap");
                         ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
                         ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
@@ -851,11 +838,11 @@ public class PoisGeneralMapActivity extends Activity implements
                 } else {// si la capa base seleccionada no es del mismo tipo que
                     // la capa 0
 
-                    /*if (capaBase.getClass() == BingMapsLayer.class) {
+                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
                         mapa.removeLayer(0);
                     } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
                         mapa.removeLayer(0);
-                    }*/
+                    }*//*
                 }
             }
             // btnAbrirCapas.setEnabled(true);
@@ -867,7 +854,7 @@ public class PoisGeneralMapActivity extends Activity implements
                     mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
                 }
 
-            } /*else if (capaBase.getClass() == BingMapsLayer.class) {
+            } *//*else if (capaBase.getClass() == BingMapsLayer.class) {
 
                 if (capas.length > 0) {
                     mapa.addLayer((BingMapsLayer) capaBase, 0);
@@ -875,23 +862,23 @@ public class PoisGeneralMapActivity extends Activity implements
                     mapa.addLayer((BingMapsLayer) capaBase);
                 }
 
-            } */else {
+            } *//*else {
                 // otro tipo de capa
             }
 
             // app.capaBaseSeleccionada = capaSeleccionada;
-            Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-                    + " capas");
+           // Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
+             //       + " capas");
         }
-    }
+    }*/
 
-    public int getParamMapaGeneralMostrar() {
+    /*public int getParamMapaGeneralMostrar() {
         return paramMapaGeneralMostrar;
     }
-
-    public void setParamMapaGeneralMostrar(int paramMapaGeneralMostrar) {
+*/
+    /*public void setParamMapaGeneralMostrar(int paramMapaGeneralMostrar) {
         this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
-    }
+    }*/
 
     /*@Override
     public void seCargoPoi(Poi poi) {
@@ -946,7 +933,7 @@ public class PoisGeneralMapActivity extends Activity implements
      *
      * @author
      */
-    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
+    /*private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
         public MyLocationListener() {
             super();
@@ -968,6 +955,6 @@ public class PoisGeneralMapActivity extends Activity implements
             if (locationChangedEvent.getLocation() == null)
                 return;
         }
-    }
+    }*/
 
 }

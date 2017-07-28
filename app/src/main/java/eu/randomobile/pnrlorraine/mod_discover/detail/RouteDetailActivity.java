@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -181,7 +180,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
 
         paramType = app.DRUPAL_TYPE_ROUTE;
-        Log.d("JmLog","La route main est : "+route.getTitle()+" si elle a image :"+route.getMainImage()+" gallery : "+route.getImages());
+        //d("JmLog","La route main est : "+route.getTitle()+" si elle a image :"+route.getMainImage()+" gallery : "+route.getImages());
 
         map = (MapView) findViewById(R.id.mapa);
 
@@ -554,7 +553,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         txt_route_title.setText(route.getTitle());
         txt_ramp.setText(Util.formatDesnivel(route.getSlope()));
-        Log.d("Desnivel:", String.valueOf(route.getSlope()));
+        //Log.d("Desnivel:", String.valueOf(route.getSlope()));
         txt_duration.setText(Util.formatDuracion(route.getEstimatedTime()));
         txt_distance.setText(Util.formatDistanciaRoute(route.getRouteLengthMeters()));
         try {
@@ -1150,7 +1149,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         // Ponerle las propiedades necesarias
         if (clase.equals(Poi.class.getName())) {
-            Log.d("Milog", "El objeto pulsado lleva un poi");
+            // Log.d("Milog", "El objeto pulsado lleva un poi");
             // Poner las propiedades en el layout
             lblNombre.setText(nombre);
             if ((cat == null) || (cat.equals("")))
