@@ -10,6 +10,8 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -347,7 +349,22 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
                 Route routePulsado = null;
 
-                routePulsado = routeAdaptador.getItem(index);
+                if (!isOnline()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RoutesListActivity.this);
+
+                    builder.setTitle(R.string.txt_sin_conexion);
+                    builder.setMessage(R.string.txt_funcion_no_disponible);
+                    builder.setPositiveButton(R.string.mod_global__ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Dismis
+                        }
+                    });
+
+                    builder.show();
+                } else {
+
+                    routePulsado = routeAdaptador.getItem(index);
 
                 /*if (arrayFilteredRoutes != null)
                     routePulsado = arrayFilteredRoutes.get(index);
@@ -355,23 +372,33 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
                 else
                     routePulsado = arrayRoutes.get(index);*/
 
-                //app.setRoutesList(arrayRoutes);
+                    //app.setRoutesList(arrayRoutes);
 
-                Intent intent = new Intent(RoutesListActivity.this, RouteDetailActivity.class);
+                    Intent intent = new Intent(RoutesListActivity.this, RouteDetailActivity.class);
 
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_NID, routePulsado.getNid());
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_DISTANCE, routePulsado.getDistanceMeters());
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_CATEGORY_ROUTE, routePulsado.getCategory().getName());
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_TITLE_ROUTE, routePulsado.getTitle());
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_MAP_URL, routePulsado.getUrlMap());
-                intent.putExtra(RouteDetailActivity.PARAM_KEY_COLOR_ROUTE, Integer.toString(routePulsado.getColorForMap(ctxList)));
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_NID, routePulsado.getNid());
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_DISTANCE, routePulsado.getDistanceMeters());
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_CATEGORY_ROUTE, routePulsado.getCategory().getName());
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_TITLE_ROUTE, routePulsado.getTitle());
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_MAP_URL, routePulsado.getUrlMap());
+                    intent.putExtra(RouteDetailActivity.PARAM_KEY_COLOR_ROUTE, Integer.toString(routePulsado.getColorForMap(ctxList)));
 
-                BitmapManager.INSTANCE.cache.remove(routePulsado.getMainImage());
+                    BitmapManager.INSTANCE.cache.remove(routePulsado.getMainImage());
 
-                startActivity(intent);
+                    startActivity(intent);
+                }
             }
         });
+
     }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
 
     private void inicializarForm() {
         panelCargando.setVisibility(View.GONE);

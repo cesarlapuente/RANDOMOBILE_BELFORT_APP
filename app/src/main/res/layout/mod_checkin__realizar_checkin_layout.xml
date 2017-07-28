@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:alborgis="http://schemas.android.com/apk/lib/eu.randomobile.pnrlorraine.mod_imgmapping"
     android:background="@color/white" >
 
 
@@ -18,8 +18,8 @@
         android:id="@+id/cuerpo"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/map_menuCheckin"
-        android:layout_above="@+id/btnCheckin">
+		android:layout_above="@+id/btnCheckin"
+		android:layout_below="@+id/map_menuCheckin">
         
 	        <LinearLayout
 	        android:layout_width="fill_parent"
@@ -31,39 +31,38 @@
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content"
 	                android:gravity="left"
+					android:padding="5dp"
 	                android:text="Nom du point"
 	                android:textColor="@color/blue_categories"
 	                android:textSize="17dp"
-	                android:textStyle="bold"
-	                android:padding="5dp" />
-	             <com.esri.android.map.MapView 
-				    xmlns:android="http://schemas.android.com/apk/res/android" 
+					android:textStyle="bold" />
+
+				<com.esri.arcgisruntime.mapping.view.MapView xmlns:android="http://schemas.android.com/apk/res/android"
 				    android:id="@+id/mapa"
 				    android:layout_width="fill_parent" 
 				    android:layout_height="130dp"
-				    android:layout_marginRight = "5dp"
+					android:layout_marginBottom="5dp"
 				    android:layout_marginLeft = "5dp"
-				    android:layout_marginTop="5dp"
-				    android:layout_marginBottom="5dp">
-				</com.esri.android.map.MapView>
+					android:layout_marginRight="5dp"
+					android:layout_marginTop="5dp"></com.esri.arcgisruntime.mapping.view.MapView>
 	            <TextView
 	                android:id="@+id/lblPonAquiComentario"
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content"
-	                android:layout_marginTop="5dp"
 	                android:layout_marginLeft="10dp"
+					android:layout_marginTop="5dp"
 	                android:text="@string/mod_checkin__deja_tu_comentario"
 	                android:textColor="#000"
 	                android:textSize="14dp" />
 	            
 	            <EditText 
 	                android:id="@+id/tbComentario"
-	                android:layout_height="wrap_content"
 	                android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
 	                android:layout_marginLeft="10dp"
 	                android:layout_marginRight="10dp"
-	                android:hint="@string/mod_checkin__deja_tu_comentario"
 	                android:background="@drawable/input_text9"
+					android:hint="@string/mod_checkin__deja_tu_comentario"
 	                android:paddingLeft="10dp"
 	                android:paddingRight="10dp"
 	                android:textColor="#FFF"
@@ -80,12 +79,12 @@
 
 		            <Button 
 					   	android:id="@+id/btnHacerFoto"
-					   	android:layout_height="35dp"
-					    android:layout_width="150dp"
-					    android:layout_margin="5dp"
-					    android:textColor="#FFF"
+						android:layout_width="150dp"
+						android:layout_height="35dp"
 					    android:layout_gravity="center"
-					    android:background="@drawable/btn_foto_checkin"/>
+						android:layout_margin="5dp"
+						android:background="@drawable/btn_foto_checkin"
+						android:textColor="#FFF" />
 		        </LinearLayout>   
 		        
 	            <LinearLayout
@@ -95,18 +94,18 @@
 		        android:orientation="horizontal">
 		            <Button 
 					   	android:id="@+id/btnCheckinsAqui"
-					   	android:layout_height="35dp"
-					    android:layout_width="150dp"
-					    android:layout_margin="5dp"
+						android:layout_width="150dp"
+						android:layout_height="35dp"
 					    android:layout_gravity="right"
+						android:layout_margin="5dp"
 					    android:background="@drawable/btn_all_checkin"/>
 		            
 		            <Button 
 					   	android:id="@+id/btnMisCheckinsAqui"
-					   	android:layout_height="35dp"
-					    android:layout_width="150dp"
-					    android:layout_margin="5dp"
+						android:layout_width="150dp"
+						android:layout_height="35dp"
 					    android:layout_gravity="right"
+						android:layout_margin="5dp"
 					    android:background="@drawable/btn_mis_checkins"/>
 		        </LinearLayout>
 	    	</LinearLayout>
@@ -115,41 +114,41 @@
     
     <Button 
 	   	android:id="@+id/btnCheckin"
-	   	android:layout_height="35dp"
-	    android:layout_width="fill_parent"
+		android:layout_width="fill_parent"
+		android:layout_height="35dp"
 	    android:layout_above="@+id/lblEstadoGPS"
-	    android:layout_margin="5dp"
-	  	android:layout_gravity="center_horizontal"
+		android:layout_gravity="center_horizontal"
+		android:layout_margin="5dp"
 	    android:background="@drawable/btn_checkin"/>
     
     
     <TextView 
         android:id="@+id/lblEstadoGPS"
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="@string/mod_global__buscando_ubicacion_gps"
-        android:gravity="center"/>
+		android:gravity="center"
+		android:text="@string/mod_global__buscando_ubicacion_gps" />
     
     
     <RelativeLayout
         android:id="@+id/panelCargando"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:visibility="gone"
-        android:background="@color/color_verde_oscuro" >
+		android:background="@color/color_verde_oscuro"
+		android:visibility="gone">
 
 
 	    <TextView
             android:id="@+id/lblCargando"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_centerVertical="true"
             android:text="@string/mod_checkin__realizando_checkin"
+			android:textColor="#FFF"
             android:textSize="16dp"
             android:textStyle="normal"
-            android:textColor="#FFF"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
               />
 	    
 	    <ProgressBar

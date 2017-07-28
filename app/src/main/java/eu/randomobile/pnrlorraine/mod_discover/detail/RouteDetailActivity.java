@@ -1051,7 +1051,9 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
             map.getGraphicsOverlays().add(gr);
 
-            map.setViewpointGeometryAsync(new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84()), 60);
+            envelope = new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84());
+
+            map.setViewpointGeometryAsync(envelope, 60);
         }
     }
 

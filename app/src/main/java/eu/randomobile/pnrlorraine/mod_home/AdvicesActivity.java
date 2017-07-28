@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -122,36 +122,41 @@ public class AdvicesActivity extends Activity {
     }
 
     private void buttonPressed(LinearLayout linearLayout) {
-        textView_1L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
-        textView_1L.setText(Html.fromHtml(app.getDBHandler().getPageById(94).getTitle()).toString());
-        textView_1R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
-        textView_1R.setText(Html.fromHtml(app.getDBHandler().getPageById(95).getTitle()).toString());
-        textView_2L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
-        textView_2L.setText(Html.fromHtml(app.getDBHandler().getPageById(96).getTitle()).toString());
-        textView_2R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
-        textView_2R.setText(Html.fromHtml(app.getDBHandler().getPageById(97).getTitle()).toString());
+        if (app.getDBHandler().getPageById(94) != null) {
+            textView_1L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
+            textView_1L.setText(Html.fromHtml(app.getDBHandler().getPageById(94).getTitle()).toString());
+            textView_1R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
+            textView_1R.setText(Html.fromHtml(app.getDBHandler().getPageById(95).getTitle()).toString());
+            textView_2L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
+            textView_2L.setText(Html.fromHtml(app.getDBHandler().getPageById(96).getTitle()).toString());
+            textView_2R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.white));
+            textView_2R.setText(Html.fromHtml(app.getDBHandler().getPageById(97).getTitle()).toString());
 
-        switch (linearLayout.getId()) {
-            case R.id.btn_LinearLayout_1L: {
-                textView_1L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
-                textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(94).getBody()).toString());
-                break;
+            switch (linearLayout.getId()) {
+                case R.id.btn_LinearLayout_1L: {
+                    textView_1L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
+                    textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(94).getBody()).toString());
+                    break;
+                }
+                case R.id.btn_LinearLayout_1R: {
+                    textView_1R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
+                    textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(95).getBody()).toString());
+                    break;
+                }
+                case R.id.btn_LinearLayout_2L: {
+                    textView_2L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
+                    textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(96).getBody()).toString());
+                    break;
+                }
+                case R.id.btn_LinearLayout_2R: {
+                    textView_2R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
+                    textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(97).getBody()).toString());
+                    break;
+                }
             }
-            case R.id.btn_LinearLayout_1R: {
-                textView_1R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
-                textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(95).getBody()).toString());
-                break;
-            }
-            case R.id.btn_LinearLayout_2L: {
-                textView_2L.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
-                textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(96).getBody()).toString());
-                break;
-            }
-            case R.id.btn_LinearLayout_2R: {
-                textView_2R.setTextColor(ContextCompat.getColor(AdvicesActivity.this, R.color.btn_pressed));
-                textView_web.setText(Html.fromHtml(app.getDBHandler().getPageById(97).getBody()).toString());
-                break;
-            }
+        } else {
+            Toast.makeText(app, "Un premiere connexion à internet est nécessaire", Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 }

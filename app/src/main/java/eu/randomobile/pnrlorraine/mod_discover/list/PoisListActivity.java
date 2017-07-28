@@ -92,6 +92,7 @@ public class PoisListActivity extends Activity implements LocationListener {
 
         poiAdaptador = new ListPoisAdapter(this, arrayPois);
         listaPois.setAdapter(poiAdaptador);
+        listaPois.setEmptyView(findViewById(R.id.emptyView));
 
         // Set GPS
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);

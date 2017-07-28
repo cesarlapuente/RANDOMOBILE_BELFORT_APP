@@ -8,13 +8,13 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
         android:background="@color/white"
+        android:gravity="center_vertical|center_horizontal"
         android:orientation="vertical"
         android:paddingBottom="15dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="15dp"
-        android:weightSum="1"
-        android:gravity="center_vertical|center_horizontal">
+        android:weightSum="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,12 +36,12 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:orientation="vertical"
             android:paddingLeft="40dp"
             android:paddingRight="40dp" >
 
@@ -54,11 +54,11 @@
         </LinearLayout>
 
         <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/splash_prograssBar"
+            style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/splash_prograssBar"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

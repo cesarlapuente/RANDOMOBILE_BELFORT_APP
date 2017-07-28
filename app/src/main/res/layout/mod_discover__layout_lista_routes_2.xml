@@ -20,6 +20,7 @@
 		alborgis:map="lista_rutas"
 		alborgis:maxSizeFactor="1.5"
 		alborgis:scaleFromOriginal="true" />
+
 </RelativeLayout>
     <ListView
    		android:id="@+id/listaRoutes"
@@ -64,9 +65,9 @@
             
 
 <!--         </RelativeLayout> -->
-        
-    
-    <RelativeLayout 
+
+
+	<RelativeLayout
 	android:id="@+id/panelCargando"    
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"

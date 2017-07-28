@@ -17,10 +17,10 @@
 	    	android:id="@+id/menuPoisList"
     		android:layout_width="fill_parent" 
     		android:layout_height="130dp"
-    		alborgis:map="lista_pois"
+			alborgis:fitImageToScreen="false"
+			alborgis:map="lista_pois"
         	alborgis:maxSizeFactor="1.5"
-        	alborgis:scaleFromOriginal="true"
-        	alborgis:fitImageToScreen="false"/>   
+			alborgis:scaleFromOriginal="true" />
 	</RelativeLayout>
 
     
@@ -28,13 +28,23 @@
    		android:id="@+id/listaPois"
    		android:layout_width="fill_parent"
    		android:layout_height="wrap_content"
-   		android:layout_below="@+id/r_menuPoisList"
    		android:layout_above="@+id/footer"
-   		android:scrollbars="none"
+		android:layout_below="@+id/r_menuPoisList"
    		android:cacheColorHint="#00000000"
    		android:divider="@color/blue_route_value"
-        android:dividerHeight="2dp">
+		android:dividerHeight="2dp"
+		android:scrollbars="none">
    </ListView>
+
+	<TextView
+		android:id="@+id/emptyView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="149dp"
+		android:text="Une connexion internet est nécessaire lors de la première utilisation."
+		android:textAlignment="center" />
+
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
@@ -43,10 +53,11 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:gravity="center_horizontal"
+			android:paddingTop="150dp"
 			android:text="@string/mod_search__noresult"
-			android:visibility="gone"
 			android:textSize="24sp"
-			android:paddingTop="150dp"/>
+			android:visibility="gone" />
+
 	</RelativeLayout>
    
         

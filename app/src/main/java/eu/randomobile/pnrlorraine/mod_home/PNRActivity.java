@@ -3,10 +3,9 @@ package eu.randomobile.pnrlorraine.mod_home;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -51,7 +50,12 @@ public class PNRActivity extends Activity {
 		mImageMap.setImageResource(R.drawable.menu_creditos);
 
 		textView = (TextView) findViewById(R.id.txtWebPNR);
-		textView.setText(Html.fromHtml(app.getDBHandler().getPageById(93).getBody()).toString().trim());
+		if (app.getDBHandler().getPageById(93) != null) {
+			textView.setText(Html.fromHtml(app.getDBHandler().getPageById(93).getBody()).toString().trim());
+		} else {
+			Toast.makeText(app, "Un premiere connexion à internet est necessaire", Toast.LENGTH_LONG).show();
+			finish();
+		}
 	}
 
 	private void cargaActivityHome() {

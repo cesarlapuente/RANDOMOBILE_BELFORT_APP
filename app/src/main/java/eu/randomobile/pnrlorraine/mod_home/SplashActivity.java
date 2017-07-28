@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -948,8 +950,42 @@ public class SplashActivity extends Activity {
         localBuilder.create().show();
     }
 
+    private void createNetworkDisabledAlert(String message) {
+        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
+        localBuilder
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Activer Internet ",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                showNetworkOptions();
+                            }
+                        }
+                );
+        localBuilder.setNegativeButton("Ne pas l'activer ",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        paramDialogInterface.cancel();
+                        finish();
+                    }
+                }
+        );
+        localBuilder.create().show();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     private void showGpsOptions() {
         startActivityForResult(new Intent("android.settings.LOCATION_SOURCE_SETTINGS"), 1);
+    }
+
+    private void showNetworkOptions() {
+        startActivityForResult(new Intent("android.settings.NETWORK_OPERATOR_SETTINGS"), 1);
     }
 
     @Override
@@ -1163,7 +1199,8 @@ public class SplashActivity extends Activity {
                             routeCategoryDAO.insertListCategory(routeCategoryTerms);
                             routes.add(route);
                             progress[0] += 50 / arrayRes.length();
-                            progressBar.setProgress(progress[0]);
+                            progressBar.incrementProgressBy(25);
+
 
                         }
                         //JSONObject object = arrayRes.getJSONObject(i);
@@ -1188,12 +1225,16 @@ public class SplashActivity extends Activity {
             }
         }, params);
 
+        progressBar.incrementProgressBy(25);
+
         params.clear();
 
         params.put("lat", String.valueOf(lat));
         params.put("lon", String.valueOf(lon));
 
         app.clienteDrupal.customMethodCallPost("poi/get_list_distance", new AsyncHttpResponseHandler() {
+
+
             @Override
             public void onSuccess(String response) {
 
@@ -1266,7 +1307,9 @@ public class SplashActivity extends Activity {
                         }
                         pois.add(poi);
                         progress[0] += 50 / arrayRes.length();
-                        progressBar.setProgress(progress[0]);
+
+
+                        //progressBar.incrementProgressBy(100 / arrayRes.length());
                     }
 
                 } catch (JSONException e) {
@@ -1278,6 +1321,7 @@ public class SplashActivity extends Activity {
                 ressourceFileDAO.insertListRessourceFile(resourceFiles);
                 voteDAO.insertListVote(votes);
                 poiDAO.insertListPoi(pois);
+                progressBar.incrementProgressBy(25);
 
                 show();
 
@@ -1297,7 +1341,7 @@ public class SplashActivity extends Activity {
 
             }
         }, params);
-
+        progressBar.incrementProgressBy(25);
 
     }
 
@@ -1360,7 +1404,6 @@ public class SplashActivity extends Activity {
         lat = location.getLatitude();
 
         progressBar = (ProgressBar) findViewById(R.id.splash_prograssBar);
-        progressBar.setMax(100);
 
         if (app.getNetStatus() != 0) {
             Log.e("+++", "+++++++++++++++++++");
@@ -1368,13 +1411,13 @@ public class SplashActivity extends Activity {
             //updateLocalDatabase_Routes();
             //loadMainActivity();
 
-        } /*else {
-            try {
+        } else {
+            /*try {
                 app.setRoutesList(app.getDBHandler().getRouteList());
 
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "Se ha producido un error al actualizar las rutas", Toast.LENGTH_LONG).show();
-            }
+            }*/
 
             loadedComponents = 4;
 
@@ -1382,7 +1425,7 @@ public class SplashActivity extends Activity {
 
             builder.setTitle(R.string.txt_sin_conexion);
             builder.setMessage(R.string.txt_caracteristicas_no_disponibles);
-            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("Acepter", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     loadMainActivity();
@@ -1402,7 +1445,7 @@ public class SplashActivity extends Activity {
             });
 
             builder.show();
-        }*/
+        }
     }
 
     protected void onResume() {
@@ -1489,7 +1532,7 @@ public class SplashActivity extends Activity {
                         app.getDBHandler().addOrReplacePage(page);
                     }
 
-                    progressBar.incrementProgressBy(25);
+                    //progressBar.incrementProgressBy(25);
                     loadedComponents++;
                     loadMainActivity();
                 }
@@ -1508,7 +1551,7 @@ public class SplashActivity extends Activity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Ha fallado la descarga de datos P3", Toast.LENGTH_LONG).show();
 
-            progressBar.incrementProgressBy(25);
+            //progressBar.incrementProgressBy(25);
             loadedComponents++;
             loadMainActivity();
         }
