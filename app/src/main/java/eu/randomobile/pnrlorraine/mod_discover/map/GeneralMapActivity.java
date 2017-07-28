@@ -1,12 +1,11 @@
 package eu.randomobile.pnrlorraine.mod_discover.map;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +28,7 @@ import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
@@ -73,25 +73,19 @@ public class GeneralMapActivity extends Activity implements
 
 	public static final int PARAM_MAPA_GENERAL_MOSTRAR_POIS = 200;
 	public static final int PARAM_MAPA_GENERAL_MOSTRAR_RUTAS = 201;
-
-	private int paramMapaGeneralMostrar;
-
 	MainApp app;
-
 	MapView mapa;
 	GraphicsOverlay capaGeometrias;
 	Callout callout;
-
 	Button btnSeleccionarCapaBase;
 	Button btnVolver;
 	TextView txtTitulo;
 	Button btnHome;
 	Button btnListado;
 	Button btnRA;
-
 	RelativeLayout panelCargando;
-	
 	ArrayList<Poi> arrayPois = null;
+	private int paramMapaGeneralMostrar;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -243,7 +237,7 @@ public class GeneralMapActivity extends Activity implements
 		btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				ComboCapasMapa comboCapas = new ComboCapasMapa(
-						getApplication(), GeneralMapActivity.this);
+						getApplication(), GeneralMapActivity.this, Basemap.createImagery());
 				comboCapas.comboCapasMapaInterface = GeneralMapActivity.this;
 				comboCapas.show();
 			}
@@ -288,7 +282,7 @@ public class GeneralMapActivity extends Activity implements
 
 	}
 
-	public void seCerroComboCapas() {
+	public void seCerroComboCapas(Basemap basemap) {
 		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
 		Log.d("Milog", "Despues de poner capa base");
@@ -696,15 +690,35 @@ public class GeneralMapActivity extends Activity implements
 		this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
 	}
 
-	
-	
-	
-	
+	@Override
+	public void seCargoPoi(Poi poi) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void producidoErrorAlCargarPoi(String error) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void seCargoRoute(Route route) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void producidoErrorAlCargarRoute(String error) {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
 	 * Location listener propio
-	 * 
+	 *
 	 * @author
-	 * 
+	 *
 	 */
 	private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
@@ -728,35 +742,6 @@ public class GeneralMapActivity extends Activity implements
 			if (locationChangedEvent.getLocation() == null)
 				return;
 		}
-	}
-	
-	
-	
-	
-	
-	@Override
-	public void seCargoPoi(Poi poi) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void producidoErrorAlCargarPoi(String error) {
-		// TODO Auto-generated method stub
-
-	}
-
-
-	@Override
-	public void seCargoRoute(Route route) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void producidoErrorAlCargarRoute(String error) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

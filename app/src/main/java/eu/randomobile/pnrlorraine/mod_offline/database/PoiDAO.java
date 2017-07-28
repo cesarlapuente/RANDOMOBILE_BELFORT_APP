@@ -17,7 +17,7 @@ import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 
 /**
  * RandomobileBelfort-Android
- * Created by Thibault Nougues on 21/07/2017.
+ * Created by Thibault N on 21/07/2017.
  */
 
 public class PoiDAO {

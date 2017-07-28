@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.list.PoisListActivity;
+import eu.randomobile.pnrlorraine.mod_discover.map.PoisGeneralMapActivity;
 import eu.randomobile.pnrlorraine.mod_events.EventsListActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
@@ -512,11 +512,15 @@ public class PoisSearchActivity extends Activity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PoisSearchActivity.this, PoisListActivity.class);
+                Intent intent;
+                if (getIntent().getBooleanExtra("liste", true)) {
+                    intent = new Intent(PoisSearchActivity.this, PoisListActivity.class);
+                } else {
+                    intent = new Intent(PoisSearchActivity.this, PoisGeneralMapActivity.class);
+                }
 
                 if (applyFilter()) {
                     intent.putIntegerArrayListExtra("filtre", filtre);
-                    Log.e("----->", "ok ");
                 }
 
                 startActivity(intent);

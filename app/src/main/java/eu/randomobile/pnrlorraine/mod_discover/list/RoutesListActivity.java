@@ -160,8 +160,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         mImageMap.setAttributes(true, false, (float) 1.0, "lista_rutas");
         mImageMap.setImageResource(R.drawable.liste_parcours_actif);
         rl = (RelativeLayout) findViewById(R.id.r_map_routelist);
-        Log.e("***", "onCreate: " + rl.getWidth() + " " + rl.getMeasuredWidth());
-        Log.e("***", "onCreate: " + rl.getHeight() + " " + rl.getMeasuredHeight());
 
         capturarControles();
         escucharEventos();
@@ -203,6 +201,7 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
     private void cargaActivitySearch() {
         Intent intent = new Intent(RoutesListActivity.this, RouteSearchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("liste", true);
         startActivityForResult(intent, 1);
     }
 

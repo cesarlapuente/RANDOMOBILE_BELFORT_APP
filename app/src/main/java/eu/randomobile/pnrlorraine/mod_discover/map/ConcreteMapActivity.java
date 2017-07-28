@@ -6,8 +6,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +18,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
@@ -31,6 +28,7 @@ import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
@@ -237,7 +235,7 @@ public class ConcreteMapActivity extends Activity implements
 		btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				ComboCapasMapa comboCapas = new ComboCapasMapa(
-						getApplication(), ConcreteMapActivity.this);
+						getApplication(), ConcreteMapActivity.this, Basemap.createImagery());
 				comboCapas.comboCapasMapaInterface = ConcreteMapActivity.this;
 				comboCapas.show();
 			}
@@ -260,7 +258,7 @@ public class ConcreteMapActivity extends Activity implements
 
 	}
 
-	public void seCerroComboCapas() {
+	public void seCerroComboCapas(Basemap basemap) {
 		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
 		Log.d("Milog", "Despues de poner capa base");
@@ -588,11 +586,35 @@ public class ConcreteMapActivity extends Activity implements
 		}
 	}
 
+	@Override
+	public void producidoErrorAlCargarListaPois(String error) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void seCargoListaRoutes(ArrayList<Route> routes) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void producidoErrorAlCargarListaRoutes(String error) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void seCargoListaPois(ArrayList<Poi> pois) {
+
+
+	}
+	
 	/**
 	 * Location listener propio
-	 * 
+	 *
 	 * @author
-	 * 
+	 *
 	 */
 	private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
@@ -616,30 +638,6 @@ public class ConcreteMapActivity extends Activity implements
 			if (locationChangedEvent.getLocation() == null)
 				return;
 		}
-	}
-
-	@Override
-	public void producidoErrorAlCargarListaPois(String error) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void seCargoListaRoutes(ArrayList<Route> routes) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void producidoErrorAlCargarListaRoutes(String error) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void seCargoListaPois(ArrayList<Poi> pois) {
-		
-
 	}
 
 }

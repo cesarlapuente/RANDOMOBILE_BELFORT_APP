@@ -1,7 +1,6 @@
 package eu.randomobile.pnrlorraine.mod_home;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,7 +37,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.Route;
 import eu.randomobile.pnrlorraine.mod_global.model.Vote;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.PoiCategoryTerm;
 import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
-import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteDifficultyTerm;
 import eu.randomobile.pnrlorraine.mod_offline.database.PoiCategoryDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.RessourceFileDAO;
@@ -46,7 +44,6 @@ import eu.randomobile.pnrlorraine.mod_offline.database.RessourceLinkDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.RouteCategoryDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.RouteDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
-import eu.randomobile.pnrlorraine.utils.JSONManager;
 
 public class SplashActivity extends Activity {
     private static final int SPLASH_TIME = 1 * 2000; // seconds
@@ -79,7 +76,7 @@ public class SplashActivity extends Activity {
 
     private Context ctx;
 
-    private static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
+    /*private static void cargarListaRutasOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String difTid, String searchTxt) {
         final HashMap<String, String> params = new HashMap<String, String>();
 
         params.put("lat", String.valueOf(lat));
@@ -110,7 +107,6 @@ public class SplashActivity extends Activity {
                     public void onSuccess(String response) {
 
                         ArrayList<Route> listaRutas = null;
-                        Log.d("ROUTE: ", response);
 
                         if (response != null && !response.equals("")) {
                             listaRutas = fillRouteList(response, app);
@@ -118,7 +114,7 @@ public class SplashActivity extends Activity {
 
                         if (listaRutas != null) {
 
-                            /*for (Route route : app.getRoutesList()) {
+                            *//*for (Route route : app.getRoutesList()) {
                                 Log.d("ForEach route sais:", " Route ID: " + route.getNid());
                                 Log.d("ForEach route sais:", " Route Name: " + route.getTitle());
 
@@ -150,7 +146,7 @@ public class SplashActivity extends Activity {
 
                                 app.getDBHandler().addOrReplaceRoute(route);
 
-                            }*/
+                            }*//*
 
                             progressBar.incrementProgressBy(25);
 
@@ -165,13 +161,12 @@ public class SplashActivity extends Activity {
                     }
 
                     public void onFailure(Throwable error) {
-                    Log.d("JmLog","FAIL connection cargarListaRutasOrdenadosDistancia");
                     }
                 },
                 params);
-    }
+    }*/
 
-    private static ArrayList<Route> fillRouteList(String response, final MainApp application) {
+    /*private static ArrayList<Route> fillRouteList(String response, final MainApp application) {
         Context ctx = application.getApplicationContext();
 
         ArrayList<Route> listaRutas = null;
@@ -190,7 +185,6 @@ public class SplashActivity extends Activity {
                         if (recObj.getClass().getName().equals(JSONObject.class.getName())) {
                             final JSONObject recDic = (JSONObject) recObj;
 
-                            Log.d("JSON Object:", " String: " + recDic.toString());
 
                             String nid = recDic.getString("nid");
                             String title = recDic.getString("title");
@@ -306,11 +300,11 @@ public class SplashActivity extends Activity {
 
                             //"pois":[{"title":"Cuevas","body":null,"lat":"28.403591432499","lon":"-14.155712170242","number":1,"type":"30","nid":"31","languageNone":"und","language":"es"},
 
-                            /*
+                            *//*
                             String pois = recDic.getString("pois");
                             Log.d("####################", " ############################################################ ");
                             Log.d("JSON Obj POIS:", "  " + pois);
-                            */
+                            *//*
 
                             try {
                                 JSONArray arrayPois = recDic.getJSONArray("pois");
@@ -336,11 +330,11 @@ public class SplashActivity extends Activity {
 
                                         arrayTemp.add(poi);
 
-                                        /*
+                                        *//*
                                         Log.d("--------------------", " ------------------------------------------------------------ ");
                                         Log.d("JSON Obj POIS:", "  " + arrayPois.get(j).toString());
                                         Log.d("--------------------", " ------------------------------------------------------------ ");
-                                        */
+                                        *//*
                                     }
 
                                     item.setPois(arrayTemp);
@@ -355,8 +349,8 @@ public class SplashActivity extends Activity {
                                             try {
                                                 JSONObject dicRes = new JSONObject(response);
                                                 if (dicRes != null) {
-                                                    if (!(dicRes.getString("alt_max").equals("null")) /*&& !(dicRes.getString("alt_min").equals("null"))*/)
-                                                        item.setSlope(dicRes.getDouble("alt_max")/* - dicRes.getDouble("alt_min")*/);
+                                                    if (!(dicRes.getString("alt_max").equals("null")) *//*&& !(dicRes.getString("alt_min").equals("null"))*//*)
+                                                        item.setSlope(dicRes.getDouble("alt_max")*//* - dicRes.getDouble("alt_min")*//*);
 
                                                     Object objDif = dicRes.get("difficulty");
 
@@ -501,9 +495,9 @@ public class SplashActivity extends Activity {
         }
 
         return listaRutas;
-    }
+    }*/
 
-    private static void cargarRoute(Application application, String nid) {
+   /* private static void cargarRoute(Application application, String nid) {
         MainApp app = (MainApp) application;
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -532,9 +526,9 @@ public class SplashActivity extends Activity {
             }
         }, params);
 
-    }
+    }*/
 
-    private static Route fillRoute(String response) {
+    /*private static Route fillRoute(String response) {
         Route route = null;
         try {
             JSONObject dicRes = new JSONObject(response);
@@ -560,8 +554,8 @@ public class SplashActivity extends Activity {
                 if (!dicRes.getString("distance").equals("null"))
                     route.setRouteLengthMeters(dicRes.getDouble("distance"));
 
-                if (!(dicRes.getString("alt_max").equals("null")) /*&& !(dicRes.getString("alt_min").equals("null"))*/)
-                    route.setSlope(dicRes.getDouble("alt_max")/* - dicRes.getDouble("alt_min")*/);
+                if (!(dicRes.getString("alt_max").equals("null")) *//*&& !(dicRes.getString("alt_min").equals("null"))*//*)
+                    route.setSlope(dicRes.getDouble("alt_max")*//* - dicRes.getDouble("alt_min")*//*);
 
                 Object objCat = dicRes.get("type");
 
@@ -580,7 +574,7 @@ public class SplashActivity extends Activity {
                 if (!dicRes.getString("difficulty").equals("null"))
                     route.setDifficulty_tid(dicRes.getString("difficulty"));
 
-                /*if (objDif != null && objDif.getClass().getName().equals(JSONObject.class.getName())) {
+                *//*if (objDif != null && objDif.getClass().getName().equals(JSONObject.class.getName())) {
                     JSONObject dicDif = (JSONObject) objDif;
                     String tid = dicDif.getString("tid");
                     String name = dicDif.getString("name");
@@ -588,7 +582,7 @@ public class SplashActivity extends Activity {
                     routeDifTerm.setTid(tid);
                     routeDifTerm.setName(name);
                     route.setDifficulty(routeDifTerm);
-                }*/
+                }*//*
 
                 route.setTrack(geom);
 
@@ -743,9 +737,9 @@ public class SplashActivity extends Activity {
         }
 
         return route;
-    }
+    }*/
 
-    private static void cargarListaPoisOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt) {
+    /*private static void cargarListaPoisOrdenadosDistancia(final Application application, double lat, double lon, int radio, int num, int pag, String catTid, String searchTxt) {
         HashMap<String, String> params = new HashMap<String, String>();
 
         params.put("lat", String.valueOf(lat));
@@ -807,8 +801,8 @@ public class SplashActivity extends Activity {
                 },
                 params);
     }
-
-    private static ArrayList<Poi> fillPoiList(String response, Application application) {
+*/
+    /*private static ArrayList<Poi> fillPoiList(String response, Application application) {
         Context ctx = application.getApplicationContext();
         ArrayList<Poi> listaPois = null;
 
@@ -914,7 +908,7 @@ public class SplashActivity extends Activity {
 
         return listaPois;
     }
-
+*/
     //get gps position
     private Location getLastKnownLocation() {
         List<String> providers = mLocationManager.getProviders(true);
@@ -932,7 +926,6 @@ public class SplashActivity extends Activity {
     }
 
     private void createGpsDisabledAlert(String message) {
-        Log.e("thib", "createGpsDisabledAlert: ");
         AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
         localBuilder
                 .setMessage(message)
@@ -963,10 +956,8 @@ public class SplashActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.e("thib", "onActivityResult:  enable");
             onCreateBis();
         } else {
-            Log.e("thib", "onActivityResult:  disable");
             createGpsDisabledAlert("Le GPS n'est toujours pas actif, voulez-vous l'activer ?");
         }
     }
@@ -1007,6 +998,8 @@ public class SplashActivity extends Activity {
         ressourceFileDAO = new RessourceFileDAO(getApplicationContext());
         ressourceLinkDAO = new RessourceLinkDAO(getApplicationContext());
         voteDAO = new VoteDAO(getApplicationContext());
+
+        updateLocalDatabase_Pages();
 
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -1194,9 +1187,6 @@ public class SplashActivity extends Activity {
 
             }
         }, params);
-
-
-        Log.e("---", "---------------------------------------------------------------------------------------------------");
 
         params.clear();
 
@@ -1417,7 +1407,6 @@ public class SplashActivity extends Activity {
 
     protected void onResume() {
         super.onResume();
-        Log.e("thib", "onResume: ");
         //this.onRestart();
 
         splashActivado = true;
@@ -1452,7 +1441,7 @@ public class SplashActivity extends Activity {
 
     //
 
-    private void updateLocalDatabase_Routes() {
+    /*private void updateLocalDatabase_Routes() {
         cargarListaRutasOrdenadosDistancia(getApplication(), // Aplicacion
                 lat, // Latitud
                 lon, // Longitud
@@ -1465,9 +1454,9 @@ public class SplashActivity extends Activity {
         );
 
         updateLocalDatabase_Pois();
-    }
+    }*/
 
-    private void updateLocalDatabase_Pois() {
+    /*private void updateLocalDatabase_Pois() {
         cargarListaPoisOrdenadosDistancia(getApplication(), // Aplicacion
                 lat, // Latitud
                 lon, // Longitud
@@ -1481,7 +1470,7 @@ public class SplashActivity extends Activity {
 
         progressBar.incrementProgressBy(25);
         updateLocalDatabase_Pages();
-    }
+    }*/
 
     private void updateLocalDatabase_Pages() {
         try {
@@ -1497,10 +1486,6 @@ public class SplashActivity extends Activity {
                     ArrayList<Page> pages = new ArrayList<Page>(Arrays.asList(list_Pages));
 
                     for (Page page : pages) {
-                        Log.d("updateLocalDatabase():", " Page Nid: " + page.getNid());
-                        Log.d("updateLocalDatabase():", " Page Title: " + page.getTitle());
-                        Log.d("updateLocalDatabase():", " Page Body: " + page.getBody());
-
                         app.getDBHandler().addOrReplacePage(page);
                     }
 
@@ -1542,7 +1527,7 @@ public class SplashActivity extends Activity {
 
     //
 
-    public class MyProgressBar extends ProgressBar {
+    /*public class MyProgressBar extends ProgressBar {
         SplashActivity splashActivity;
 
         public MyProgressBar(Context context, SplashActivity splashActivity) {
@@ -1558,5 +1543,5 @@ public class SplashActivity extends Activity {
                 splashActivity.loadMainActivity();
             }
         }
-    }
+    }*/
 }

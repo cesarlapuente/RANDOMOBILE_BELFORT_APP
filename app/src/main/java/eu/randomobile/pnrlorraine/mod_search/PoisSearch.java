@@ -241,7 +241,7 @@ public class PoisSearch {
 			return true;
 		if (getCheckParques() && category == 45)
 			return true;
-		if (getCheckPatrimonio() && category == 29)
+		if (getCheckPatrimonio() && category == 30)
 			return true;
 		if (getCheckSMonumentos() && category == 36)
 			return true;

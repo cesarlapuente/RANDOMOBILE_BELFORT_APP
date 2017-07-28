@@ -1,21 +1,13 @@
 package eu.randomobile.pnrlorraine.mod_discover.detail;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -35,18 +27,14 @@ import android.widget.Toast;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Geometry;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
-import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedEvent;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedListener;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
-import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
@@ -55,7 +43,6 @@ import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 
 import java.io.File;
@@ -70,11 +57,8 @@ import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.WKTUtil;
 import eu.randomobile.pnrlorraine.mod_global.data_access.DownloadAndSaveTPK;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa.ComboCapasMapaInterface;
-import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourcePoi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
@@ -87,7 +71,6 @@ import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.RessourceFileDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.RouteDAO;
 import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
-import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
 import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
@@ -157,6 +140,10 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     private VoteDAO voteDAO;
     private RessourceFileDAO fileDAO;
 
+
+    private Envelope envelope;
+    private Basemap basemap;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_detail);
@@ -165,6 +152,10 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         poiDAO = new PoiDAO((getApplicationContext()));
         voteDAO = new VoteDAO(getApplicationContext());
         fileDAO = new RessourceFileDAO(getApplicationContext());
+
+        envelope = new Envelope(47.7000, 6.8000, 47.6, 6.9, SpatialReferences.getWgs84());
+
+        basemap = Basemap.createImagery();
 
         this.app = (MainApp) getApplication();
 
@@ -192,11 +183,11 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         paramType = app.DRUPAL_TYPE_ROUTE;
         Log.d("JmLog","La route main est : "+route.getTitle()+" si elle a image :"+route.getMainImage()+" gallery : "+route.getImages());
 
-        //inicializarMapa();
         map = (MapView) findViewById(R.id.mapa);
-        ArcGISMap mapArgis = new ArcGISMap(Basemap.Type.IMAGERY, 47.6333, 6.8667, 16);
-        //Point pt = new Point(34.056295, -117.195800, SpatialReferences.getWgs84());
+
+        ArcGISMap mapArgis = new ArcGISMap(basemap);
         map.setMap(mapArgis);
+        map.setViewpointGeometryAsync(envelope, 60);
         initializeComponents();
         //
         //inicializarForm();
@@ -390,16 +381,16 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             }
         });
 
-        map.getMap().addDoneLoadingListener(new Runnable() {
+        map.getMap().addLoadStatusChangedListener(new LoadStatusChangedListener() {
             @Override
-            public void run() {
+            public void loadStatusChanged(LoadStatusChangedEvent loadStatusChangedEvent) {
+                if (LoadStatus.LOADED == loadStatusChangedEvent.getNewLoadStatus()) {
                 /*LocationDisplay ls = map.getLocationDisplay();
                 ls.addLocationChangedListener(new MyLocationListener());
                 ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
                 ls.startAsync();*/
-                geometricLayer = new GraphicsOverlay();
-                geometricPOIsLayer = new GraphicsOverlay();
-                representarGeometrias();
+                    representarGeometrias();
+                }
             }
         });
 
@@ -410,7 +401,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         btn_Layers.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ComboCapasMapa comboCapas = new ComboCapasMapa(getApplication(), RouteDetailActivity.this);
+                ComboCapasMapa comboCapas = new ComboCapasMapa(getApplication(), RouteDetailActivity.this, basemap);
                 comboCapas.comboCapasMapaInterface = RouteDetailActivity.this;
 
                 comboCapas.show();
@@ -652,7 +643,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     /**
      * This method is used to check if the user has already downloaded the route's map (tpk) or not.
      */
-    private void chekcOfflineMapState() {
+    /*private void chekcOfflineMapState() {
         try {
             File root = android.os.Environment.getExternalStorageDirectory();
             File map_directory = new File(root.getAbsolutePath() + "/localmaps");
@@ -671,7 +662,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         } catch (Exception e) {
 
         }
-    }
+    }*/
 
     /**
      * This method is used for delete the downloaded route's map (tpk).
@@ -728,7 +719,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
     }
 
-    private void escucharEventos() {
+    /*private void escucharEventos() {
         // add a click handler to react when areas are tapped
 
 
@@ -741,7 +732,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 //			}
 //		});
 
-        /*
+        *//*
         btnMenuMasValorar.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
                 if (User.isLoggedIn(app)) {
@@ -790,12 +781,12 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 //				Share.compartir(app, RouteDetailActivity.this, miRoute);
 //			}
 //		});
-        */
+        *//*
 
         // Al tocar un punto en el map
-    }
+    }*/
 
-    @SuppressLint("NewApi")
+    /*@SuppressLint("NewApi")
     private void inicializarForm() {
         //poner estilos (fuente, color, ...)
         if (android.os.Build.VERSION.SDK_INT >= 11) {
@@ -807,7 +798,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         Typeface tfScalaBold = Util.fontScala_Bold(this);
 
-        /*
+        *//*
         txtTitulo.setTypeface(tfScalaBold);
         lblTitleHeader.setTypeface(tfScalaBold);
 
@@ -831,10 +822,10 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             imgViewCategory.setBackgroundResource(R.drawable.categoria_pr);
         }
         panelCargando.setVisibility(View.GONE);
-        */
-    }
+        *//*
+    }*/
 
-    public void seCargoRoute(Route route) {
+    /*public void seCargoRoute(Route route) {
 //		if (route != null) {
 //			this.miRoute = route;
 //
@@ -892,7 +883,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         // Poner la imagen de dificultad
         String dificultad = route.getDifficulty().getName();
         // Tr�s Facile
-        /*
+        *//*
         if (dificultad.equals(this.getResources().getString(R.string.muy_facil)))
             imgDificultad.setBackgroundResource(R.drawable.marcador_facil);
             //Facile
@@ -930,17 +921,17 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             }
         } else {
             imgViewValoracion.setImageResource(R.drawable.puntuacion_0_estrellas);
-        }*/
+        }*//*
         //panelCargando.setVisibility(View.GONE);
 
-    }
+    }*/
 
-    public void producidoErrorAlCargarRoute(String error) {
+    /*public void producidoErrorAlCargarRoute(String error) {
         Log.d("Milog", "producidoErrorAlCargarRoute: " + error);
         // panelCargando.setVisibility(View.GONE);
         Util.mostrarMensaje(this, getResources().getString(R.string.mod_global__error), getResources().getString(R.string.mod_global__error));
         finish();
-    }
+    }*/
 
     /*@Override
     public void seCargoListaRoutes(ArrayList<Route> routes) {
@@ -955,7 +946,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     }*/
 
 
-    public void inicializarMapa() {
+    /*public void inicializarMapa() {
         //ponerCapaBase();
 
 
@@ -964,7 +955,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         map.getGraphicsOverlays().add(geometricLayer);
         map.getGraphicsOverlays().add(geometricPOIsLayer);
-    }
+    }*/
 
     private void representarGeometrias() {
 
@@ -1047,7 +1038,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                 final HashMap<String, Object> attrs = new HashMap<String, Object>();
                 attrs.put("nombre", p.getTitle());
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    attrs.put("descripcion", Html.fromHtml(p.getBody(), Html.FROM_HTML_MODE_LEGACY));
+                    attrs.put("descripcion", Html.fromHtml(p.getBody(), Html.FROM_HTML_MODE_LEGACY).toString());
                 } else {
                     attrs.put("descripcion", Html.fromHtml(p.getBody()).toString());
                 }
@@ -1106,7 +1097,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         return view;
     }
 
-    private View getViewForCalloutPoi(final String nombre, String clase, final String nidDrupal, String cat) {
+    /*private View getViewForCalloutPoi(final String nombre, String clase, final String nidDrupal, String cat) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
                 R.layout.mod_discover__layout_callout_mapa, null);
         final TextView lblNombre = (TextView) view
@@ -1143,7 +1134,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         return view;
     }
-
+*/
 
     private View getViewForCallout(String nombre, String clase, final String cat, final String nid) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
@@ -1195,7 +1186,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         return view;
     }
 
-    private void dibujarPoisInRoute(Route ruta) {
+    /*private void dibujarPoisInRoute(Route ruta) {
         resourcePois = ruta.getPois();
         ArrayList<ResourcePoi> pois = resourcePois;
         PictureMarkerSymbol sym;
@@ -1206,7 +1197,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             //Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
             //        pois.get(j).getLatitude()), SpatialReference.create(102100));
             Point puntoProyectado = new Point(pois.get(j).getLongitude(),
-                    pois.get(j).getLatitude(), SpatialReferences.getWgs84() /*SpatialReference.create(102100)*/);
+                    pois.get(j).getLatitude(), SpatialReferences.getWgs84() *//*SpatialReference.create(102100)*//*);
             number = pois.get(j).getNumber();
             int clase = pois.get(j).getType();
             Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
@@ -1273,7 +1264,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             attrs.put("clase", Poi.class.getName());
             attrs.put("cat", claseNombre);
 
-            Graphic gr = new Graphic(/*puntoProyectado, sym);*/puntoProyectado, attrs, sym);
+            Graphic gr = new Graphic(*//*puntoProyectado, sym);*//*puntoProyectado, attrs, sym);
 
             if (clase == 52) {
                 try {
@@ -1287,9 +1278,9 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                 geometricPOIsLayer.getGraphics().add(gr);
         }
         // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
-    }
+    }*/
 
-    private void dibujarGeometrias(ArrayList<Object> geometrias,
+    /*private void dibujarGeometrias(ArrayList<Object> geometrias,
                                    String paramNombre, String paramNombreClase, String paramNid, final String urlIcon, int color) {
         int polygonFillColor = Color.rgb(55, 132, 218);
         int polygonBorderColor = Color.rgb(27, 87, 187);
@@ -1366,9 +1357,9 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                 }
             }
         }
-    }
+    }*/
 
-    private void centrarEnExtentCapa(GraphicsOverlay capa) {
+    /*private void centrarEnExtentCapa(GraphicsOverlay capa) {
         // Hacer zoom a la capa de geometrias
         Envelope env;
         Envelope NewEnv = capa.getExtent();
@@ -1381,7 +1372,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
 
         //this.map.setViewpointGeometryAsync(NewEnv, 100);
-    }
+    }*/
 
    /* private void copyMapFileInAppFileDir(String fileOutput, String fileAssetsInput) {
         FileOutputStream destinationFileStream = null;
@@ -1408,8 +1399,8 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
     }*/
 
-    public void ponerCapaBase() {
-        /* Codigo de prueba */
+    /*public void ponerCapaBase() {
+        *//* Codigo de prueba *//*
         map.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
         if (!DataConection.hayConexion(this)) {
             String basemapurl = Util.getUrlRouteBaseLayerOffline(app, paramNid, paramMapUrl);
@@ -1419,7 +1410,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             map.getMap().setMaxScale(1000);
             return;
         }
-        /* Fin de codigo de prueba */
+        *//* Fin de codigo de prueba *//*
         CapaBase capaSeleccionada = app.capaBaseSeleccionada;
         Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
         Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
@@ -1442,7 +1433,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                         .equals(capa0.getClass().getName())) {
                     Log.d("Milog",
                             "La clase de la capa base es igual que la clase de la capa0");
-                    /*if (capaBase.getClass() == ArcGISTiledLayer.class) {
+                    *//*if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo BING");
                         BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
                         BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
@@ -1457,7 +1448,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                                             + map.getLayers().length
                                             + " capas");
                         }
-                    } else */if (capaBase.getClass() == ArcGISTiledLayer.class) {
+                    } else *//*if (capaBase.getClass() == ArcGISTiledLayer.class) {
                         Log.d("Milog", "capaBase es de tipo TiledMap");
                         ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
                         ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
@@ -1479,11 +1470,11 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                     // la capa 0
 
                     map.getMap().getOperationalLayers().remove(0);
-                    /*if (capaBase.getClass() == BingMapsLayer.class) {
+                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
                         map.removeLayer(0);
                     } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
                         map.removeLayer(0);
-                    }*/
+                    }*//*
                 }
             }
             // btnAbrirCapas.setEnabled(true);
@@ -1495,7 +1486,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                     map.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
                 }
 
-            } /*else if (capaBase.getClass() == BingMapsLayer.class) {
+            } *//*else if (capaBase.getClass() == BingMapsLayer.class) {
 
                 if (capas.length > 0) {
                     map.addLayer((BingMapsLayer) capaBase, 0);
@@ -1503,7 +1494,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                     map.addLayer((BingMapsLayer) capaBase);
                 }
 
-            } */else {
+            } *//*else {
                 // otro tipo de capa
             }
 
@@ -1511,7 +1502,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             Log.d("Milog", "El map tiene " + map.getMap().getOperationalLayers().size()
                     + " capas");
         }
-    }
+    }*/
 
     /*@Override
     public void seCargoListaRoutesOffline(ArrayList<Route> routes) {
@@ -1541,9 +1532,13 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     }*/
 
     @Override
-    public void seCerroComboCapas() {
-        // TODO Auto-generated method stub
-        ponerCapaBase();
+    public void seCerroComboCapas(Basemap basemap) {
+        if (!this.basemap.equals(basemap)) {
+            this.basemap = basemap;
+            ArcGISMap mapArgis = new ArcGISMap(this.basemap);
+            map.setMap(mapArgis);
+            map.setViewpointGeometryAsync(envelope, 60);
+        }
     }
 /*
     // El interface de Pois es solo para el filtrado de pois.
@@ -1626,7 +1621,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         //this.btnCategorias.setText(this.categoryName);
     }*/
 
-    private void filterPois() {
+    /*private void filterPois() {
         if (arrayPois != null) {
             for (int i = 0; i < arrayPois.size(); i++) {
                 if (PoisSearch.checkCriteria(arrayPois.get(i), this.getApplicationContext()))
@@ -1636,9 +1631,9 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
         lastLatitude = getLoc()[0];
         lastLongitude = getLoc()[1];
-    }
+    }*/
 
-    private void dibujarPoisEnMapa(ArrayList<Poi> aFilteredPois) {
+    /*private void dibujarPoisEnMapa(ArrayList<Poi> aFilteredPois) {
 
         for (int i = 0; i < aFilteredPois.size(); i++) {
             Poi poi = aFilteredPois.get(i);
@@ -1690,10 +1685,10 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             Graphic gr = new Graphic(puntoProyectado, attrs, sym);
             geometricPOIsLayer.getGraphics().add(gr);
         }
-    }
+    }*/
 
     /* Proceso que se realizar� tras la busqueda de Pois */
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         geometricPOIsLayer.getGraphics().clear();
         if (data == null) {
@@ -1706,15 +1701,15 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         filterPois();
     }
 
-    /* This is a fast code to get the last known location of the phone. If there is no exact
+    *//* This is a fast code to get the last known location of the phone. If there is no exact
      * gps-information it falls back to the network-based location info.
      */
-    private double[] getLoc() {
+    /*private double[] getLoc() {
         app.getApplicationContext();
         LocationManager lm = (LocationManager) app.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = lm.getProviders(true);
 
-	    /* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
+	    *//* Loop over the array backwards, and if you get an accurate location, then break out the loop*//*
         Location l = null;
 
         for (int i = providers.size() - 1; i >= 0; i--) {
@@ -1728,7 +1723,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             gps[1] = l.getLongitude();
         }
         return gps;
-    }
+    }*/
 
     /*
     private void showDialog () {
@@ -1817,7 +1812,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
      *
      * @author
      */
-    private class MyLocationListener implements LocationDisplay.LocationChangedListener {
+    /*private class MyLocationListener implements LocationDisplay.LocationChangedListener {
 
         public MyLocationListener() {
             super();
@@ -1846,6 +1841,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             if (locationChangedEvent.getLocation() == null)
                 return;
         }
-    }
+    }*/
 
 }

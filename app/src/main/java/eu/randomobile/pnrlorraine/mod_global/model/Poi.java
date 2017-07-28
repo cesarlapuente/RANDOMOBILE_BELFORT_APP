@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -22,6 +23,7 @@ import eu.randomobile.pnrlorraine.utils.JSONManager;
 public class Poi {
 
 	public static PoisInterface poisInterface;
+	private static int[] defaut = new int[]{25, 36, 28, 30, 45, 48, 26, 47, 49, 50, 51, 27};
 	private String nid;
 	private String title;
 	private String body;
@@ -37,6 +39,14 @@ public class Poi {
 	private Vote vote;
 	private int number;
 	private int cat;
+
+	public static List<Integer> getFiltreDefault() {
+		List<Integer> list = new ArrayList<>();
+		for (Integer itg : defaut) {
+			list.add(itg);
+		}
+		return list;
+	}
 
 	public static String getCategoryName(int cat) {
 		switch (cat) {

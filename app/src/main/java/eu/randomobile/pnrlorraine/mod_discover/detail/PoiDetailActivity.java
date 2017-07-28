@@ -159,8 +159,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 		//miPoi.setEnlaces(linkDAO.getListResourceLinks());
 		miPoi.setVote(voteDAO.getVote(paramNid));
 
-		Log.e("########", miPoi.toString());
-
 
 		capturarControles();
 		seCargoPoi(miPoi);

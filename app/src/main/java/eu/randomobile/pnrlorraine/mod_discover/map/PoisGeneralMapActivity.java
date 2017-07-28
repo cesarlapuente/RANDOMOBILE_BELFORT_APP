@@ -3,10 +3,8 @@ package eu.randomobile.pnrlorraine.mod_discover.map;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -53,7 +52,6 @@ import java.util.concurrent.ExecutionException;
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_discover.detail.PoiDetailActivity;
-import eu.randomobile.pnrlorraine.mod_discover.detail.RouteDetailActivity;
 import eu.randomobile.pnrlorraine.mod_discover.list.PoisListActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
@@ -62,22 +60,16 @@ import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa;
 import eu.randomobile.pnrlorraine.mod_global.map_layer_change.ComboCapasMapa.ComboCapasMapaInterface;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi.PoisInterface;
-import eu.randomobile.pnrlorraine.mod_global.model.Route;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
-import eu.randomobile.pnrlorraine.mod_notification.Cache;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi.PoisModeOfflineInterface;
 import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
-import eu.randomobile.pnrlorraine.mod_search.PoisSearch;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
 
 //import eu.randomobile.pnrlorraine.mod_discover.ra.MetaIORAActivity;
 
 public class PoisGeneralMapActivity extends Activity implements
-        ComboCapasMapaInterface, PoisInterface, PoisModeOfflineInterface {
+        ComboCapasMapaInterface/*, PoisInterface, PoisModeOfflineInterface */ {
 
     public static final String PARAM_KEY_MOSTRAR = "mapa_mostrar";
 
@@ -90,7 +82,7 @@ public class PoisGeneralMapActivity extends Activity implements
     Callout callout;
     Button btnSeleccionarCapaBase;
     RelativeLayout panelCargando;
-    ArrayList<Poi> arrayPois = null;
+    List<Poi> arrayPois = null;
     // Array con las pois filtrados por categoria
     ArrayList<Poi> arrayFilteredPois = null;
     PictureMarkerSymbol hotel;
@@ -101,6 +93,11 @@ public class PoisGeneralMapActivity extends Activity implements
     PictureMarkerSymbol naturaleza;
     private int paramMapaGeneralMostrar;
     private PoiDAO poiDAO;
+    private ProgressBar progressBar;
+
+    private Envelope envelope;
+    private Basemap basemap;
+    private List<Integer> filtre;
 
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -115,6 +112,7 @@ public class PoisGeneralMapActivity extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mod_discover__mapa_general_pois);
+        progressBar = (ProgressBar) findViewById(R.id.ruedaCargandoMapa);
 
         this.app = (MainApp) getApplication();
 
@@ -137,20 +135,46 @@ public class PoisGeneralMapActivity extends Activity implements
         naturaleza = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
                 R.drawable.icono_naturaleza)));
 
-        // Recuperar parametros
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            setParamMapaGeneralMostrar(b.getInt(PARAM_KEY_MOSTRAR));
-        }
+        poiDAO = new PoiDAO(getApplicationContext());
+        arrayPois = poiDAO.getAllPois();
+
+        Intent intent = getIntent();
+
+        filtre = intent.getIntegerArrayListExtra("filtre");
+        if (filtre == null)
+            filtre = Poi.getFiltreDefault();
+
+        arrayPois = filterPois();
 
         // Capturar controles
         this.capturarControles();
 
+        envelope = new Envelope(47.7000, 6.8000, 47.6, 6.9, SpatialReferences.getWgs84());
+
+        basemap = Basemap.createImagery();
+
+        mapa = (MapView) findViewById(R.id.mapa);
+        ArcGISMap mapArgis = new ArcGISMap(basemap);
+        mapa.setMap(mapArgis);
+        mapa.setViewpointGeometryAsync(envelope, 60);
+        //mapa.getGraphicsOverlays().clear();
+
         // Configurar formulario
-        this.inicializarMapa();
+        //this.inicializarMapa();
 
         // Escuchar eventos
         this.escucharEventos();
+        //representarGeometrias();
+    }
+
+    private List<Poi> filterPois() {
+        List<Poi> list = new ArrayList<>();
+        for (Poi poi : arrayPois) {
+            if (filtre.contains(poi.getCat())) {
+                list.add(poi);
+            }
+        }
+        return list;
     }
 
     public void onResume() {
@@ -158,10 +182,10 @@ public class PoisGeneralMapActivity extends Activity implements
         mImageMap.mBubbleMap.clear();
         mImageMap.postInvalidate();
         // Activar GPS
-        LocationDisplay ls = mapa.getLocationDisplay();
+        /*LocationDisplay ls = mapa.getLocationDisplay();
 //		ls.setLocationListener(new MyLocationListener());
 //		ls.setAutoPanMode(AutoPanMode.OFF);
-        ls.startAsync();
+        ls.startAsync();*/
 
     }
 
@@ -174,7 +198,7 @@ public class PoisGeneralMapActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mapa.getGraphicsOverlays().clear();
+        //mapa.getGraphicsOverlays().clear();
         hotel = null;
         restaurante = null;
         descubrir = null;
@@ -186,19 +210,19 @@ public class PoisGeneralMapActivity extends Activity implements
     protected void onPause() {
         // TODO Auto-generated method stub
         super.onPause();
-        LocationDisplay ls = mapa.getLocationDisplay();
+        //LocationDisplay ls = mapa.getLocationDisplay();
         //ls.setLocationListener(new MyLocationListener());
 
-        if (ls.isStarted()) {
+        /*if (ls.isStarted()) {
             ls.stop();
-        }
+        }*/
     }
 
-    public void onConfigurationChanged(Configuration newConfig) {
+    /*public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
         Log.d("Milog", "Cambio la configuracion");
-    }
+    }*/
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -212,7 +236,7 @@ public class PoisGeneralMapActivity extends Activity implements
     }
 
     public void capturarControles() {
-        mapa = (MapView) findViewById(R.id.mapa);
+        // mapa = (MapView) findViewById(R.id.mapa);
         btnSeleccionarCapaBase = (Button) findViewById(R.id.btnAbrirCapas);
         panelCargando = (RelativeLayout) findViewById(R.id.panelCargando);
     }
@@ -223,17 +247,6 @@ public class PoisGeneralMapActivity extends Activity implements
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-//    private void cargaRAActivity() {
-////		Intent intent = new Intent(PoisGeneralMapActivity.this,
-////				RAActivity.class);
-////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_TITLE_STRING, "RA");
-////		intent.putExtra(RAActivity.EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL, "wikitudeWorld" + File.separator + "index.html");
-////		intent.putExtra(RAActivity.PARAM_KEY_JSON_POI_DATA, JSONPOIParser.parseToJSONArray(app, arrayPois).toString() );
-//        Intent intent = new Intent(PoisGeneralMapActivity.this,
-//                MetaIORAActivity.class);
-//        startActivity(intent);
-//    }
 
     private void cargaActivityPoisList() {
         Intent intent = new Intent(PoisGeneralMapActivity.this,
@@ -246,7 +259,9 @@ public class PoisGeneralMapActivity extends Activity implements
         Intent intent = new Intent(PoisGeneralMapActivity.this,
                 PoisSearchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("liste", false);
         startActivityForResult(intent, 1);
+        finish();
     }
 
     private void cargaActivityOptions() {
@@ -256,21 +271,19 @@ public class PoisGeneralMapActivity extends Activity implements
         startActivity(intent);
     }
 
-    public void inicializarMapa() {
+   /* public void inicializarMapa() {
 
         ponerCapaBase();
 
         capaGeometrias = new GraphicsOverlay();
-        mapa.getGraphicsOverlays().add(capaGeometrias);
+        //mapa.getGraphicsOverlays().add(capaGeometrias);
 
         // Tipografias
         Typeface tfBubleGum = Util.fontBubblegum_Regular(this);
         this.btnSeleccionarCapaBase.setTypeface(tfBubleGum);
-    }
+    }*/
 
     public void escucharEventos() {
-
-
 
         mImageMap.addOnImageMapClickedHandler(new ImageMap.OnImageMapClickedHandler() {
             @Override
@@ -312,7 +325,7 @@ public class PoisGeneralMapActivity extends Activity implements
         });
 
 
-        this.mapa.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mapa){
+        mapa.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mapa) {
             @Override
             public boolean onSingleTapConfirmed(final MotionEvent e) {
                 if (mapa.getMap().getLoadStatus() == LoadStatus.NOT_LOADED) {
@@ -327,10 +340,6 @@ public class PoisGeneralMapActivity extends Activity implements
                     public void run() {
                         try {
                             if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
-                                Log.d("Milog", "Hay graficos en la zona pulsada");
-                                /*List lr = graphicsIDS.get();
-
-                                Graphic gr = capaGeometrias.getGraphics().get(capaGeometrias.getGraphics().indexOf(lr.get(0)));*/
                                 List<IdentifyGraphicsOverlayResult> lr = graphicsIDS.get();
                                 List<Graphic> listGraphic = new ArrayList<Graphic>();
                                 Graphic gr = null;
@@ -340,8 +349,7 @@ public class PoisGeneralMapActivity extends Activity implements
                                     gr = listGraphic.get(0);
 
                                 if (gr != null) {
-                                    String nombre = (String) gr.getAttributes().get(
-                                            "nombre");
+                                    String nombre = (String) gr.getAttributes().get("nombre");
                                     String clase = (String) gr.getAttributes().get("clase");
                                     String nid = (String) gr.getAttributes().get("nid");
                                     String cat = (String) gr.getAttributes().get("cat");
@@ -350,7 +358,7 @@ public class PoisGeneralMapActivity extends Activity implements
                                     callout = mapa.getCallout();
                                     // Establecer el estilo del callout
                                     callout.setStyle(new Callout.Style(getApplicationContext(), R.xml.style_callout_mapa_global));
-                                    callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, app.getApplicationContext()));
+                                    callout.getStyle().setMaxWidth((int) Util.convertDpToPixel(300, getApplicationContext()));
                                     // Establecer el contenido del callout
                                     View contenidoCallout = getViewForCallout(nombre,
                                             clase, nid, cat, distanceMeters);
@@ -359,7 +367,6 @@ public class PoisGeneralMapActivity extends Activity implements
                                     callout.show();                            }
 
                             } else {
-                                Log.d("Milog", "No hay graficos en la zona pulsada");
                                 if (callout != null && callout.isShowing()) {
                                     callout.dismiss();
                                 }
@@ -371,7 +378,7 @@ public class PoisGeneralMapActivity extends Activity implements
                         }
                     }
                 });
-                return false;
+                return true;
             }
         });
 
@@ -381,11 +388,10 @@ public class PoisGeneralMapActivity extends Activity implements
             public void loadStatusChanged(LoadStatusChangedEvent loadStatusChangedEvent) {
                 if (LoadStatus.LOADED == loadStatusChangedEvent.getNewLoadStatus()) {
 
-                    LocationDisplay ls = mapa.getLocationDisplay();
+                    /*LocationDisplay ls = mapa.getLocationDisplay();
                     ls.addLocationChangedListener(new PoisGeneralMapActivity.MyLocationListener());
                     ls.setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
-                    ls.startAsync();
-
+                    ls.startAsync();*/
                     representarGeometrias();
                 }
             }
@@ -394,7 +400,7 @@ public class PoisGeneralMapActivity extends Activity implements
         btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
                 ComboCapasMapa comboCapas = new ComboCapasMapa(
-                        getApplication(), PoisGeneralMapActivity.this);
+                        getApplication(), PoisGeneralMapActivity.this, basemap);
                 comboCapas.comboCapasMapaInterface = PoisGeneralMapActivity.this;
                 comboCapas.show();
             }
@@ -402,7 +408,7 @@ public class PoisGeneralMapActivity extends Activity implements
 
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
             return;
@@ -416,65 +422,106 @@ public class PoisGeneralMapActivity extends Activity implements
         capaGeometrias.getGraphics().clear();
         if (arrayFilteredPois.size() > 0)
             seCargoListaPois(arrayFilteredPois);
-    }
+    }*/
 
-    private void filterPois() {
+    /*private void filterPois() {
         if (arrayPois != null)
             for (int i = 0; i < arrayPois.size(); i++) {
                 if (PoisSearch.checkCriteria(arrayPois.get(i), this))
                     arrayFilteredPois.add(arrayPois.get(i));
             }
-    }
+    }*/
 
-    public void seCerroComboCapas() {
-        Log.d("Milog", "Antes de poner capa base");
-        ponerCapaBase();
-        Log.d("Milog", "Despues de poner capa base");
+    public void seCerroComboCapas(Basemap basemap) {
+        if (!this.basemap.equals(basemap)) {
+            this.basemap = basemap;
+            ArcGISMap mapArgis = new ArcGISMap(this.basemap);
+            mapa.setMap(mapArgis);
+            mapa.setViewpointGeometryAsync(envelope, 60);
+        }
     }
 
     private void representarGeometrias() {
 
-        if (Cache.filteredPois != null) {
-            this.arrayFilteredPois = (ArrayList<Poi>) Cache.filteredPois;
-            //Cache.arrayPois = Cache.filteredPois;
-            if (arrayPois == null)
-                arrayPois = (ArrayList<Poi>) Cache.arrayPois;
-            this.seCargoListaPois(this.arrayFilteredPois);
-            panelCargando.setVisibility(View.GONE);
-        } else if (DataConection.hayConexion(this)) {
+        GraphicsOverlay gr = new GraphicsOverlay();
 
-            // Recoger los filtros
-            double lat = (double) app.preferencias.getFloat(
-                    app.FILTER_KEY_LAST_LOCATION_LATITUDE, 0);
-            double lon = (double) app.preferencias.getFloat(
-                    app.FILTER_KEY_LAST_LOCATION_LONGITUDE, 0);
+        if (!arrayPois.isEmpty()) {
+            double latmin = 180;
+            double latmax = -180;
+            double lonmin = 180;
+            double lonmax = -180;
 
-            if (paramMapaGeneralMostrar == PARAM_MAPA_GENERAL_MOSTRAR_POIS) {
-                String tidCat = app.preferencias.getString(
-                        app.FILTER_KEY_POI_CATEGORY_TID, null);
-                String txtBuscar = app.preferencias.getString(
-                        app.FILTER_KEY_POI_TEXT, null);
+            for (Poi poi : arrayPois) {
+                GeoPoint p = poi.getCoordinates();
+                if (p.getLatitude() < latmin)
+                    latmin = p.getLatitude();
+                if (p.getLatitude() > latmax)
+                    latmax = p.getLatitude();
+                if (p.getLongitude() < lonmin)
+                    lonmin = p.getLongitude();
+                if (p.getLongitude() > lonmax)
+                    lonmax = p.getLongitude();
 
-                Poi.poisInterface = this;
-                Poi.cargarListaPoisOrdenadosDistancia(app, lat, lon, 0, 0, 0,
-                        tidCat, txtBuscar);
+                Point puntoProyectado = new Point(p.getLongitude(),
+                        p.getLatitude(), SpatialReferences.getWgs84());
+
+                PictureMarkerSymbol sym;
+                String claseNombre = Poi.getCategoryName(poi.getCat());
+
+                switch (poi.getCat()) {
+                    case 26:
+                    case 47:
+                    case 48:
+                    case 49:
+                    case 50:
+                    case 51: // Hébergements
+                        sym = hotel;
+                        //claseNombre = this.getResources().getString(R.string.alojamientos);
+                        break;
+                    case 30: //Patrimoine naturel
+                        sym = naturaleza;
+                        //claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
+                        break;
+                    case 36:  //Monuments
+                    case 28:
+                        sym = descubrir;
+                        //claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
+                        break;
+                    case 27: //Restauracion
+                        sym = restaurante;
+                        //claseNombre = this.getResources().getString(R.string.restauracion);
+                        break;
+                    case 25: //Offices de tourisme
+                        sym = info;
+                        //claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
+                        break;
+                    default:
+                        sym = icono;
+                        claseNombre = this.getResources().getString(R.string.punto_de_interes);
+                }
+
+                final HashMap<String, Object> attrs = new HashMap<String, Object>();
+                attrs.put("clase", claseNombre);
+                attrs.put("nid", poi.getNid());
+                attrs.put("nombre", poi.getTitle());
+
+                gr.getGraphics().add(new Graphic(puntoProyectado, attrs, sym));
+
+
             }
 
-        } else {
-            OfflinePoi.poisInterface = this;
-            OfflinePoi.cargaListaPoisOffline(getApplication());
-            panelCargando.setVisibility(View.GONE);
-            Util.mostrarMensaje(
-                    this,
-                    getResources().getString(
-                            R.string.mod_global__sin_conexion_a_internet),
-                    getResources()
-                            .getString(
-                                    R.string.mod_global__no_dispones_de_conexion_a_internet));
+            mapa.getGraphicsOverlays().add(gr);
+
+            envelope = new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84());
+
+            mapa.setViewpointGeometryAsync(envelope, 60);
+
+            progressBar.setVisibility(View.INVISIBLE);
+
         }
     }
 
-    @Override
+    /*@Override
     public void seCargoListaPois(ArrayList<Poi> pois) {
 
         if (arrayFilteredPois == null)
@@ -523,39 +570,37 @@ public class PoisGeneralMapActivity extends Activity implements
     public void producidoErrorAlCargarListaPois(String error) {
         // Quitar el panel de cargando
         panelCargando.setVisibility(View.GONE);
-    }
+    }*/
 
     private View getViewForCallout(final String nombre, String clase, final String nid, String cat, final String distanceMeters) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
                 R.layout.mod_discover__layout_callout_mapa, null);
-        Log.d("Milog", "1");
         final TextView lblNombre = (TextView) view
                 .findViewById(R.id.lblNombrePunto);
-        Log.d("Milog", "2");
         final TextView lblCategoria = (TextView) view
                 .findViewById(R.id.lblCategoriaPunto);
-        Log.d("Milog", "3");
         final Button btnCerrarDialogo = (Button) view
                 .findViewById(R.id.btnVerFichaPunto);
-        Log.d("Milog", "4");
+
+        lblNombre.setText(nombre);
+        lblCategoria.setText(clase);
+
+        // Escuchar el evento del click del bot�n
+        btnCerrarDialogo.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(PoisGeneralMapActivity.this,
+                        PoiDetailActivity.class);
+                intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
+                //intent.putExtra(PoiDetailActivity.PARAM_KEY_DISTANCE, Double.valueOf(distanceMeters));
+                startActivity(intent);
+                callout.dismiss();
+            }
+        });
 
         // Ponerle las propiedades necesarias
-        if (clase.equals(Poi.class.getName())) {
+        /*if (clase.equals(Poi.class.getName())) {
             // Poner las propiedades en el layout
-            lblNombre.setText(nombre);
-            lblCategoria.setText(cat);
 
-            // Escuchar el evento del click del bot�n
-            btnCerrarDialogo.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    Intent intent = new Intent(PoisGeneralMapActivity.this,
-                            PoiDetailActivity.class);
-                    intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
-                    intent.putExtra(PoiDetailActivity.PARAM_KEY_DISTANCE, Double.valueOf(distanceMeters));
-                    startActivity(intent);
-                    callout.dismiss();
-                }
-            });
         } else if (clase.equals(Route.class.getName())) {
             // Poner las propiedades en el layout
             lblNombre.setText(nombre);
@@ -571,7 +616,7 @@ public class PoisGeneralMapActivity extends Activity implements
                     callout.dismiss();
                 }
             });
-        }
+        }*/
 
         return view;
     }
@@ -834,7 +879,7 @@ public class PoisGeneralMapActivity extends Activity implements
                 // otro tipo de capa
             }
 
-            app.capaBaseSeleccionada = capaSeleccionada;
+            // app.capaBaseSeleccionada = capaSeleccionada;
             Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
                     + " capas");
         }
@@ -848,7 +893,7 @@ public class PoisGeneralMapActivity extends Activity implements
         this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
     }
 
-    @Override
+    /*@Override
     public void seCargoPoi(Poi poi) {
         // TODO Auto-generated method stub
 
@@ -894,7 +939,7 @@ public class PoisGeneralMapActivity extends Activity implements
         panelCargando.setVisibility(View.GONE);
         Log.d("Milog", "seCargoListaPois");
 
-    }
+    }*/
 
     /**
      * Location listener propio

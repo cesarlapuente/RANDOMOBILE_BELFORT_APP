@@ -83,7 +83,7 @@ public class PoisListActivity extends Activity implements LocationListener {
         Intent intent = getIntent();
         filtre = intent.getIntegerArrayListExtra("filtre");
         if (filtre == null)
-            filtre = getFiltre(new int[]{25, 36, 28, 30, 45, 20000, 30000, 48, 26, 47, 49, 50, 51, 27});
+            filtre = Poi.getFiltreDefault();
 
         arrayPois = filterPois();
 
@@ -142,14 +142,6 @@ public class PoisListActivity extends Activity implements LocationListener {
         inicializarForm();
 
         panelCargando.setVisibility(View.GONE);
-    }
-
-    private List<Integer> getFiltre(int[] i) {
-        List<Integer> list = new ArrayList<>();
-        for (Integer itg : i) {
-            list.add(itg);
-        }
-        return list;
     }
 
     private List<Poi> filterPois() {

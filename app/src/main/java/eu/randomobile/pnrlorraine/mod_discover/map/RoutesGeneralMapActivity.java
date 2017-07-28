@@ -333,7 +333,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 		btnSeleccionarCapaBase.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				ComboCapasMapa comboCapas = new ComboCapasMapa(
-						getApplication(), RoutesGeneralMapActivity.this);
+						getApplication(), RoutesGeneralMapActivity.this, Basemap.createImagery());
 				comboCapas.comboCapasMapaInterface = RoutesGeneralMapActivity.this;
 				comboCapas.show();
 			}
@@ -341,7 +341,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 
 	}
 
-	public void seCerroComboCapas() {
+	public void seCerroComboCapas(Basemap basemap) {
 		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
 		Log.d("Milog", "Despues de poner capa base");
