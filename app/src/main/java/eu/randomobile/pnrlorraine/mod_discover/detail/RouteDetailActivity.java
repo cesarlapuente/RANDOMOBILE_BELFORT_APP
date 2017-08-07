@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,12 +72,11 @@ import eu.randomobile.pnrlorraine.mod_offline.database.VoteDAO;
 import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
-public class RouteDetailActivity extends Activity implements /*RoutesInterface, RoutesModeOfflineInterface,
-        */ComboCapasMapaInterface/*, PoisInterface, PoisModeOfflineInterface, OnTaskCompletedInterface */ {
+public class RouteDetailActivity extends Activity implements
+        ComboCapasMapaInterface {
+
     public static final String PARAM_KEY_NID = "nid";
     public static final String PARAM_KEY_DISTANCE = "distance";
-    public static final String PARAM_KEY_NID_MOSTRAR = "mapa_nid_mostrar";
-    public static final String PARAM_KEY_TYPE_DRUPAL = "mapa_type_mostrar";
     public static final String PARAM_KEY_TITLE_ROUTE = "route_title";
     public static final String PARAM_KEY_CATEGORY_ROUTE = "route_category";
     public static final String PARAM_KEY_MAP_URL = "map_url";
@@ -92,15 +90,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     double paramDistanceMeters;
     LinearLayout wrapper_description;
     ScrollView scrollView2;
-    RelativeLayout panelCargando;
-    /* arrayPois y arrayFilteredPois para las busquedas
-     * Funcionalidad: Ver Pois                  */
-    // Array con los elementos que contendra
-    ArrayList<Poi> arrayPois = null;
-    // Array con las pois filtrados por categoria
-    ArrayList<Poi> arrayFilteredPois = null;
-    //
-    ArrayList<ResourcePoi> resourcePois = null;
     String paramType;
     int paramColorRoute = 0;
     private MainApp app;
@@ -109,15 +98,14 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
     private MapView map;
     private GraphicsOverlay geometricLayer;
     private GraphicsOverlay geometricPOIsLayer;
+    private GraphicsOverlay poisGr;
     private Callout callout;
     private Point firstPoint;
     private ImageButton btn_Layers;
     private ImageButton btn_Download_Map;
     private ImageButton btn_Rate;
-    //private ImageButton btn_Related;
     private ImageButton btn_Galery;
 
-    // RelativeLayout panelCargandoMapas;
 
 
     // ProgressBar pb;
@@ -152,11 +140,13 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         voteDAO = new VoteDAO(getApplicationContext());
         fileDAO = new RessourceFileDAO(getApplicationContext());
 
-        envelope = new Envelope(47.7000, 6.8000, 47.6, 6.9, SpatialReferences.getWgs84());
+        envelope = new Envelope(6.8000, 47.7000, 6.9, 47.6, SpatialReferences.getWgs84());
 
         basemap = Basemap.createImagery();
 
         this.app = (MainApp) getApplication();
+
+        poisGr = new GraphicsOverlay();
 
 
         TAG = this.getLocalClassName();
@@ -180,18 +170,13 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         }
 
         paramType = app.DRUPAL_TYPE_ROUTE;
-        //d("JmLog","La route main est : "+route.getTitle()+" si elle a image :"+route.getMainImage()+" gallery : "+route.getImages());
 
         map = (MapView) findViewById(R.id.mapa);
 
         ArcGISMap mapArgis = new ArcGISMap(basemap);
         map.setMap(mapArgis);
-        map.setViewpointGeometryAsync(envelope, 60);
         initializeComponents();
-        //
-        //inicializarForm();
         setData();
-        //chekcOfflineMapState();
     }
 
     private void initializeComponents() {
@@ -242,9 +227,8 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                         break;
                     }
                     case "POINTS": {
-                        boolean poisLayerIsEnabled = geometricPOIsLayer.isVisible();
 
-                        geometricPOIsLayer.setVisible(!poisLayerIsEnabled);
+                        poisGr.setVisible(!poisGr.isVisible());
                         break;
                     }
                     case "PLUS": {
@@ -252,8 +236,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                         break;
                     }
                     case "INFO": {
-                        /*Toast.makeText(RouteDetailActivity.this, "OPTION DISABLED", Toast.LENGTH_LONG);
-                        break;*/
                         if (scrollView2.getVisibility() == View.GONE) {
                             scrollView2.setVisibility(View.VISIBLE);
                         }
@@ -553,7 +535,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
 
         txt_route_title.setText(route.getTitle());
         txt_ramp.setText(Util.formatDesnivel(route.getSlope()));
-        //Log.d("Desnivel:", String.valueOf(route.getSlope()));
         txt_duration.setText(Util.formatDuracion(route.getEstimatedTime()));
         txt_distance.setText(Util.formatDistanciaRoute(route.getRouteLengthMeters()));
         try {
@@ -615,53 +596,7 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         } catch (Exception e) {
 
         }
-
-        /*
-        if (DataConection.hayConexion(this)) {
-            // Si hay conexi�n, recargar los datos
-            // panelCargando.setVisibility(View.VISIBLE);
-            Route.routesInterface = this;
-            Route.cargarRoute(app, paramNid);
-            OfflineRoute.routesInterface = this;
-        } else {
-            // Si la ruta est� en la base de datos
-            if (Offline.isNidInDB(app, app.DRUPAL_TYPE_ROUTE, Integer.valueOf(paramNid))) {
-                OfflineRoute.routesInterface = this;
-                OfflineRoute.cargarRouteOffline(app, paramNid);
-            }
-            // Si no hay conexi�n a Internet y la ruta no esta en la Base de Datos (offline)
-            else
-                Util.mostrarMensaje(
-                        this,
-                        getResources().getString(R.string.mod_global__sin_conexion_a_internet),
-                        getResources().getString(R.string.mod_global__no_dispones_de_conexion_a_internet));
-        }
-        */
     }
-
-    /**
-     * This method is used to check if the user has already downloaded the route's map (tpk) or not.
-     */
-    /*private void chekcOfflineMapState() {
-        try {
-            File root = android.os.Environment.getExternalStorageDirectory();
-            File map_directory = new File(root.getAbsolutePath() + "/localmaps");
-
-            String files_list[] = map_directory.list();
-
-            for (String file : files_list) {
-                if (file.toString().equals(route.getNid().toString() + ".tpk")) {
-                    Log.d("mapsDirectory sais:", " Existe el mapa de la ruta: " + route.getNid());
-
-                    btn_Download_Map.setImageDrawable(ContextCompat.getDrawable(RouteDetailActivity.this, R.drawable.boton_mapa));
-
-                    route_tpk_downloaded = true;
-                }
-            }
-        } catch (Exception e) {
-
-        }
-    }*/
 
     /**
      * This method is used for delete the downloaded route's map (tpk).
@@ -717,244 +652,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             ls.stop();
         }
     }
-
-    /*private void escucharEventos() {
-        // add a click handler to react when areas are tapped
-
-
-//		layoutVerEnMapa.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//				Intent intent = new Intent(RouteDetailActivity.this, ConcreteMapActivity.class);
-//				intent.putExtra(ConcreteMapActivity.PARAM_KEY_NID_MOSTRAR, miRoute.getNid());
-//				intent.putExtra(ConcreteMapActivity.PARAM_KEY_TYPE_DRUPAL, app.DRUPAL_TYPE_ROUTE);
-//				startActivity(intent);
-//			}
-//		});
-
-        *//*
-        btnMenuMasValorar.setOnClickListener(new OnClickListener() {
-            public void onClick(View arg0) {
-                if (User.isLoggedIn(app)) {
-                    Intent intent = new Intent(RouteDetailActivity.this, VoteActivity.class);
-                    intent.putExtra(VoteActivity.PARAM_KEY_NID_ITEM_A_VALORAR, miRoute.getNid());
-                    intent.putExtra(VoteActivity.PARAM_KEY_TITLE_ITEM_A_VALORAR, miRoute.getTitle());
-                    startActivity(intent);
-                } else {
-                    User.askForloginHere(RouteDetailActivity.this);
-                }
-            }
-        });
-
-        btnMenuMasMas.setOnClickListener(new OnClickListener() {
-            public void onClick(View arg0) {
-                layoutBotonesMenuMas.setVisibility(View.GONE);
-            }
-        });
-
-        btnMenuMasTelecarga.setOnClickListener(new OnClickListener() {
-            public void onClick(View arg0) {
-                try {
-                    Log.d("RouteDetailActv. sais:", " RUTE URL: " + route.getUrlMap());
-
-                    new DownloadAndSaveTPK(app, Integer.parseInt(route.getNid()), route.getUrlMap(), (paramNid + ".tpk"), RouteDetailActivity.this);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        btnValorar.setOnClickListener(new OnClickListener() {
-            public void onClick(View arg0) {
-                if (User.isLoggedIn(app)) {
-                    Intent intent = new Intent(RouteDetailActivity.this, VoteActivity.class);
-                    intent.putExtra(VoteActivity.PARAM_KEY_NID_ITEM_A_VALORAR, miRoute.getNid());
-                    intent.putExtra(VoteActivity.PARAM_KEY_TITLE_ITEM_A_VALORAR, miRoute.getTitle());
-                    startActivity(intent);
-                } else {
-                    User.askForloginHere(RouteDetailActivity.this);
-                }
-            }
-        });
-//		btnCompartir.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//				Share.compartir(app, RouteDetailActivity.this, miRoute);
-//			}
-//		});
-        *//*
-
-        // Al tocar un punto en el map
-    }*/
-
-    /*@SuppressLint("NewApi")
-    private void inicializarForm() {
-        //poner estilos (fuente, color, ...)
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-            ActionBar ab = getActionBar();
-            if (ab != null) {
-                ab.hide();
-            }
-        }
-
-        Typeface tfScalaBold = Util.fontScala_Bold(this);
-
-        *//*
-        txtTitulo.setTypeface(tfScalaBold);
-        lblTitleHeader.setTypeface(tfScalaBold);
-
-        lblDesnivel.setTypeface(tfScalaBold);
-        lblDuracion.setTypeface(tfScalaBold);
-        lblDistancia.setTypeface(tfScalaBold);
-        lblDificultad.setTypeface(tfScalaBold);
-        lblValoracion.setTypeface(tfScalaBold);
-
-        lblValDesnivel.setTypeface(tfScalaBold);
-        lblValDuracion.setTypeface(tfScalaBold);
-        lblValDistancia.setTypeface(tfScalaBold);
-
-        lblDescripcion.setTypeface(tfScalaBold);
-
-        lblTitleHeader.setText(paramTitleRoute);
-        // Poner la imagen de categoria
-        if (paramCategoryRoute.equals("GR")) {
-            imgViewCategory.setBackgroundResource(R.drawable.categoria_gr);
-        } else {
-            imgViewCategory.setBackgroundResource(R.drawable.categoria_pr);
-        }
-        panelCargando.setVisibility(View.GONE);
-        *//*
-    }*/
-
-    /*public void seCargoRoute(Route route) {
-//		if (route != null) {
-//			this.miRoute = route;
-//
-//			// Poner el t�tulo
-//			this.lblNombre.setText( this.miRoute.getTitle() );
-//			this.txtTitulo.setText( this.miRoute.getTitle() );
-//
-//			// Poner la categor�a
-//			if(this.miRoute.getCategory() != null){
-//				this.lblCategoria.setText( this.miRoute.getCategory().getName() );
-//			}else{
-//				this.lblCategoria.setText( getResources().getString(R.string.mod_global__sin_datos) );
-//			}
-//
-//			// Poner la dificultad
-//			if(this.miRoute.getDifficulty() != null){
-//				this.lblDificultad.setText( this.miRoute.getDifficulty().getName() );
-//			}else{
-//				this.lblDificultad.setText( getResources().getString(R.string.mod_global__sin_datos) );
-//			}
-//
-//
-//			if(miRoute.getImages() != null){
-//				if(miRoute.getImages().size() > 0){
-//					ResourceFile rf = miRoute.getImages().get(0);
-//					BitmapManager.INSTANCE.loadBitmap(rf.getFileUrl(), imageViewPrincipal, 500, 400);
-//				}
-//			}
-//
-//
-//			// Poner la descripci�n
-//			if(miRoute.getBody() != null && !miRoute.getBody().equals("") && !miRoute.getBody().equals("null") && !miRoute.getBody().equals("(null)")){
-//				this.lblDescripcion.setText( Html.fromHtml(miRoute.getBody()), TextView.BufferType.SPANNABLE );
-//			}else{
-//				this.lblDescripcion.setText( getResources().getString(R.string.mod_global__sin_datos) );
-//			}
-//		}
-        this.route = route;
-        //pintar ruta
-        if (route != null) {
-            Polyline polylineProyectado = null;
-            if (route.getTrack() != null) {
-                polylineProyectado = WKTUtil.getPolylineFromWKTLineStringField(app, route.getTrack());
-            }
-
-            ArrayList<Object> geometrias = new ArrayList<Object>();
-            geometrias.add(polylineProyectado);
-            dibujarGeometrias(geometrias, route.getTitle(), route.getClass().getName(), route.getNid(), null, paramColorRoute);
-        }
-
-        dibujarPoisInRoute(route);
-        // Centrar en el extent de la capa
-        centrarEnExtentCapa(geometricLayer);
-
-        // Poner la imagen de dificultad
-        String dificultad = route.getDifficulty().getName();
-        // Tr�s Facile
-        *//*
-        if (dificultad.equals(this.getResources().getString(R.string.muy_facil)))
-            imgDificultad.setBackgroundResource(R.drawable.marcador_facil);
-            //Facile
-        else if (dificultad.equals(this.getResources().getString(R.string.facil)))
-            imgDificultad.setBackgroundResource(R.drawable.marcador_media);
-            //Moyene
-        else if (dificultad.equals(this.getResources().getString(R.string.medio)))
-            imgDificultad.setBackgroundResource(R.drawable.marcador_dificil);
-            //Difficile
-        else if (dificultad.equals(this.getResources().getString(R.string.dificil)))
-            imgDificultad.setBackgroundResource(R.drawable.marcador_muydificil);
-
-        // Poner numero de avis e imagen votos
-        String valString = app.getApplicationContext().getResources().getString(
-                R.string.mod_discover__nota);
-        lblValoracion.setText(valString + " (" + String.valueOf(route.getVoteStatic().getNumVotes()) + " votos)");
-        if (route.getVoteStatic() != null) {
-            if (route.getVoteStatic().getValue() <= 10) {
-                // Si es menor o igual a 0
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_0_estrellas);
-            } else if (route.getVoteStatic().getValue() > 10 && route.getVoteStatic().getValue() < 30) {
-                // Si est� entre 1 y 24
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_1_estrellas);
-            } else if (route.getVoteStatic().getValue() >= 30 && route.getVoteStatic().getValue() < 50) {
-                // Si est� entre 25 y 49
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_2_estrellas);
-            } else if (route.getVoteStatic().getValue() >= 50 && route.getVoteStatic().getValue() < 70) {
-                // Si est� entre 50 y 74
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_3_estrellas);
-            } else if (route.getVoteStatic().getValue() >= 70 && route.getVoteStatic().getValue() <= 90) {
-                // Si est� entre 75 y 90
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_4_estrellas);
-            } else {
-                imgViewValoracion.setImageResource(R.drawable.puntuacion_5_estrellas);
-            }
-        } else {
-            imgViewValoracion.setImageResource(R.drawable.puntuacion_0_estrellas);
-        }*//*
-        //panelCargando.setVisibility(View.GONE);
-
-    }*/
-
-    /*public void producidoErrorAlCargarRoute(String error) {
-        Log.d("Milog", "producidoErrorAlCargarRoute: " + error);
-        // panelCargando.setVisibility(View.GONE);
-        Util.mostrarMensaje(this, getResources().getString(R.string.mod_global__error), getResources().getString(R.string.mod_global__error));
-        finish();
-    }*/
-
-    /*@Override
-    public void seCargoListaRoutes(ArrayList<Route> routes) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaRoutes(String error) {
-        // TODO Auto-generated method stub
-
-    }*/
-
-
-    /*public void inicializarMapa() {
-        //ponerCapaBase();
-
-
-        geometricLayer = new GraphicsOverlay();
-        geometricPOIsLayer = new GraphicsOverlay();
-
-        map.getGraphicsOverlays().add(geometricLayer);
-        map.getGraphicsOverlays().add(geometricPOIsLayer);
-    }*/
 
     private void representarGeometrias() {
 
@@ -1045,14 +742,18 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
                 attrs.put("clase", Poi.class.getName());
                 attrs.put("cat", claseNombre);
 
-                gr.getGraphics().add(new Graphic(puntoProyectado, attrs, sym));
+                if (type == 52) {
+                    gr.getGraphics().add(new Graphic(puntoProyectado, attrs, sym));
+                } else {
+                    poisGr.getGraphics().add(new Graphic(puntoProyectado, attrs, sym));
+                }
             }
-
-            map.getGraphicsOverlays().add(gr);
-
             envelope = new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84());
 
-            map.setViewpointGeometryAsync(envelope, 60);
+            map.getGraphicsOverlays().add(gr);
+            map.getGraphicsOverlays().add(poisGr);
+
+            map.setViewpointGeometryAsync(new Envelope(lonmax, latmin, lonmin, latmax, SpatialReferences.getWgs84()), 60);
         }
     }
 
@@ -1097,45 +798,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         });
         return view;
     }
-
-    /*private View getViewForCalloutPoi(final String nombre, String clase, final String nidDrupal, String cat) {
-        View view = LayoutInflater.from(getApplicationContext()).inflate(
-                R.layout.mod_discover__layout_callout_mapa, null);
-        final TextView lblNombre = (TextView) view
-                .findViewById(R.id.lblNombrePunto);
-        final TextView lblCategoria = (TextView) view
-                .findViewById(R.id.lblCategoriaPunto);
-        final Button btnCerrarDialogo = (Button) view
-                .findViewById(R.id.btnVerFichaPunto);
-
-        // Ponerle las propiedades necesarias
-        if (clase.equals(Poi.class.getName())) {
-            // Poner las propiedades en el layout
-            lblNombre.setText(nombre);
-            lblCategoria.setText(cat);
-
-            // Escuchar el evento del click del bot?n
-            btnCerrarDialogo.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    Intent intent = new Intent(RouteDetailActivity.this,
-                            PoiDetailActivity.class);
-                    intent.putExtra(PoiDetailActivity.PARAM_KEY_NID,
-                            nidDrupal);
-                    //intent.putExtra(PoiDetailActivity.PARAM_KEY_DISTANCE,0.0);
-                    //int desnivel = 0;
-                    //intent.putExtra(PoiDetailActivity.PARAM_KEY_DESNIVEL, desnivel);
-                    //intent.putExtra(PoiDetailActivity.PARAM_KEY_NUMBERVOTES,0);
-                    //intent.putExtra(PoiDetailActivity.PARAM_KEY_VALORATION,0);
-                    //BitmapManager.INSTANCE.cache.remove(poiPulsado.getMainImage());
-                    startActivity(intent);
-                    callout.dismiss();
-                }
-            });
-        }
-
-        return view;
-    }
-*/
 
     private View getViewForCallout(String nombre, String clase, final String cat, final String nid) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
@@ -1187,351 +849,6 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
         return view;
     }
 
-    /*private void dibujarPoisInRoute(Route ruta) {
-        resourcePois = ruta.getPois();
-        ArrayList<ResourcePoi> pois = resourcePois;
-        PictureMarkerSymbol sym;
-        String allPoisDescription = "";
-        Context ctx = app.getApplicationContext();
-        for (int j = 0; j < pois.size(); j++) {
-            int number;
-            //Point puntoProyectado = (Point) GeometryEngine.project(new Point(pois.get(j).getLongitude(),
-            //        pois.get(j).getLatitude()), SpatialReference.create(102100));
-            Point puntoProyectado = new Point(pois.get(j).getLongitude(),
-                    pois.get(j).getLatitude(), SpatialReferences.getWgs84() *//*SpatialReference.create(102100)*//*);
-            number = pois.get(j).getNumber();
-            int clase = pois.get(j).getType();
-            Log.d("Debug", "Number is: " + number + "and title: " + pois.get(j).getTitle());
-            Log.d("LA clase es:", String.valueOf(clase));
-            String claseNombre = "";
-            allPoisDescription += pois.get(j).getTitle() + "\n" + pois.get(j).getBody() + "\n\n";
-            switch (clase) {
-                case 52:
-                    try {
-                        String num = String.valueOf(number);
-                        if (number == 1) {
-                            firstPoint = puntoProyectado;
-                        }
-                        if (number < 10) {
-                            num = "0" + number;
-                        }
-                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("mapa_ruta_num_" + num, "drawable", getPackageName())));
-                        claseNombre = this.getResources().getString(R.string.punto_de_direccion);
-                    } catch (Exception e) {
-                        sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
-                    }
-                    break;
-                case 26:
-                case 47:
-                case 48:
-                case 49:
-                case 50:
-                case 51: // Hébergements
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
-                    claseNombre = this.getResources().getString(R.string.alojamientos);
-                    firstPoint = puntoProyectado;
-                    break;
-                case 30: //Patrimoine naturel
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_naturaleza));
-                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
-                    break;
-                case 36:  //Monuments
-                case 28:
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
-                    claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
-                    break;
-                case 27: //Restauracion
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
-                    claseNombre = this.getResources().getString(R.string.restauracion);
-                    break;
-                case 25: //Offices de tourisme
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
-                    claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
-                    break;
-                default:
-                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
-                    claseNombre = this.getResources().getString(R.string.punto_de_interes);
-            }
-
-            final HashMap<String, Object> attrs = new HashMap<String, Object>();
-            attrs.put("nombre", pois.get(j).getTitle());
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody(), Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                attrs.put("descripcion", Html.fromHtml(pois.get(j).getBody()).toString());
-            }
-            attrs.put("nid", Integer.toString(pois.get(j).getNid()));
-            Log.d("EL id del poi es: ", Integer.toString(pois.get(j).getNid()));
-            attrs.put("clase", Poi.class.getName());
-            attrs.put("cat", claseNombre);
-
-            Graphic gr = new Graphic(*//*puntoProyectado, sym);*//*puntoProyectado, attrs, sym);
-
-            if (clase == 52) {
-                try {
-                    geometricLayer.getGraphics().add(gr);
-                } catch (Exception e) {
-                    Log.e(TAG, "dibujarPoisInRoute: ", e);
-                    this.onRestart();
-                }
-
-            } else
-                geometricPOIsLayer.getGraphics().add(gr);
-        }
-        // lblPoisDescripcion.setText(Html.fromHtml(allPoisDescription));
-    }*/
-
-    /*private void dibujarGeometrias(ArrayList<Object> geometrias,
-                                   String paramNombre, String paramNombreClase, String paramNid, final String urlIcon, int color) {
-        int polygonFillColor = Color.rgb(55, 132, 218);
-        int polygonBorderColor = Color.rgb(27, 87, 187);
-        //int pointColor = Color.rgb(206, 240, 5);
-        if (geometrias != null) {
-            for (int j = 0; j < geometrias.size(); j++) {
-                Object geomObj = geometrias.get(j);
-
-                final HashMap<String, Object> attrs = new HashMap<String, Object>();
-                attrs.put("clase", paramNombreClase);
-                attrs.put("nid", paramNid);
-                attrs.put("nombre", paramNombre);
-
-                if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Polygon.class.getName())) {
-                    Log.e("***", "polygon");
-                    Polygon polygon = (Polygon) geomObj;
-                    SimpleFillSymbol sym = new SimpleFillSymbol();
-                    sym.setColor(
-                            polygonFillColor);
-
-                    sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 4));
-                    Graphic gr = new Graphic(polygon, attrs, sym);
-                    geometricLayer.getGraphics().add(gr);
-                } else if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Point.class.getName())) {
-                    Log.e("***", "point");
-
-                    final Point point = (Point) geomObj;
-
-                    // Cargar los iconos de remoto con AsyncTask
-                    new AsyncTask<Integer, Float, Integer>() {
-
-                        PictureMarkerSymbol sym = null;
-
-                        // Ejecucion pesada
-                        protected Integer doInBackground(Integer... params) {
-                            Log.d("Milog", "URL Icono: " + urlIcon);
-                            if (urlIcon != null) {
-                                try {
-                                    sym = new PictureMarkerSymbol(urlIcon);
-                                } catch (Exception e) {
-                                    Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
-                                    sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
-                                }
-                            } else {
-                                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
-                            }
-                            return 0;
-                        }
-
-                        // Acciones despu�s de ejecutarse (Main Thread)
-                        protected void onPostExecute(Integer bytes) {
-                            Graphic gr = new Graphic(point, attrs, sym);
-                            geometricLayer.getGraphics().add(gr);
-
-                            // Centrar en el poi y hacer zoom
-                            double scale = 5000.0;
-                            // map.setViewpointCenterAsync(point, scale);
-                        }
-                    }.execute(1);
-
-                } else if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Polyline.class.getName())) {
-                    Log.e("***", "polyline");
-                    Polyline polyline = (Polyline) geomObj;
-                    //int color = paramColorRoute;
-                    //TOTO
-                    Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.CYAN, 6));
-                    geometricLayer.getGraphics().add(gr);
-                }
-            }
-        }
-    }*/
-
-    /*private void centrarEnExtentCapa(GraphicsOverlay capa) {
-        // Hacer zoom a la capa de geometrias
-        Envelope env;
-        Envelope NewEnv = capa.getExtent();
-        for (int i=0; i< capa.getGraphics().size(); i++) {
-            Geometry geom = capa.getGraphics().get(i).getGeometry();
-            env = geom.getExtent();
-            //geom.queryEnvelope(env);
-            NewEnv.createFromInternal(env.getInternal());
-            //NewEnv.merge(env);
-        }
-
-        //this.map.setViewpointGeometryAsync(NewEnv, 100);
-    }*/
-
-   /* private void copyMapFileInAppFileDir(String fileOutput, String fileAssetsInput) {
-        FileOutputStream destinationFileStream = null;
-        InputStream assetsOriginFileStream = null;
-        try {
-            //destinationFileStream = openFileOutput(fileOutput, Context.MODE_PRIVATE);
-            destinationFileStream = new FileOutputStream(new File(fileOutput));
-            assetsOriginFileStream = getAssets().open(fileAssetsInput);
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = assetsOriginFileStream.read(buf)) > 0) {
-                destinationFileStream.write(buf, 0, len);
-            }
-        } catch (Exception e) {
-            Log.d("Sauvage", e.getMessage());
-        } finally {
-            try {
-                assetsOriginFileStream.close();
-                destinationFileStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
-    /*public void ponerCapaBase() {
-        *//* Codigo de prueba *//*
-        map.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
-        if (!DataConection.hayConexion(this)) {
-            String basemapurl = Util.getUrlRouteBaseLayerOffline(app, paramNid, paramMapUrl);
-            ArcGISTiledLayer baseLayer;
-            baseLayer = new ArcGISTiledLayer(basemapurl);
-            map.getMap().getOperationalLayers().add(baseLayer);
-            map.getMap().setMaxScale(1000);
-            return;
-        }
-        *//* Fin de codigo de prueba *//*
-        CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-        Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-        Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
-
-        Object capaBase = capaSeleccionada.getMapLayer();
-        Log.d("Milog", "Object capaBase");
-
-        // Correcci�n, para que no cambie la capa base cuando la seleccionada es
-        // la misma que ya estaba (ahorra datos)
-        LayerList capas = map.getMap().getOperationalLayers();
-        if (capas != null) {
-            Log.d("Milog", "capas no es nulo");
-            if (capas.size() > 0) {
-
-                Log.d("Milog", "Hay alguna capa");
-                Object capa0 = capas.get(0);
-                Log.d("Milog", "Tenemos capa0");
-                // si la capa base seleccionada es del mismo tipo que la capa 0
-                if (capaBase.getClass().getName()
-                        .equals(capa0.getClass().getName())) {
-                    Log.d("Milog",
-                            "La clase de la capa base es igual que la clase de la capa0");
-                    *//*if (capaBase.getClass() == ArcGISTiledLayer.class) {
-                        Log.d("Milog", "capaBase es de tipo BING");
-                        BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
-                        BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
-
-                        if (capaBaseCasted.getMapStyle().equals(
-                                capa0Casted.getMapStyle())) {
-                            return;
-                        } else {
-                            map.removeLayer(0);
-                            Log.d("Milog",
-                                    "PUNTO INTERMEDIO BING: el map tiene "
-                                            + map.getLayers().length
-                                            + " capas");
-                        }
-                    } else *//*if (capaBase.getClass() == ArcGISTiledLayer.class) {
-                        Log.d("Milog", "capaBase es de tipo TiledMap");
-                        ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
-                        ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
-                        String strUrlCapaBaseCasted = capaBaseCasted.getUri().toString();
-                        String strUrlCapa0Casted = capa0Casted.getUri().toString();
-                        if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
-                            return;
-                        } else {
-                            map.getMap().getOperationalLayers().remove(0);
-                            Log.d("Milog",
-                                    "PUNTO INTERMEDIO TILED: el map tiene "
-                                            + map.getMap().getOperationalLayers().size()
-                                            + " capas");
-                        }
-                    }
-                    Log.d("Milog", "La capa 0 es de clase "
-                            + capa0.getClass().getName());
-                } else {// si la capa base seleccionada no es del mismo tipo que
-                    // la capa 0
-
-                    map.getMap().getOperationalLayers().remove(0);
-                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
-                        map.removeLayer(0);
-                    } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
-                        map.removeLayer(0);
-                    }*//*
-                }
-            }
-            // btnAbrirCapas.setEnabled(true);
-            if (capaBase.getClass() == ArcGISTiledLayer.class) {
-
-                if (capas.size() > 0) {
-                    map.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
-                } else {
-                    map.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
-                }
-
-            } *//*else if (capaBase.getClass() == BingMapsLayer.class) {
-
-                if (capas.length > 0) {
-                    map.addLayer((BingMapsLayer) capaBase, 0);
-                } else {
-                    map.addLayer((BingMapsLayer) capaBase);
-                }
-
-            } *//*else {
-                // otro tipo de capa
-            }
-
-            app.capaBaseSeleccionada = capaSeleccionada;
-            Log.d("Milog", "El map tiene " + map.getMap().getOperationalLayers().size()
-                    + " capas");
-        }
-    }*/
-
-    /*@Override
-    public void seCargoListaRoutesOffline(ArrayList<Route> routes) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaRoutesOffline(String error) {
-        // TODO Auto-generated method stub
-        // panelCargando.setVisibility(View.GONE);
-
-    }
-
-    @Override
-    public void seCargoRouteOffline(Route item) {
-        // TODO Auto-generated method stub
-        if (item != null)
-            seCargoRoute(item);
-        // panelCargando.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void producidoErrorAlCargarRouteOffline(String error) {
-        // TODO Auto-generated method stub
-        // panelCargando.setVisibility(View.GONE);
-    }*/
-
     @Override
     public void seCerroComboCapas(Basemap basemap) {
         if (!this.basemap.equals(basemap)) {
@@ -1541,307 +858,4 @@ public class RouteDetailActivity extends Activity implements /*RoutesInterface, 
             map.setViewpointGeometryAsync(envelope, 60);
         }
     }
-/*
-    // El interface de Pois es solo para el filtrado de pois.
-    private void cargaActivitySearch() {
-        Intent intent = new Intent(RouteDetailActivity.this,
-                PoisSearchActivity.class);
-        intent.putExtra(PoisSearchActivity.PARAM_KEY_HIDE_EVENTS, true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivityForResult(intent, 1);
-    }
-
-    /*@Override
-    public void seCargoListaPois(ArrayList<Poi> pois) {
-        // TODO Auto-generated method stub
-        if (pois != null) {
-            this.arrayPois = pois;
-            Cache.arrayPois = pois;
-            if (Cache.hashMapPois == null) {
-                Cache.iniHashMapPois();
-            }
-            if (Cache.hashMapPois == null) {
-                Cache.hashMapPois = new HashMap<String, Integer>();
-            }
-        }
-        // panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaPois");
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaPois(String error) {
-        // TODO Auto-generated method stub
-        Log.d("Milog", "producidoErrorAlCargarListaPois: " + error);
-        // panelCargando.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void seCargoPoi(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoi(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void recargarDatosPois() {
-        if (Cache.arrayPois != null) {
-            this.arrayPois = Cache.arrayPois;
-            return;
-        }
-        if (DataConection.hayConexion(this)) {
-            // Si hay conexi�n, recargar los datos
-            // panelCargando.setVisibility(View.VISIBLE);
-            Poi.poisInterface = this;
-            Poi.cargarListaPoisOrdenadosDistancia(getApplication(), // Aplicacion
-                    getLoc()[0], // Latitud
-                    getLoc()[1], // Longitud
-                    0, // Radio en Kms
-                    0, // N�mero de elementos por p�gina
-                    0, // P�gina
-                    null, // Tid de la categor�a que queremos filtrar
-                    null // Texto a buscar
-            );
-        } else {
-            OfflinePoi.poisInterface = this;
-            OfflinePoi.cargaListaPoisOffline(getApplication());
-            // Si no hay conexi�n a Internet
-            Util.mostrarMensaje(
-                    this,
-                    getResources().getString(
-                            R.string.mod_global__sin_conexion_a_internet),
-                    getResources()
-                            .getString(
-                                    R.string.mod_global__no_dispones_de_conexion_a_internet));
-        }
-
-        // Poner el texto al bot�n que hace de combo
-        //this.btnCategorias.setText(this.categoryName);
-    }*/
-
-    /*private void filterPois() {
-        if (arrayPois != null) {
-            for (int i = 0; i < arrayPois.size(); i++) {
-                if (PoisSearch.checkCriteria(arrayPois.get(i), this.getApplicationContext()))
-                    arrayFilteredPois.add(arrayPois.get(i));
-            }
-            dibujarPoisEnMapa(arrayFilteredPois);
-        }
-        lastLatitude = getLoc()[0];
-        lastLongitude = getLoc()[1];
-    }*/
-
-    /*private void dibujarPoisEnMapa(ArrayList<Poi> aFilteredPois) {
-
-        for (int i = 0; i < aFilteredPois.size(); i++) {
-            Poi poi = aFilteredPois.get(i);
-            // Por cada poi obtener sus coordenadas y construir un objeto
-            // Point de Arcgis
-            GeoPoint gp = poi.getCoordinates();
-            Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
-                    SpatialReference.create(102100));
-            ArrayList<Object> geometrias = new ArrayList<Object>();
-            geometrias.add(puntoProyectado);
-
-            String cat = "poi";
-            if (poi.getCategory() != null) {
-                cat = poi.getCategory().getName();
-            }
-
-            String icon = null;
-            if (poi.getCategory() != null && poi.getCategory().getIcon() != null) {
-                icon = poi.getCategory().getIcon();
-            }
-            final HashMap<String, Object> attrs = new HashMap<String, Object>();
-            attrs.put("clase", poi.getClass().getName());
-            attrs.put("nid", poi.getNid());
-            attrs.put("nombre", poi.getTitle());
-            attrs.put("cat", cat);
-
-            String paramCat = cat;
-            Log.d("Debug", "cat a une valeur de : " + cat);
-            PictureMarkerSymbol sym = null;
-            if (paramCat.equals("Chambre d'hôtes") || paramCat.equals("Hôtellerie")
-                    || paramCat.equals("Hébergements collectifs") || paramCat.equals("Hôtellerie de plein air")
-                    || paramCat.equals("Meublés") || paramCat.equals("Résidences")) {
-                //Drawable d = getResources().getDrawable(R.drawable.icono_hotel);
-                //Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
-                // Scale it to 50 x 50
-                //Drawable dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 50, 50, true));
-                //sym = new PictureMarkerSymbol(dr);
-                //sym.setOffsetY(-px2dip(this.getApplicationContext(),d.getIntrinsicHeight() / 2));
-            } else if (paramCat.equals("Musées") || paramCat.equals("Patrimoine naturel")
-                    || paramCat.equals("Sites et monuments") || paramCat.equals("Offices de tourisme")
-                    || paramCat.equals("Parc et Jardin")) {
-                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
-            } else if (paramCat.equals("Restauration"))
-                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
-            else
-                sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
-
-            Graphic gr = new Graphic(puntoProyectado, attrs, sym);
-            geometricPOIsLayer.getGraphics().add(gr);
-        }
-    }*/
-
-    /* Proceso que se realizar� tras la busqueda de Pois */
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        geometricPOIsLayer.getGraphics().clear();
-        if (data == null) {
-            return;
-        }
-        String name = data.getStringExtra("name");
-        if (arrayFilteredPois == null)
-            arrayFilteredPois = new ArrayList<Poi>();
-        arrayFilteredPois.clear();
-        filterPois();
-    }
-
-    *//* This is a fast code to get the last known location of the phone. If there is no exact
-     * gps-information it falls back to the network-based location info.
-     */
-    /*private double[] getLoc() {
-        app.getApplicationContext();
-        LocationManager lm = (LocationManager) app.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        List<String> providers = lm.getProviders(true);
-
-	    *//* Loop over the array backwards, and if you get an accurate location, then break out the loop*//*
-        Location l = null;
-
-        for (int i = providers.size() - 1; i >= 0; i--) {
-            l = lm.getLastKnownLocation(providers.get(i));
-            if (l != null) break;
-        }
-
-        double[] gps = new double[2];
-        if (l != null) {
-            gps[0] = l.getLatitude();
-            gps[1] = l.getLongitude();
-        }
-        return gps;
-    }*/
-
-    /*
-    private void showDialog () {
-        // Creating alert Dialog with one Button
-
-        dialogPoi = new Dialog(this);
-        dialogPoi.setContentView(R.layout.mod_discover_dialog_poi_route);
-        dialogPoi.setTitle("Info " + "T�l�chargement");
-        dialogPoi.setCancelable(true);
-        //there are a lot of settings, for dialog, check them all out!
-
-        //set up text
-        TextView text = (TextView) dialogPoi.findViewById(R.id.txtPoiDescription);
-        text.setText(R.string.mod_home__info_telecarga);
-
-        //set up button
-        Button button = (Button) dialogPoi.findViewById(R.id.Button01);
-        button.setOnClickListener(new OnClickListener() {
-        @Override
-            public void onClick(View v) {
-                dialogPoi.dismiss();
-            }
-        });
-        //now that the dialog is set up, it's time to show it
-        dialogPoi.show();
-
-    }
-*/
-   /* @Override
-    public void seCargoListaPoisOffline(ArrayList<Poi> pois) {
-        // TODO Auto-generated method stub
-        if (pois != null) {
-            this.arrayPois = pois;
-            Cache.arrayPois = pois;
-            if (Cache.hashMapPois == null) {
-                Cache.iniHashMapPois();
-            }
-        }
-        // panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaPoisOffline");
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaPoisOffline(String error) {
-        // TODO Auto-generated method stub
-        // panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "Error al cargar Pois Offline");
-    }
-
-    @Override
-    public void seCargoPoiOffline(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoiOffline(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCompletoDescarga() {
-        // TODO Auto-generated method stub
-        // panelCargandoMapas.setVisibility(View.GONE);
-        Util.mostrarMensaje(RouteDetailActivity.this, getResources().getString(R.string.mod_discover__telecarga_completada_titulo),
-                getResources().getString(R.string.mod_discover__telecarga_completada_info));
-    }
-
-    @Override
-    public void setProgresoDescarga(int progress) {
-        // TODO Auto-generated method stub
-        //ProgressBar pb = (ProgressBar) panelCargandoMapas.getChildAt(0);
-        // RouteDetailActivity.this.pb.setProgress(progress);
-    }
-
-    @Override
-    public void inicioDescarga() {
-        // TODO Auto-generated method stub
-        // RouteDetailActivity.this.panelCargandoMapas.setVisibility(View.VISIBLE);
-
-    }*/
-
-    /**
-     * Location listener propio
-     *
-     * @author
-     */
-    /*private class MyLocationListener implements LocationDisplay.LocationChangedListener {
-
-        public MyLocationListener() {
-            super();
-        }
-
-        public void onLocationChanged(Location loc) {
-            if (loc == null)
-                return;
-//			else
-//				GPS.setLastLocation(loc);
-        }
-
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-            if (locationChangedEvent.getLocation() == null)
-                return;
-        }
-    }*/
-
 }

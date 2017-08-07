@@ -1,11 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_options;
 
-import java.util.ArrayList;
-
-
-
-
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,6 +12,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_global.Util;
@@ -88,14 +85,10 @@ public class OptionsActivity extends Activity implements RoutesModeOfflineInterf
 			check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				public void onCheckedChanged(CompoundButton buttonView,
 						boolean isChecked) {
-					if (isChecked) {
-						// The toggle is enabled
-						Cache.notificationEnabled = true;
-					} else {
-						// The toggle is disabled
-						Cache.notificationEnabled = false;
-					}
-				}
+                    // The toggle is enabled
+// The toggle is disabled
+                    Cache.notificationEnabled = isChecked;
+                }
 			});
 			mImageMap
 					.addOnImageMapClickedHandler(new ImageMap.OnImageMapClickedHandler() {

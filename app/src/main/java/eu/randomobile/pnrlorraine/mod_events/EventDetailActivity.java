@@ -1,9 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,19 +17,24 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.arcgisruntime.geometry.Geometry;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
-import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.mapping.LayerList;
-import com.esri.arcgisruntime.mapping.view.*;
+import com.esri.arcgisruntime.mapping.view.Callout;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
@@ -59,12 +59,11 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 	String paramNid = "";
 	MapView mapa = null;
 	Callout callout = null;
-	private Event evento = null;
+    GraphicsOverlay capaGeometrias = null;
+    RelativeLayout panelCargando;
+    private Event evento = null;
 	private GeoPoint coordenadas = null;
 	private PoiCategoryTerm categoria = null;
-	GraphicsOverlay capaGeometrias = null;
-
-	RelativeLayout panelCargando;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -227,7 +226,6 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 	}
 
 	public void producidoErrorAlCargarPoi(String error) {
-		Log.d("Milog", "producidoErrorAlCargarPoi: " + error);
 		panelCargando.setVisibility(View.GONE);
 		Util.mostrarMensaje(this,
 				getResources().getString(R.string.mod_global__error),
@@ -237,30 +235,21 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 
 	public void ponerCapaBase() {
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
 
 		// Corrección, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
-			Log.d("Milog", "capas no es nulo");
 			if (capas.size() > 0) {
 
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
-					Log.d("Milog",
-							"La clase de la capa base es igual que la clase de la capa0");
 
 					if (capaBase.getClass() == ArcGISTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
 						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
@@ -271,14 +260,8 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getGraphicsOverlays().size()
-											+ " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase "
-							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
 					// la capa 0
 
@@ -300,8 +283,6 @@ public class EventDetailActivity extends Activity implements EventsInterface {
 				}
 
 				app.capaBaseSeleccionada = capaSeleccionada;
-				Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-						+ " capas");
 			}
 		}
 	}

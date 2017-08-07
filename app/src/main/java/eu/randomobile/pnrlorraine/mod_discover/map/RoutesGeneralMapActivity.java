@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -141,7 +140,6 @@ public class RoutesGeneralMapActivity extends Activity implements
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		Log.d("Milog", "Cambio la configuracion");
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -342,9 +340,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 	}
 
 	public void seCerroComboCapas(Basemap basemap) {
-		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
-		Log.d("Milog", "Despues de poner capa base");
 	}
 
 	private void representarGeometrias() {
@@ -424,9 +420,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 			
 		}
 		if (capaGeometrias.getGraphics().size() > 0){
-			Log.d("RoutesMap", "Ahora mismo vamos a centrar");
 			centrarEnExtentCapa(capaGeometrias);
-			Log.d("RoutesMap", "Ya hemos centrado, ¿qué tal?");
 		}
 
 	}
@@ -462,7 +456,6 @@ public class RoutesGeneralMapActivity extends Activity implements
 	@Override
 	public void producidoErrorAlCargarListaRoutesOffline(String error) {
 		// TODO Auto-generated method stub
-		Log.d("Milog", "producidoErrorAlCargarListaRoutes: " + error);
 		panelCargando.setVisibility(View.GONE);
 	}
 
@@ -484,16 +477,12 @@ public class RoutesGeneralMapActivity extends Activity implements
 	private View getViewForCallout(final String nombre, String clase, final String nid, final String cat, final String type, final String color) {
 		View view = LayoutInflater.from(getApplicationContext()).inflate(
 				R.layout.mod_discover__layout_callout_mapa, null);
-		Log.d("Milog", "1");
 		final TextView lblNombre = (TextView) view
 				.findViewById(R.id.lblNombrePunto);
-		Log.d("Milog", "2");
 		final TextView lblCategoria = (TextView) view
 				.findViewById(R.id.lblCategoriaPunto);
-		Log.d("Milog", "3");
 		final Button btnCerrarDialogo = (Button) view
 				.findViewById(R.id.btnVerFichaPunto);
-		Log.d("Milog", "4");
 
 		// Ponerle las propiedades necesarias
 		if (clase.equals(Poi.class.getName())) {
@@ -576,12 +565,10 @@ public class RoutesGeneralMapActivity extends Activity implements
 						
 						// Ejecucion pesada
 						protected Integer doInBackground(Integer... params) {
-							Log.d("Milog", "URL Icono: " + urlIcon);
 							if(urlIcon != null){
 								try {
 									sym = new PictureMarkerSymbol(urlIcon);
 								} catch (Exception e) {
-									Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
 									sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
 								}
 							}else{
@@ -621,7 +608,6 @@ public class RoutesGeneralMapActivity extends Activity implements
 		int numberOfGrapchics=capa.getGraphicIDs().length;
 
 		for (int i : capa.getGraphicIDs()) {
-			Log.d("RoutesMap", "Grafico num: " + Integer.toString(i)+"/"+Integer.toString(numberOfGrapchics));
 			Geometry geom = capa.getGraphic(i).getGeometry();
 			geom.queryEnvelope(env);
 			NewEnv.merge(env);
@@ -639,7 +625,7 @@ public class RoutesGeneralMapActivity extends Activity implements
 				Geometry geom = capa.getGraphics().get(element).getGeometry();
 				// merge extent with point
 			    Envelope env = geom.getExtent();
-				extent.createFromInternal(env.getInternal());
+			Envelope.createFromInternal(env.getInternal());
 		}
 
 		// Set the map extent to the envelope containing the result graphics
@@ -665,29 +651,20 @@ public class RoutesGeneralMapActivity extends Activity implements
 		*/
 		/* Fin codigo de prueba */
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
 		mapa.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10)); //Todo change init for arcgis 100.0.0
 		// Correcci�n, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
-			Log.d("Milog", "capas no es nulo");
 			if (capas.size() > 0) {
 
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
-					Log.d("Milog",
-							"La clase de la capa base es igual que la clase de la capa0");
 					if (capaBase.getClass() == ArcGISTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo BING");
 						ArcGISVectorTiledLayer capaBaseCasted = (ArcGISVectorTiledLayer) capaBase;
 						ArcGISVectorTiledLayer capa0Casted = (ArcGISVectorTiledLayer) capa0;
 
@@ -696,13 +673,8 @@ public class RoutesGeneralMapActivity extends Activity implements
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO BING: el mapa tiene "
-											+ mapa.getMap().getOperationalLayers().size()
-											+ " capas");
 						}
 					} else if (capaBase.getClass() == ArcGISTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
 						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
@@ -713,14 +685,8 @@ public class RoutesGeneralMapActivity extends Activity implements
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getMap().getOperationalLayers().size()
-											+ " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase "
-							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
 						// la capa 0
 					mapa.getMap().getOperationalLayers().remove(0);
@@ -741,8 +707,6 @@ public class RoutesGeneralMapActivity extends Activity implements
 			}
 
 			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-					+ " capas");
 		}
 	}
 

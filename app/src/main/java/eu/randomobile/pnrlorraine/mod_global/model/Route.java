@@ -85,7 +85,6 @@ public class Route {
             params.put("search", searchTxt);
         }
 
-        Log.d("Milog", "Parametros enviados a route/get_list_distance: " + params.toString());
 
         MainApp app = (MainApp) application;
 
@@ -93,7 +92,6 @@ public class Route {
                     public void onSuccess(String response) {
 
                         ArrayList<Route> listaRutas = null;
-                        Log.d("Milog", "Respuesta de cargar rutas distance: " + response);
 
                         if (response != null && !response.equals("")) {
 
@@ -106,7 +104,6 @@ public class Route {
                             if (listaRutas != null)
                                 Route.routesInterface.seCargoListaRoutes(listaRutas);
                             else {
-                                Log.d("Milog", "Antes de informar al delegate de un error");
                                 Route.routesInterface.producidoErrorAlCargarListaRoutes("Error al cargar lista de routes");
                             }
                         }
@@ -115,7 +112,6 @@ public class Route {
                     public void onFailure(Throwable error) {
                         // Informar al delegate
                         if (Route.routesInterface != null) {
-                            Log.d("Milog", "Antes de informar al delegate de un error Ordenados DIstancia: " + error.toString());
                             Route.routesInterface.producidoErrorAlCargarListaRoutes(error.toString());
                         }
                     }
@@ -133,7 +129,6 @@ public class Route {
         try {
             JSONArray arrayRes = new JSONArray(response);
             if (arrayRes != null) {
-                Log.d("fillRouteList() sais:", " Array devuelto. Contiene al menos 1 elemento.");
 
                 listaRutas = new ArrayList<Route>();
 
@@ -148,14 +143,11 @@ public class Route {
                             String title = recDic.getString("title");
                             String body = recDic.getString("body");
 
-                            Log.d("fillRouteList() sais:", " BODY: " + body);
 
                             String distance = recDic.getString("distance");
                             String image = recDic.getString("image");
                             String geomWKT = recDic.getString("geom");
                             String url = recDic.getString("map_tpk");
-
-                            Log.d("fillRouteList() sais:", "URL tpk: " + url);
 
                             Route item = new Route();
 
@@ -165,7 +157,6 @@ public class Route {
                             item.setTrack(geomWKT);
                             item.setUrlMap(url);
 
-                            Log.d("fillRouteList() sais:", "URL en objeto Ruta: " + item.getUrlMap());
 
                             double distanceKMDouble = Double.valueOf(distance);
                             double distanceMDouble = distanceKMDouble * 1000;
@@ -264,7 +255,6 @@ public class Route {
 
 
         } catch (Exception e) {
-            Log.d("Milog", "Excepcion en lista rutas: " + e.toString());
             listaRutas = null;
         }
         return listaRutas;
@@ -273,14 +263,11 @@ public class Route {
     public static Route fillRoute(String response) {
         Route route = null;
         try {
-            Log.d("JmLog","La valeur de la reponse :"+response);
             JSONObject dicRes = new JSONObject(response);
             if (dicRes != null) {
                 String nid = dicRes.getString("nid");
                 String title = dicRes.getString("title");
                 String body = dicRes.getString("body");
-
-                Log.d("fillRoute() sais:", " BODY: " + body);
 
                 String geom = dicRes.getString("geom");
                 String url_map = dicRes.getString("map");
@@ -333,11 +320,9 @@ public class Route {
                             JSONObject dic = (JSONObject) obj;
                             String name = dic.getString("name");
                             String url = dic.getString("url");
-                            Log.d("JmLog", "l'url est :" + url);
                             ResourceFile rf = new ResourceFile();
                             rf.setFileName(name);
                             rf.setFileUrl(url);
-                            //Log.d("Jmlog", "L'objet images : " + dicRes.get("images"));
                             rf.setFileTitle(JSONManager.getString(dic, "title"));
                             rf.setFileBody(JSONManager.getString(dic, "body"));
                             rf.setCopyright(JSONManager.getString(dic, "copyright"));
@@ -345,7 +330,6 @@ public class Route {
                         }
                     }
                 }
-                Log.d("JmLog","Taille de tab  l'image : "+arrayResourceImages.size());
                 route.setImages(arrayResourceImages);
 
                 ArrayList<ResourceFile> arrayResourceAudios = new ArrayList<ResourceFile>();
@@ -454,8 +438,6 @@ public class Route {
                     route.setVote(vote);
                 }
 
-            }else {
-                Log.d("JmLog","Connexion route échouée !");
             }
         } catch (Exception e) {
             Log.d("Milog", "Excepcion cargar route: " + e.toString());
@@ -473,17 +455,14 @@ public class Route {
         app.clienteDrupal.customMethodCallPost("route/get_item",
                 new AsyncHttpResponseHandler() {
                     public void onSuccess(String response) {
-                        Log.d("Milog", "Exito al cargar route: " + response);
 
                         if (response != null && !response.equals("")) {
                             Route route = fillRoute(response);
-                            //Log.d("Jmlog","ROUTE VALUE IMAGES ARRAY :"+route.getImages()+" route nid :"+route.getNid());
                             // Informar al delegate
                             if (Route.routesInterface != null) {
                                 if (route != null)
                                    Route.routesInterface.seCargoRoute(route);
                                 else {
-                                    Log.d("Milog", "Antes de informar al delegate de un error");
                                     Route.routesInterface.producidoErrorAlCargarRoute("Error al cargar route");
                                 }
                             }
@@ -493,8 +472,6 @@ public class Route {
                     public void onFailure(Throwable error) {
                         // Informar al delegate
                         if (Route.routesInterface != null) {
-                            Log.d("Milog",
-                                    "Antes de informar al delegate de un error: " + error.toString());
                             Route.routesInterface
                                     .producidoErrorAlCargarRoute(error
                                             .toString());
@@ -750,13 +727,13 @@ public class Route {
         this.local_directory_map = local_directory_map;
     }
 
-    public static interface RoutesInterface {
-        public void seCargoListaRoutes(ArrayList<Route> routes);
+    public interface RoutesInterface {
+        void seCargoListaRoutes(ArrayList<Route> routes);
 
-        public void producidoErrorAlCargarListaRoutes(String error);
+        void producidoErrorAlCargarListaRoutes(String error);
 
-        public void seCargoRoute(Route route);
+        void seCargoRoute(Route route);
 
-        public void producidoErrorAlCargarRoute(String error);
+        void producidoErrorAlCargarRoute(String error);
     }
 }

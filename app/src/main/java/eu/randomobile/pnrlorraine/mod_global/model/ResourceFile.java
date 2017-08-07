@@ -95,8 +95,6 @@ public class ResourceFile extends Resource implements Parcelable {
 				new AsyncHttpResponseHandler() {
 					public void onSuccess(String response) {
 
-						Log.d("Milog", "Respuesta de subir fichero: "
-								+ response);
 						if (response != null && !response.equals("")) {
 
 							try {
@@ -121,8 +119,6 @@ public class ResourceFile extends Resource implements Parcelable {
 
 						// Informar al delegate
 						if (ResourceFile.resourceFileInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error");
 							ResourceFile.resourceFileInterface
 									.producidoErrorAlSubirFichero("Error al recoger respuesta");
 						}
@@ -130,12 +126,8 @@ public class ResourceFile extends Resource implements Parcelable {
 					}
 
 					public void onFailure(Throwable error) {
-						Log.d("Milog", "Respuesta de subir fichero erronea: "
-								+ error);
 						// Informar al delegate
 						if (ResourceFile.resourceFileInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error");
 							ResourceFile.resourceFileInterface
 									.producidoErrorAlSubirFichero(error
 											.toString());
@@ -266,9 +258,9 @@ public class ResourceFile extends Resource implements Parcelable {
 		this.fileUrl = fileUrl;
 	}
 
-	public static interface ResourceFileInterface {
-		public void seSubioFichero(String fid, String uri);
+    public interface ResourceFileInterface {
+        void seSubioFichero(String fid, String uri);
 
-		public void producidoErrorAlSubirFichero(String error);
-	}
+        void producidoErrorAlSubirFichero(String error);
+    }
 }

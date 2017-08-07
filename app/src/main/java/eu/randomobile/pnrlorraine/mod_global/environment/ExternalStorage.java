@@ -1,5 +1,11 @@
 package eu.randomobile.pnrlorraine.mod_global.environment;
 
+import android.app.Application;
+import android.content.Context;
+import android.database.Cursor;
+import android.os.Environment;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -7,23 +13,15 @@ import java.io.InputStream;
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.mod_global.data_access.DBManager;
 
-import android.app.Application;
-import android.content.Context;
-import android.database.Cursor;
-import android.os.Environment;
-import android.util.Log;
-
 public class ExternalStorage {
 
 	// Comprueba si tiene almacenamiento externo montado (interno o SD)
 	public static boolean tieneSD(Context contexto){
 		// Comprobamos la ruta hasta la raiz de la tarjeta SD
 		File dirSD = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-		if(dirSD.exists()){
-			return true; //tiene tarjeta SD
-		}else{
-			return false; //no tiene tarjeta SD
-		}
+		//tiene tarjeta SD
+//no tiene tarjeta SD
+		return dirSD.exists();
 	}
 	
 	
@@ -75,11 +73,9 @@ public class ExternalStorage {
 		
 		// Fichero de BBDDD
 		if(!tieneFicheroBD){
-			Log.d("Milog", "No tiene el fichero de BBDD. Voy a copiarlo");
 			// No tiene el fichero de BBDD. Hay que copiarlo
 			copiarBDDeRecursosASD(application, app.RES_ID_FICH_BBBDD, app.NOMBRE_FICH_BBDD);
 		}else{
-			Log.d("Milog", "Ya tiene el fichero de BBDD. Compruebo si necesita version nueva");
 			// Ya tiene el fichero de BBDD. Hay que actualizarlo si ha cambiado la versi—n del fichero
 			actualizarBDExistente(application, app.NOMBRE_FICH_BBDD);
 		}
@@ -109,7 +105,6 @@ public class ExternalStorage {
 
 		try{
 	    	if (c != null) {
-	    		Log.d("Milog", "El cursor no es nulo");
 	            if(c.moveToFirst()){
 	            	versionOriginal = c.getString(c.getColumnIndex("bd_version"));
 	            }else{
@@ -143,7 +138,6 @@ public class ExternalStorage {
 			c = DBManager.consultar(consultaVersion, application);
 			try{
 		    	if (c != null) {
-		    		Log.d("Milog", "El cursor no es nulo");
 		            if(c.moveToFirst()){
 		            	versionNueva = c.getString(c.getColumnIndex("bd_version"));
 		            	
@@ -171,9 +165,8 @@ public class ExternalStorage {
 				fOrig.delete();
 				
 			}else{
-				
-				Log.d("Milog", "No hay que actualizar");
-				
+
+
 				// Eliminar el ficheroNuevo
 				File fNuevo = new File(Environment.getExternalStorageDirectory() + "/" + app.CARPETA_SD + "/" + nombreBBDD);
 				fNuevo.delete();

@@ -1,41 +1,48 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.Application;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import eu.randomobile.pnrlorraine.MainApp;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import eu.randomobile.pnrlorraine.MainApp;
 
 public class Geocache implements Parcelable {
 
-	private String nid;
+    public static final Parcelable.Creator<Geocache> CREATOR = new Parcelable.Creator<Geocache>() {
+
+        public Geocache createFromParcel(Parcel in) {
+            Geocache complaint = new Geocache();
+            complaint.setNid(in.readString());
+            complaint.setTitle(in.readString());
+            complaint.setBody(in.readString());
+            complaint.setDistanceMeters(in.readDouble());
+            complaint.setCoordinates((GeoPoint) in.readParcelable(GeoPoint.class.getClassLoader()));
+            return complaint;
+        }
+
+        @Override
+        public Geocache[] newArray(int size) {
+            return new Geocache[size];
+        }
+    };
+    // Interface para comunicarse con las llamadas asincronas
+    public static GeocachingInterface geocachingInterface;
+    private String nid;
 	private String title;
 	private String body;
 	private double distanceMeters;
 	private GeoPoint coordinates;
 	private boolean done;
-	
 
-
-
-	// Interface para comunicarse con las llamadas asincronas
-	public static GeocachingInterface geocachingInterface;
-	public static interface GeocachingInterface {
-		public void seCargoListaGeocachesCercanos(ArrayList<Geocache> geocaches);
-		public void producidoErrorAlCargarListaGeocachesCercanos(String error);
-		public void seHaCapturadoGeocache(boolean res);
-		public void producidoErrorAlCapturarGeocache(String error);
-	}
-
-	
 	public static void cargarListaGeocachesCercanos(Application application, double lat, double lon, int radio, int num, int pag){
 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -52,16 +59,14 @@ public class Geocache implements Parcelable {
 		}
 
 		
-		Log.d("Milog", "Parametros enviados a geocache/get_list: " + params.toString());
 
 		MainApp app = (MainApp)application;
 		
 		app.clienteDrupal.customMethodCallPost("geocache/get_list", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
-				
-				Log.d("Milog", "Respuesta de cargar geocaches cercanos: " + response);
-				
-				ArrayList<Geocache> listaGeocaches = null;
+
+
+                ArrayList<Geocache> listaGeocaches = null;
 				
 				if(response != null && !response.equals("")){
 					
@@ -69,7 +74,6 @@ public class Geocache implements Parcelable {
 	                	JSONArray arrayRes = new JSONArray(response);
 	                	if(arrayRes != null){
 	                		if(arrayRes.length() > 0){
-	                			Log.d("Milog", "array devuelto contiene al menos 1 elemento");
 	                			listaGeocaches = new ArrayList<Geocache>();
 	                		}
 	                		
@@ -133,7 +137,6 @@ public class Geocache implements Parcelable {
 				
 				// Informar al delegate
 	    		if(Geocache.geocachingInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			Geocache.geocachingInterface.producidoErrorAlCargarListaGeocachesCercanos("Error al cargar lista de geocaches");
 	    		}
 				
@@ -144,7 +147,6 @@ public class Geocache implements Parcelable {
 			public void onFailure(Throwable error) {
 				// Informar al delegate
 				if(Geocache.geocachingInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error: " + error.toString());
 	    			Geocache.geocachingInterface.producidoErrorAlCargarListaGeocachesCercanos(error.toString());
 	    		}
 			}
@@ -170,7 +172,6 @@ public class Geocache implements Parcelable {
 		app.clienteDrupal.customMethodCallPost("geocache/capture", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
 				
-				Log.d("Milog", "Respuesta de capturar geocache: " + response);
 				if(response != null && !response.equals("")){
 					
 					try {
@@ -200,7 +201,6 @@ public class Geocache implements Parcelable {
 	                		}else{
 	                			// Informar al delegate
 	            	    		if(Geocache.geocachingInterface != null){
-	            	    			Log.d("Milog", "Antes de informar al delegate de un error: " + error);
 	            	    			Geocache.geocachingInterface.producidoErrorAlCapturarGeocache("No se puede procesar la respuesta en el servidor");
 	            	    			return;
 	            	    		}
@@ -216,7 +216,6 @@ public class Geocache implements Parcelable {
 				
 				// Informar al delegate
 	    		if(Geocache.geocachingInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			Geocache.geocachingInterface.producidoErrorAlCapturarGeocache("Error al recoger respuesta");
 	    		}
 				
@@ -227,7 +226,6 @@ public class Geocache implements Parcelable {
 			public void onFailure(Throwable error) {
 				// Informar al delegate
 				if(Geocache.geocachingInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			Geocache.geocachingInterface.producidoErrorAlCapturarGeocache(error.toString());
 	    		}
 			}
@@ -320,26 +318,15 @@ public class Geocache implements Parcelable {
 		this.done = done;
 	}
 
-	public static final Parcelable.Creator<Geocache> CREATOR = new Parcelable.Creator<Geocache>() {
+    public interface GeocachingInterface {
+        void seCargoListaGeocachesCercanos(ArrayList<Geocache> geocaches);
 
-		public Geocache createFromParcel(Parcel in) {
-			Geocache complaint = new Geocache();
-			complaint.setNid(in.readString());
-			complaint.setTitle(in.readString());
-			complaint.setBody(in.readString());
-			complaint.setDistanceMeters(in.readDouble());
-			complaint.setCoordinates( (GeoPoint)in.readParcelable(GeoPoint.class.getClassLoader()) );
-			return complaint;
-		}
+        void producidoErrorAlCargarListaGeocachesCercanos(String error);
 
-		@Override
-		public Geocache[] newArray(int size) {
-			return new Geocache[size];
-		}
-	};
-	
-	
-	
-	
+        void seHaCapturadoGeocache(boolean res);
+
+        void producidoErrorAlCapturarGeocache(String error);
+    }
+
 
 }

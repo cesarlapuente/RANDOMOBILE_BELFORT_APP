@@ -1,5 +1,12 @@
 package eu.randomobile.pnrlorraine.mod_global.libraries.download;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.PowerManager;
+import android.util.Log;
+import android.widget.RelativeLayout;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,30 +16,15 @@ import java.net.URL;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.mod_global.Util;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.PowerManager;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 // usually, subclasses of AsyncTask are declared inside the activity class.
 // that way, you can easily modify the UI thread from here
 public class DownloadUrl extends AsyncTask<String, Integer, String> {
 
+    public static OnTaskCompletedInterface completedInterface;
     private Context context;
     private PowerManager.WakeLock mWakeLock;
-    
-	public static OnTaskCompletedInterface completedInterface;
 
-	public static interface OnTaskCompletedInterface {
-		public void seCompletoDescarga();
-		public void setProgresoDescarga(int progress);
-		public void inicioDescarga();
-	}
-	
     public DownloadUrl(Context context) {
         this.context = context;
         if(DownloadUrl.completedInterface != null)
@@ -42,7 +34,7 @@ public class DownloadUrl extends AsyncTask<String, Integer, String> {
     public DownloadUrl (Context context, RelativeLayout rl) {
     	this.context = context;
     }
-    
+
     // Obtiene el tamaño global de las imagenes a descargar.
     private int getFilesSizes(String... sUrl) {
     	int size = 0;
@@ -75,19 +67,19 @@ public class DownloadUrl extends AsyncTask<String, Integer, String> {
 	            URL url = new URL(sUrl[i]);
 	            connection = (HttpURLConnection) url.openConnection();
 	            connection.connect();
-	
+
 	            // expect HTTP 200 OK, so we don't mistakenly save error report
 	            // instead of the file
 	            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
 	                return "Server returned HTTP " + connection.getResponseCode()
 	                        + " " + connection.getResponseMessage();
 	            }
-	
-	            // this will be useful to display download percentage
+
+                // this will be useful to display download percentage
 	            // might be -1: server did not report the length
 	            //int fileLength = connection.getContentLength();
-	
-	            // download the file
+
+                // download the file
 	            input = connection.getInputStream();
 	            if (sUrl[i].endsWith(".tpk") || sUrl[i].endsWith(".TPK")) {
 	            	String idStr = sUrl[i].substring(sUrl[i].lastIndexOf('/') + 1);
@@ -119,8 +111,8 @@ public class DownloadUrl extends AsyncTask<String, Integer, String> {
 	                    input.close();
 	            } catch (IOException ignored) {
 	            }
-	
-	            if (connection != null)
+
+                if (connection != null)
 	                connection.disconnect();
 	        }
         }
@@ -137,13 +129,21 @@ public class DownloadUrl extends AsyncTask<String, Integer, String> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 	}
-	
-	@Override
+
+    @Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
 		// Informar al delegate
 		if(DownloadUrl.completedInterface != null){
     		DownloadUrl.completedInterface.seCompletoDescarga();
-		}   		
-	}
+        }
+    }
+
+    public interface OnTaskCompletedInterface {
+        void seCompletoDescarga();
+
+        void setProgresoDescarga(int progress);
+
+        void inicioDescarga();
+    }
 }

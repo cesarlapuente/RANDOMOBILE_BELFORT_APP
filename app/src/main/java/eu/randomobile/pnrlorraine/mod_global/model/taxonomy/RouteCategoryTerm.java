@@ -39,7 +39,6 @@ public class RouteCategoryTerm extends Term {
 		app.clienteDrupal.customMethodCallPost("taxonomy/routes", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
 
-				Log.d("Milog", "Respuesta de cargar categorias routes: " + response);
 
 				ArrayList<RouteCategoryTerm> listaCategorias = null;
 
@@ -49,7 +48,6 @@ public class RouteCategoryTerm extends Term {
 	                	JSONArray arrayRes = new JSONArray(response);
 	                	if(arrayRes != null){
 	                		if(arrayRes.length() > 0){
-	                			Log.d("Milog", "array devuelto contiene al menos 1 elemento");
 	                			listaCategorias = new ArrayList<RouteCategoryTerm>();
 	                		}
 
@@ -86,7 +84,6 @@ public class RouteCategoryTerm extends Term {
 
 				// Informar al delegate
 	    		if(RouteCategoryTerm.routeCategoriesInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			RouteCategoryTerm.routeCategoriesInterface.producidoErrorAlCargarListaCategoriasRutas("Error al cargar lista de pois");
 	    		}
 
@@ -96,7 +93,6 @@ public class RouteCategoryTerm extends Term {
 					public void onFailure(Throwable error) {
 				// Informar al delegate
 				if(RouteCategoryTerm.routeCategoriesInterface != null){
-	    			Log.d("Milog", "Antes de informar al delegate de un error: " + error.toString());
 	    			RouteCategoryTerm.routeCategoriesInterface.producidoErrorAlCargarListaCategoriasRutas(error.toString());
 	    		}
 			}
@@ -114,10 +110,10 @@ public class RouteCategoryTerm extends Term {
 	}
 
 
-	public static interface RouteCategoriesInterface {
-		public void seCargoListaCategoriasRutas(ArrayList<RouteCategoryTerm> routeCategories);
+	public interface RouteCategoriesInterface {
+		void seCargoListaCategoriasRutas(ArrayList<RouteCategoryTerm> routeCategories);
 
-		public void producidoErrorAlCargarListaCategoriasRutas(String error);
+		void producidoErrorAlCargarListaCategoriasRutas(String error);
 	}
 	
 	

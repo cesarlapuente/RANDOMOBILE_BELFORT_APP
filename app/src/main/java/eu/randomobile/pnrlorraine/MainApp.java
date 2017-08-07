@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
@@ -22,8 +21,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.Especie;
 import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 import eu.randomobile.pnrlorraine.mod_global.model.Route;
 import eu.randomobile.pnrlorraine.mod_offline.Offline;
-import eu.randomobile.pnrlorraine.mod_offline.OfflinePoi;
-import eu.randomobile.pnrlorraine.mod_offline.OfflineRoute;
 
 //import com.esri.android.runtime.ArcGISRuntime;
 
@@ -230,13 +227,19 @@ public class MainApp extends Application {
 	public void onCreate(){
 		super.onCreate();
 		ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud1476524168,none,YYPJD4SZ8LL2F5KHT065");
-		this.inicializarAplicacion();
+		//this.inicializarAplicacion();
 		System.loadLibrary("runtimecore_java");
 		//System.loadLibrary("rs.main"); //crash ...
-		System.loadLibrary("render_script_analysis");
+		//System.loadLibrary("render_script_analysis");
 		//initImageLoader();
 
 		dBHandler = new DBHandler(getApplicationContext(), null, null, 1, MainApp.this);
+	}
+
+	public void init() {
+		this.inicializarAplicacion();
+
+		System.loadLibrary("render_script_analysis");
 	}
 
 	
@@ -271,11 +274,8 @@ public class MainApp extends Application {
 		String domain = this.URL_SERVIDOR;
 		Long maxLifeTime = Long.valueOf(this.MAX_SESION_LIFETIME);
 		if (this.clienteDrupal == null) {
-			Log.d("Milog", "Cliente drupal es nulo. Voy a inicializarlo");
 			this.clienteDrupal = new Drupal7RESTClient(this,
 					preferencesKey, server, domain, maxLifeTime);
-		} else {
-			Log.d("Milog", "Cliente drupal no es nulo");
 		}
 		
 		// Inicializar la seguridad de drupal
@@ -298,8 +298,8 @@ public class MainApp extends Application {
 //		Offline.fillRoutesTable(this);
 //		OfflineRoute.cargaListaRutasOffline (this);
 //		OfflineRoute.fillRouteItem(this, "962");
-		OfflineRoute.fillRoutesTable(this);
-		OfflinePoi.fillPoisTable(this);
+		//OfflineRoute.fillRoutesTable(this);
+		//OfflinePoi.fillPoisTable(this);
 //		jsonString = Offline.extractJsonList (this, this.DRUPAL_TYPE_POI);
 //		jsonString = Offline.extractJsonList (this, this.DRUPAL_TYPE_ROUTE);
 //		jsonString = "";

@@ -1,46 +1,22 @@
 package eu.randomobile.pnrlorraine.mod_offline;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import eu.randomobile.pnrlorraine.MainApp;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.environment.GPS;
-import eu.randomobile.pnrlorraine.mod_global.libraries.download.DownloadUrl;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi;
-import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
-import eu.randomobile.pnrlorraine.mod_global.model.Route;
-import eu.randomobile.pnrlorraine.mod_global.model.Vote;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi.PoisInterface;
-import eu.randomobile.pnrlorraine.mod_global.model.Route.RoutesInterface;
-import eu.randomobile.pnrlorraine.mod_global.model.taxonomy.RouteCategoryTerm;
-import eu.randomobile.pnrlorraine.utils.JSONManager;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.PowerManager;
 import android.util.Log;
-import android.view.View;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import eu.randomobile.pnrlorraine.MainApp;
+import eu.randomobile.pnrlorraine.mod_global.libraries.download.DownloadUrl;
 
 // Clase para la funcionalidad Offline
 public class Offline {
@@ -367,10 +343,7 @@ public class Offline {
 	private static Boolean checkInVariable (String val, int max) {
 		if (val.equals("null"))
 			return true;
-		if (Integer.parseInt(val) < max)
-			return true;
-		else 
-			return false;
+		return Integer.parseInt(val) < max;
 	}
 	
 	private static Boolean checkKeyword (String keyword, String title, String body) {

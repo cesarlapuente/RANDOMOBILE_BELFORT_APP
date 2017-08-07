@@ -32,11 +32,9 @@ public class PoiCategoryTerm extends Term implements Serializable {
         HashMap<String, String> params = null;
         MainApp app = (MainApp) application;
 
-        Log.d("PoiCategoryTerm sais:", " <----------> Entrada detectada <---------->");
 
         app.clienteDrupal.customMethodCallPost("taxonomy/pois", new AsyncHttpResponseHandler() {
             public void onSuccess(String response) {
-                Log.d("Milog", "Respuesta de cargar categorias pois: " + response);
 
                 ArrayList<PoiCategoryTerm> listaCategorias = null;
 
@@ -46,7 +44,6 @@ public class PoiCategoryTerm extends Term implements Serializable {
 
                         if (arrayRes != null) {
                             if (arrayRes.length() > 0) {
-                                Log.d("Milog", "array devuelto contiene al menos 1 elemento");
 
                                 listaCategorias = new ArrayList<PoiCategoryTerm>();
                             }
@@ -84,7 +81,6 @@ public class PoiCategoryTerm extends Term implements Serializable {
 
                 // Informar al delegate
                 if (PoiCategoryTerm.poiCategoriesInterface != null) {
-                    Log.d("Milog", "Antes de informar al delegate de un error");
                     PoiCategoryTerm.poiCategoriesInterface.producidoErrorAlCargarListaCategoriasPois("Error al cargar lista de pois");
                 }
             }
@@ -92,7 +88,6 @@ public class PoiCategoryTerm extends Term implements Serializable {
             public void onFailure(Throwable error) {
                 // Informar al delegate
                 if (PoiCategoryTerm.poiCategoriesInterface != null) {
-                    Log.d("Milog", "Antes de informar al delegate de un error: " + error.toString());
                     PoiCategoryTerm.poiCategoriesInterface.producidoErrorAlCargarListaCategoriasPois(error.toString());
                 }
             }
@@ -114,9 +109,9 @@ public class PoiCategoryTerm extends Term implements Serializable {
         this.icon = icon;
     }
 
-    public static interface PoiCategoriesInterface {
-        public void seCargoListaCategoriasPois(ArrayList<PoiCategoryTerm> pois);
+    public interface PoiCategoriesInterface {
+        void seCargoListaCategoriasPois(ArrayList<PoiCategoryTerm> pois);
 
-        public void producidoErrorAlCargarListaCategoriasPois(String error);
+        void producidoErrorAlCargarListaCategoriasPois(String error);
     }
 }

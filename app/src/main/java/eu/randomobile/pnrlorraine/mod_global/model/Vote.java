@@ -244,14 +244,14 @@ public class Vote {
 		this.numVotes = numVotes;
 	}
 
-	public static interface VoteInterface {
-		public void seEnvioVoto(int countVotes, int avgResults);
+	public interface VoteInterface {
+		void seEnvioVoto(int countVotes, int avgResults);
 
-		public void producidoErrorAlVotar(String error);
+		void producidoErrorAlVotar(String error);
 
-		public void seCargoVoto(int countVotes, int avgResults);
+		void seCargoVoto(int countVotes, int avgResults);
 
-		public void producidoErrorAlCargarVoto(String error);
+		void producidoErrorAlCargarVoto(String error);
 	}
 	
 	

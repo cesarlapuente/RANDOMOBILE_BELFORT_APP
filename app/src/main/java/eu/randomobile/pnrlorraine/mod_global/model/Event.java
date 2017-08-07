@@ -1,21 +1,23 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.Application;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import eu.randomobile.pnrlorraine.MainApp;
 
 public class Event {
-	private String nid;
+    // Interface para comunicarse con las llamadas asíncronas
+    public static EventsInterface eventsInterface;
+    private String nid;
 	private String title;
 	private String body;
 	private String dateStart;
@@ -23,33 +25,15 @@ public class Event {
 	private String mainImage;
 	private String nidPoiRelated;
 
-	// Interface para comunicarse con las llamadas asíncronas
-	public static EventsInterface eventsInterface;
-
-	public static interface EventsInterface {
-		public void cargarEventos(List<Event> events);
-
-		public void producidoErrorAlCargarListaEvents(String error);
-
-		public void cargarEvento(Event event);
-
-		public void producidoErrorAlCargarEvent(String error);
-	}
-
 	public static void cargarListaEvents(Application application, String nidPoi) {
 		HashMap<String, String> params = new HashMap<String, String>();
 		if (nidPoi != null && !nidPoi.equals("")) {
 			params.put("nid", nidPoi);
 		}
-		Log.d("Milog",
-				"Parametros enviados a event/get_list: " + params.toString());
 		MainApp app = (MainApp) application;
 		app.clienteDrupal.customMethodCallPost("event/get_list",
 				new AsyncHttpResponseHandler() {
 					public void onSuccess(String response) {
-
-						Log.d("Milog", "Respuesta de cargar eventos: "
-								+ response);
 
 						List<Event> listaEvents = null;
 
@@ -59,8 +43,6 @@ public class Event {
 								JSONArray arrayRes = new JSONArray(response);
 								if (arrayRes != null) {
 									if (arrayRes.length() > 0) {
-										Log.d("Milog",
-												"array devuelto contiene al menos 1 elemento");
 										listaEvents = new ArrayList<Event>();
 									}
 
@@ -129,8 +111,6 @@ public class Event {
 
 						// Informar al delegate
 						if (Event.eventsInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error");
 							Event.eventsInterface
 									.producidoErrorAlCargarListaEvents("Error al cargar lista de pois");
 						}
@@ -140,9 +120,6 @@ public class Event {
 					public void onFailure(Throwable error) {
 						// Informar al delegate
 						if (Event.eventsInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error: "
-											+ error.toString());
 							Event.eventsInterface
 									.producidoErrorAlCargarListaEvents(error
 											.toString());
@@ -162,7 +139,6 @@ public class Event {
 		app.clienteDrupal.customMethodCallPost("event/get_item",
 				new AsyncHttpResponseHandler() {
 					public void onSuccess(String response) {
-						Log.d("Milog", "Exito al cargar event: " + response);
 
 						if (response != null && !response.equals("")) {
 
@@ -217,8 +193,6 @@ public class Event {
 
 						// Informar al delegate
 						if (Event.eventsInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error");
 							Event.eventsInterface
 									.producidoErrorAlCargarEvent("Error al cargar event");
 						}
@@ -228,9 +202,6 @@ public class Event {
 					public void onFailure(Throwable error) {
 						// Informar al delegate
 						if (Event.eventsInterface != null) {
-							Log.d("Milog",
-									"Antes de informar al delegate de un error: "
-											+ error.toString());
 							Event.eventsInterface
 									.producidoErrorAlCargarEvent(error
 											.toString());
@@ -294,6 +265,16 @@ public class Event {
 
 	public void setNidPoiRelated(String nidPoiRelated) {
 		this.nidPoiRelated = nidPoiRelated;
-	}
+    }
+
+    public interface EventsInterface {
+        void cargarEventos(List<Event> events);
+
+        void producidoErrorAlCargarListaEvents(String error);
+
+        void cargarEvento(Event event);
+
+        void producidoErrorAlCargarEvent(String error);
+    }
 
 }

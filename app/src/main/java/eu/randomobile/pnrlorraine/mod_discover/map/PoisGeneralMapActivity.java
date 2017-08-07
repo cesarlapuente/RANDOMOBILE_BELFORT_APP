@@ -53,15 +53,13 @@ import eu.randomobile.pnrlorraine.mod_offline.database.PoiDAO;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 import eu.randomobile.pnrlorraine.mod_search.PoisSearchActivity;
 
-//import eu.randomobile.pnrlorraine.mod_discover.ra.MetaIORAActivity;
 
 public class PoisGeneralMapActivity extends Activity implements
-        ComboCapasMapaInterface/*, PoisInterface, PoisModeOfflineInterface */ {
+        ComboCapasMapaInterface {
 
     public static final String PARAM_KEY_MOSTRAR = "mapa_mostrar";
 
     public static final int PARAM_MAPA_GENERAL_MOSTRAR_POIS = 200;
-    public static final int PARAM_MAPA_GENERAL_MOSTRAR_RUTAS = 201;
     MainApp app;
     ImageMap mImageMap = null;
     MapView mapa;
@@ -78,7 +76,6 @@ public class PoisGeneralMapActivity extends Activity implements
     PictureMarkerSymbol info;
     PictureMarkerSymbol icono;
     PictureMarkerSymbol naturaleza;
-    private int paramMapaGeneralMostrar;
     private PoiDAO poiDAO;
     private ProgressBar progressBar;
 
@@ -108,7 +105,6 @@ public class PoisGeneralMapActivity extends Activity implements
         mImageMap.setAttributes(true, false, (float) 1.0, "mapa_pois");
         mImageMap.setImageResource(R.drawable.mapa_pois);
 
-        //icono = new PictureMarkerSymbol((BitmapDrawable) ResourcesCompat.getDrawable(getResources(),R.drawable.poi_icono, null));
         icono = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
                 R.drawable.poi_icono)));
         hotel = new PictureMarkerSymbol(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),
@@ -144,14 +140,10 @@ public class PoisGeneralMapActivity extends Activity implements
         ArcGISMap mapArgis = new ArcGISMap(basemap);
         mapa.setMap(mapArgis);
         mapa.setViewpointGeometryAsync(envelope, 60);
-        //mapa.getGraphicsOverlays().clear();
 
-        // Configurar formulario
-        //this.inicializarMapa();
 
         // Escuchar eventos
         this.escucharEventos();
-        //representarGeometrias();
     }
 
     private List<Poi> filterPois() {
@@ -179,13 +171,11 @@ public class PoisGeneralMapActivity extends Activity implements
     @Override
     protected void onStop() {
         super.onStop();
-        //mapa.getGraphicsOverlays().clear();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //mapa.getGraphicsOverlays().clear();
         hotel = null;
         restaurante = null;
         descubrir = null;
@@ -223,7 +213,6 @@ public class PoisGeneralMapActivity extends Activity implements
     }
 
     public void capturarControles() {
-        // mapa = (MapView) findViewById(R.id.mapa);
         btnSeleccionarCapaBase = (Button) findViewById(R.id.btnAbrirCapas);
         panelCargando = (RelativeLayout) findViewById(R.id.panelCargando);
     }
@@ -258,17 +247,6 @@ public class PoisGeneralMapActivity extends Activity implements
         startActivity(intent);
     }
 
-   /* public void inicializarMapa() {
-
-        ponerCapaBase();
-
-        capaGeometrias = new GraphicsOverlay();
-        //mapa.getGraphicsOverlays().add(capaGeometrias);
-
-        // Tipografias
-        Typeface tfBubleGum = Util.fontBubblegum_Regular(this);
-        this.btnSeleccionarCapaBase.setTypeface(tfBubleGum);
-    }*/
 
     public void escucharEventos() {
 
@@ -395,29 +373,6 @@ public class PoisGeneralMapActivity extends Activity implements
 
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return;
-        }
-        String name = data.getStringExtra("name");
-        if (arrayFilteredPois == null)
-            arrayFilteredPois = new ArrayList<Poi>();
-        arrayFilteredPois.clear();
-        filterPois();
-        Cache.filteredPois = arrayFilteredPois;
-        capaGeometrias.getGraphics().clear();
-        if (arrayFilteredPois.size() > 0)
-            seCargoListaPois(arrayFilteredPois);
-    }*/
-
-    /*private void filterPois() {
-        if (arrayPois != null)
-            for (int i = 0; i < arrayPois.size(); i++) {
-                if (PoisSearch.checkCriteria(arrayPois.get(i), this))
-                    arrayFilteredPois.add(arrayPois.get(i));
-            }
-    }*/
 
     public void seCerroComboCapas(Basemap basemap) {
         if (!this.basemap.equals(basemap)) {
@@ -463,24 +418,19 @@ public class PoisGeneralMapActivity extends Activity implements
                     case 50:
                     case 51: // Hébergements
                         sym = hotel;
-                        //claseNombre = this.getResources().getString(R.string.alojamientos);
                         break;
                     case 30: //Patrimoine naturel
                         sym = naturaleza;
-                        //claseNombre = this.getResources().getString(R.string.lugar_de_interes_natural);
                         break;
                     case 36:  //Monuments
                     case 28:
                         sym = descubrir;
-                        //claseNombre = this.getResources().getString(R.string.lugar_de_interes_cultural);
                         break;
                     case 27: //Restauracion
                         sym = restaurante;
-                        //claseNombre = this.getResources().getString(R.string.restauracion);
                         break;
                     case 25: //Offices de tourisme
                         sym = info;
-                        //claseNombre = this.getResources().getString(R.string.servicios_oficinas_de_turismo);
                         break;
                     default:
                         sym = icono;
@@ -508,57 +458,6 @@ public class PoisGeneralMapActivity extends Activity implements
         }
     }
 
-    /*@Override
-    public void seCargoListaPois(ArrayList<Poi> pois) {
-
-        if (arrayFilteredPois == null)
-            arrayPois = pois;
-
-        Log.d("Milog", "Se carg� lista pois");
-        if (pois != null) {
-            Log.d("Milog", "Lista pois no es nulo");
-
-            for (int i = 0; i < pois.size(); i++) {
-                if (!pois.get(i).getCategory().getTid().equals("52")) {
-                    Poi poi = pois.get(i);
-                    // Por cada poi obtener sus coordenadas y construir un objeto
-                    // Point de Arcgis
-                    GeoPoint gp = poi.getCoordinates();
-                    Point puntoProyectado = new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());//(Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()),
-                    //          SpatialReferences.getWgs84());
-                    ArrayList<Object> geometrias = new ArrayList<Object>();
-                    geometrias.add(puntoProyectado);
-
-                    String cat = "poi";
-                    if (poi.getCategory() != null) {
-                        cat = poi.getCategory().getTid();
-                    }
-
-
-                    String icon = null;
-                    if (poi.getCategory() != null && poi.getCategory().getTid() != null) {
-                        icon = poi.getCategory().getIcon();
-                    }
-
-                    dibujarGeometrias(geometrias, poi.getTitle(), poi.getClass().getName(),
-                            poi.getNid(), cat, icon, Double.toString(poi.getDistanceMeters()));
-                }
-            }
-
-            centrarEnExtentCapa(capaGeometrias);
-        }
-
-        // Quitar el panel de cargando
-        panelCargando.setVisibility(View.GONE);
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaPois(String error) {
-        // Quitar el panel de cargando
-        panelCargando.setVisibility(View.GONE);
-    }*/
-
     private View getViewForCallout(final String nombre, String clase, final String nid, String cat, final String distanceMeters) {
         View view = LayoutInflater.from(getApplicationContext()).inflate(
                 R.layout.mod_discover__layout_callout_mapa, null);
@@ -584,377 +483,7 @@ public class PoisGeneralMapActivity extends Activity implements
             }
         });
 
-        // Ponerle las propiedades necesarias
-        /*if (clase.equals(Poi.class.getName())) {
-            // Poner las propiedades en el layout
-
-        } else if (clase.equals(Route.class.getName())) {
-            // Poner las propiedades en el layout
-            lblNombre.setText(nombre);
-            lblCategoria.setText("Route");
-
-            // Escuchar el evento del click del bot�n
-            btnCerrarDialogo.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    Intent intent = new Intent(PoisGeneralMapActivity.this,
-                            RouteDetailActivity.class);
-                    intent.putExtra(PoiDetailActivity.PARAM_KEY_NID, nid);
-                    startActivity(intent);
-                    callout.dismiss();
-                }
-            });
-        }*/
-
         return view;
     }
-
-    /*private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon, final String distanceMeters) {
-
-        int polygonFillColor = Color.rgb(55, 132, 218);
-        int polygonBorderColor = Color.rgb(27, 87, 187);
-        //int pointColor = Color.rgb(206, 240, 5);
-        if (geometrias != null) {
-            for (int j = 0; j < geometrias.size(); j++) {
-                Object geomObj = geometrias.get(j);
-                Geometry geo = null;
-                Symbol symb = null;
-
-                final HashMap<String, Object> attrs = new HashMap<String, Object>();
-                attrs.put("clase", paramNombreClase);
-                attrs.put("nid", paramNid);
-                attrs.put("nombre", paramNombre);
-                //attrs.put("cat", paramCat);
-                attrs.put("distanceMeters", distanceMeters);
-
-                if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Polygon.class.getName())) {
-                    Polygon polygon = (Polygon) geomObj;
-                    SimpleFillSymbol sym = new SimpleFillSymbol();
-                    sym.setColor(polygonFillColor);
-                    sym.setOutline(new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, polygonBorderColor, 8));
-                    *//*Graphic gr = new Graphic(polygon, attrs, sym);
-                    capaGeometrias.getGraphics().add(gr);*//*
-
-                    geo = polygon;
-                    symb = sym;
-
-                } else if (geomObj != null
-                        && geomObj.getClass().getName()
-                        .equals(Point.class.getName())) {
-
-
-                    final Point point = (Point) geomObj;
-
-                    PictureMarkerSymbol sym = null;
-
-                    switch (paramCat) {
-                        case "26":
-                            attrs.put("cat", "Hébergement collectif");
-                            sym = hotel;
-                            break;
-                        case "47":
-                            attrs.put("cat", "Chambre d’hôtes");
-                            sym = hotel;
-                            break;
-                        case "48":
-                            attrs.put("cat", "Hôtellerie");
-                            sym = hotel;
-                            break;
-                        case "49":
-                            attrs.put("cat", "Hôtellerie de plein air");
-                            sym = hotel;
-                            break;
-                        case "50":
-                            attrs.put("cat", "Meublés");
-                            sym = hotel;
-                            break;
-                        case "51":
-                            attrs.put("cat", "Hotel");
-                            sym = hotel;
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_hotel));
-                            break;
-                        case "36":
-                            attrs.put("cat", "Monument");
-                            sym = descubrir;
-                            break;
-                        case "28":
-                            attrs.put("cat", "Musée");
-                            sym = descubrir;
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_descubrir));
-                            break;
-                        case "27":
-                            attrs.put("cat", "Restauration");
-                            sym = restaurante;
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_restaurante));
-                            break;
-                        case "25":
-                            attrs.put("cat", "Office de tourisme");
-                            sym = info;
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.icono_info));
-                            break;
-                        case "30":
-                            sym = naturaleza;
-                            attrs.put("cat", this.getResources().getString(R.string.lugar_de_interes_natural));
-                            break;
-                        default:
-                            sym = icono;
-                            attrs.put("cat", "Point d'interet");
-                            //sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.poi_icono));
-                    }
-                    *//*Graphic gr = new Graphic(point, attrs, sym );
-                    capaGeometrias.getGraphics().add(gr);*//*
-
-                    geo = point;
-                    symb = sym;
-
-                    // Centrar en el extent de la capa
-                    //centrarEnExtentCapa(capaGeometrias);
-
-                } else if (geomObj != null
-                        && geomObj.getClass().isInstance(Polyline.class)) {
-                    Polyline polyline = (Polyline) geomObj;
-
-                    int color = Color.BLUE;
-
-                    *//*Graphic gr = new Graphic(polyline, attrs, new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10));
-                    capaGeometrias.getGraphics().add(gr);*//*
-
-                    geo = polyline;
-                    symb = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, color, 10);
-
-                }
-
-                Graphic gr = null;
-
-                if (geo != null)
-                    gr = new Graphic(geo, attrs, symb);
-                else
-                    Log.e("thib", "geo null  ");
-                try {
-                    capaGeometrias.getGraphics().add(gr);
-
-                } catch (Exception e) {
-                    Log.e("Error Graphics", "dibujarGeometrias: ", e);
-                    this.onRestart();
-
-                    *//*capaGeometrias.getGraphics().remove(gr);
-                    Log.e("thib", "echec add " + gr.getAttributes().toString() + "\n"
-                            + symb.equals(hotel) + "\n" + symb.equals(restaurante) + "\n"
-                            + symb.equals(descubrir) + "\n" + symb.equals(icono) + "\n"
-                            + symb.equals(info) + "\n" + geo.toJson() + "\n", e);*//*
-                }
-                //capaGeometrias.getGraphics().add(gr);
-            }
-        }
-    }*/
-
-    /*private void centrarEnExtentCapa(GraphicsOverlay capa) {
-        // Hacer zoom a la capa de geometrias
-        Envelope env ;
-        Envelope NewEnv = capa.getExtent();
-        if (capa.getGraphics() != null)
-            for (int i=0; i<capa.getGraphics().size(); i++) {
-                Geometry geom = capa.getGraphics().get(i).getGeometry();
-                env = geom.getExtent();
-                //geom.queryEnvelope(env);
-                NewEnv.createFromInternal(env.getInternal());
-                //NewEnv.merge(env);
-            }
-        this.mapa.setViewpointGeometryAsync(NewEnv, 100);
-        //this.mapa.setExtent(NewEnv, 100);
-    }*/
-
-
-    /*public void ponerCapaBase() {
-        *//* Codigo de prueba *//*
-        if (!DataConection.hayConexion(this)) {
-            String basemapurl = Util.getUrlGeneralBaseLayerOffline(app);
-            ArcGISTiledLayer baseLayer;
-            baseLayer = new ArcGISTiledLayer(basemapurl);
-            mapa.getMap().getOperationalLayers().add(baseLayer);
-            mapa.getMap().setMaxScale(1000);
-            return;
-        }
-		*//* Fin de codigo de prueba *//*
-        CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-        Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-        Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
-
-        Object capaBase = capaSeleccionada.getMapLayer();
-        Log.d("Milog", "Object capaBase");
-
-        // Correcci�n, para que no cambie la capa base cuando la seleccionada es
-        // la misma que ya estaba (ahorra datos)
-        mapa.setMap(new ArcGISMap(Basemap.Type.IMAGERY, 56.008993, -2.725301, 10));
-        LayerList capas = mapa.getMap().getOperationalLayers();
-        if (capas != null) {
-            Log.d("Milog", "capas no es nulo");
-            if (capas.size() > 0) {
-
-                Log.d("Milog", "Hay alguna capa");
-                Object capa0 = capas.get(0);
-                Log.d("Milog", "Tenemos capa0");
-                // si la capa base seleccionada es del mismo tipo que la capa 0
-                if (capaBase.getClass().getName()
-                        .equals(capa0.getClass().getName())) {
-                    Log.d("Milog",
-                            "La clase de la capa base es igual que la clase de la capa0");
-                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
-                        Log.d("Milog", "capaBase es de tipo BING");
-                        BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
-                        BingMapsLayer capa0Casted = (BingMapsLayer) capa0;
-
-                        if (capaBaseCasted.getMapStyle().equals(
-                                capa0Casted.getMapStyle())) {
-                            return;
-                        } else {
-                            mapa.removeLayer(0);
-                            Log.d("Milog",
-                                    "PUNTO INTERMEDIO BING: el mapa tiene "
-                                            + mapa.getLayers().length
-                                            + " capas");
-                        }
-                    } else*//* if (capaBase.getClass() == ArcGISTiledLayer.class) {
-                        Log.d("Milog", "capaBase es de tipo TiledMap");
-                        ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
-                        ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
-                        String strUrlCapaBaseCasted = capaBaseCasted.getUri()
-                                .toString();
-                        String strUrlCapa0Casted = capa0Casted.getUri()
-                                .toString();
-                        if (strUrlCapaBaseCasted.equals(strUrlCapa0Casted)) {
-                            return;
-                        } else {
-                            mapa.getMap().getOperationalLayers().remove(0);
-                            Log.d("Milog",
-                                    "PUNTO INTERMEDIO TILED: el mapa tiene "
-                                            + mapa.getMap().getOperationalLayers().size()
-                                            + " capas");
-                        }
-                    }
-                    Log.d("Milog", "La capa 0 es de clase "
-                            + capa0.getClass().getName());
-                } else {// si la capa base seleccionada no es del mismo tipo que
-                    // la capa 0
-
-                    *//*if (capaBase.getClass() == BingMapsLayer.class) {
-                        mapa.removeLayer(0);
-                    } else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
-                        mapa.removeLayer(0);
-                    }*//*
-                }
-            }
-            // btnAbrirCapas.setEnabled(true);
-            if (capaBase.getClass() == ArcGISTiledLayer.class) {
-
-                if (capas.size() > 0) {
-                    mapa.getMap().getOperationalLayers().add(0, (ArcGISTiledLayer) capaBase);
-                } else {
-                    mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
-                }
-
-            } *//*else if (capaBase.getClass() == BingMapsLayer.class) {
-
-                if (capas.length > 0) {
-                    mapa.addLayer((BingMapsLayer) capaBase, 0);
-                } else {
-                    mapa.addLayer((BingMapsLayer) capaBase);
-                }
-
-            } *//*else {
-                // otro tipo de capa
-            }
-
-            // app.capaBaseSeleccionada = capaSeleccionada;
-           // Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-             //       + " capas");
-        }
-    }*/
-
-    /*public int getParamMapaGeneralMostrar() {
-        return paramMapaGeneralMostrar;
-    }
-*/
-    /*public void setParamMapaGeneralMostrar(int paramMapaGeneralMostrar) {
-        this.paramMapaGeneralMostrar = paramMapaGeneralMostrar;
-    }*/
-
-    /*@Override
-    public void seCargoPoi(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoi(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarListaPoisOffline(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCargoPoiOffline(Poi poi) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void producidoErrorAlCargarPoiOffline(String error) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void seCargoListaPoisOffline(ArrayList<Poi> pois) {
-        // TODO Auto-generated method stub
-        if (pois != null) {
-            this.arrayPois = pois;
-            Cache.arrayPois = pois;
-            if (Cache.hashMapPois == null) {
-                Cache.iniHashMapPois();
-            }
-            seCargoListaPois(pois);
-            // poiAdaptador = new ListPoisAdapter(this, arrayPois);
-            // listaPois.setAdapter(poiAdaptador);
-        }
-        panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaPois");
-
-    }*/
-
-    /**
-     * Location listener propio
-     *
-     * @author
-     */
-    /*private class MyLocationListener implements LocationDisplay.LocationChangedListener {
-
-        public MyLocationListener() {
-            super();
-        }
-
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-            if (locationChangedEvent.getLocation() == null)
-                return;
-        }
-    }*/
 
 }

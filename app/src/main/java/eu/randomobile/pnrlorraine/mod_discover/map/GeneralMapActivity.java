@@ -8,7 +8,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -116,7 +115,6 @@ public class GeneralMapActivity extends Activity implements
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		Log.d("Milog", "Cambio la configuracion");
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -182,7 +180,6 @@ public class GeneralMapActivity extends Activity implements
 					public void run() {
 						try {
 							if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
-                                Log.d("Milog", "Hay graficos en la zona pulsada");
                                 List lr = graphicsIDS.get();
 
                                 Graphic gr = capaGeometrias.getGraphics().get(capaGeometrias.getGraphics().indexOf(lr.get(0)));
@@ -206,7 +203,6 @@ public class GeneralMapActivity extends Activity implements
                                 }
 
                             } else {
-                                Log.d("Milog", "No hay graficos en la zona pulsada");
                                 if (callout != null && callout.isShowing()) {
                                     callout.dismiss();
                                 }
@@ -283,9 +279,7 @@ public class GeneralMapActivity extends Activity implements
 	}
 
 	public void seCerroComboCapas(Basemap basemap) {
-		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
-		Log.d("Milog", "Despues de poner capa base");
 	}
 
 	private void representarGeometrias() {
@@ -343,9 +337,7 @@ public class GeneralMapActivity extends Activity implements
 		
 		arrayPois = pois;
 		
-		Log.d("Milog", "Se carg— lista pois");
 		if (pois != null) {
-			Log.d("Milog", "Lista pois no es nulo");
 
 			for (int i = 0; i < pois.size(); i++) {
 				Poi poi = pois.get(i);
@@ -406,7 +398,6 @@ public class GeneralMapActivity extends Activity implements
 			        
 			        // Poner el color en funci—n de la ruta (igual que en en los PDF de Alto çgueda)
 			        if(route.getNid() != null){
-			        	Log.d("Milog", "Nid ruta: " + route.getNid() );
 			        	if(route.getNid() .equals("885")){
 			        		color = Color.rgb(43, 132, 62);
 			        	}else if(route.getNid() .equals("887")){
@@ -447,16 +438,12 @@ public class GeneralMapActivity extends Activity implements
 	private View getViewForCallout(String nombre, String clase, final String nid, String cat) {
 		View view = LayoutInflater.from(getApplicationContext()).inflate(
 				R.layout.mod_discover__layout_callout_mapa, null);
-		Log.d("Milog", "1");
 		final TextView lblNombre = (TextView) view
 				.findViewById(R.id.lblNombrePunto);
-		Log.d("Milog", "2");
 		final TextView lblCategoria = (TextView) view
 				.findViewById(R.id.lblCategoriaPunto);
-		Log.d("Milog", "3");
 		final Button btnCerrarDialogo = (Button) view
 				.findViewById(R.id.btnVerFichaPunto);
-		Log.d("Milog", "4");
 
 		// Ponerle las propiedades necesarias
 		if (clase.equals(Poi.class.getName())) {
@@ -533,12 +520,10 @@ public class GeneralMapActivity extends Activity implements
 						
 						// Ejecucion pesada
 						protected Integer doInBackground(Integer... params) {
-							Log.d("Milog", "URL Icono: " + urlIcon);
 							if(urlIcon != null){
 								try {
 									sym = new PictureMarkerSymbol(urlIcon);
 								} catch (Exception e) {
-									Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
 									sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
 								}
 							}else{
@@ -578,7 +563,7 @@ public class GeneralMapActivity extends Activity implements
 			Geometry geom = capa.getGraphics().get(i).getGeometry();
 			env = geom.getExtent();
 			//geom.queryEnvelope(env);
-			NewEnv.createFromInternal(env.getInternal());
+			Envelope.createFromInternal(env.getInternal());
 			//NewEnv.merge(env);
 		}
 
@@ -587,27 +572,19 @@ public class GeneralMapActivity extends Activity implements
 
 	public void ponerCapaBase() {
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
 
 		// Corrección, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
-			Log.d("Milog", "capas no es nulo");
 			if (capas.size() > 0) {
 
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
-					Log.d("Milog",
-							"La clase de la capa base es igual que la clase de la capa0");
 					/*if (capaBase.getClass() == BingMapsLayer.class) {
 						Log.d("Milog", "capaBase es de tipo BING");
 						BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
@@ -624,7 +601,6 @@ public class GeneralMapActivity extends Activity implements
 											+ " capas");
 						}
 					} else*/ if (capaBase.getClass() == ArcGISTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
 						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
@@ -635,14 +611,8 @@ public class GeneralMapActivity extends Activity implements
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getMap().getOperationalLayers().size()
-											+ " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase "
-							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
 						// la capa 0
 					mapa.getMap().getOperationalLayers().remove(0);
@@ -676,9 +646,6 @@ public class GeneralMapActivity extends Activity implements
 			}
 
 			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-
-					+ " capas");
 		}
 	}
 

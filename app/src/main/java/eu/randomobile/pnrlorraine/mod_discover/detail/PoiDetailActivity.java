@@ -5,14 +5,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.util.Linkify;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -24,11 +22,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
-import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
@@ -44,7 +40,6 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,13 +68,12 @@ import eu.randomobile.pnrlorraine.mod_share.Share;
 import eu.randomobile.pnrlorraine.mod_vote.VoteActivity;
 
 
-public class PoiDetailActivity extends Activity /*implements PoisInterface, PoisModeOfflineInterface, LocationListener, OnTaskCompletedInterface*/ {
+public class PoiDetailActivity extends Activity {
 	public static final String PARAM_KEY_NID = "nid";
 	public static final String PARAM_KEY_DISTANCE = "distance";
 	public static final String PARAM_KEY_DESNIVEL = "desnivel";
 	public static final String PARAM_KEY_NUMBERVOTES = "nvotos";
 	public static final String PARAM_KEY_VALORATION = "valoracion";
-	private static final long MIN_TIME_BW_UPDATES = 50*1000;
 	LocationManager locationManager;
 
 	String paramNid;
@@ -108,7 +102,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 	TextView lblDescripcion;
 	TextView lblSectionValoracion;
 	ImageView imgViewValoracion;
-	// RelativeLayout layoutVerEnMapa;
 	ImageButton btnValorar;
 	Button btnCompartir;
 	ImageButton btnImgs;
@@ -165,7 +158,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 		escucharEventos();
 		inicializarForm();
 		inicializarMapa();
-		recargarDatos();
 	}
 
 	public void onResume() {
@@ -367,11 +359,7 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 		
 		btnMenuMasTelecarga.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				//layoutBotonesMenuMas.setVisibility(View.GONE);
 				panelCargando.setVisibility(View.VISIBLE);
-				/*DownloadUrl.completedInterface = PoiDetailActivity.this;
-				OfflinePoi.poisInterface = PoiDetailActivity.this;
-				OfflinePoi.fillPoisItem(app, miPoi.getNid());*/
 			}
 		});
 		btnMenuMasValorar.setOnClickListener(new OnClickListener() {
@@ -400,27 +388,11 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 			@Override
 			public void run() {
 				mapa.getLocationDisplay().startAsync();
-				mapa.getLocationDisplay().setAutoPanMode(LocationDisplay.AutoPanMode.OFF);//.setAutoPan(false);
-
-				/*if(locationManager == null){
-					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				}
-				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 10, PoiDetailActivity.this);
-				*///mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude()), 5);
+				mapa.getLocationDisplay().setAutoPanMode(LocationDisplay.AutoPanMode.OFF);
 				mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 10000));
 			}
 		});
 
-	}
-
-	private void representarPunto(){
-		if(ubicacionPunto != null){
-			Point puntoProyectado = (Point) GeometryEngine.project(new Point(ubicacionPunto.getLongitude(), ubicacionPunto.getLatitude()), SpatialReference.create(102100));
-			int pointColor = Color.MAGENTA;
-			SimpleMarkerSymbol sym = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, pointColor, 10);
-		    Graphic gr = new Graphic(puntoProyectado, null, sym );
-			capaGeometrias.getGraphics().add(gr);
-		}
 	}
 
 	@SuppressLint("NewApi")
@@ -432,20 +404,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 				ab.hide();
 			}
 		}
-		Typeface tfBubleGum = Util.fontBubblegum_Regular(this);
-		Typeface tfBentonBold = Util.fontBenton_Bold(this);
-		Typeface tfBentonBoo = Util.fontBenton_Boo(this);
-
-		/*
-		lblSeccionCategoria.setTypeface(tfBentonBoo);
-		lblCategoria.setTypeface(tfBentonBold);
-		lblSeccionDistancia.setTypeface(tfBentonBoo);
-		lblDistancia.setTypeface(tfBentonBold);
-		lblSeccionDesnivel.setTypeface(tfBentonBoo);
-		lblDesnivel.setTypeface(tfBentonBold);
-		// lblVerEnMapa.setTypeface(tfBubleGum);
-		lblDescripcion.setTypeface(tfBentonBoo);
-		*/
 
 		panelCargando.setVisibility(View.GONE);
 	}
@@ -454,29 +412,8 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 
 		ponerCapaBase();
 
-
-
 		capaGeometrias = new GraphicsOverlay();
 		mapa.getGraphicsOverlays().add(capaGeometrias);
-		//mapa.setScale(5000);
-		//centrarEnExtentCapa(capaGeometrias);
-	}
-
-	private void recargarDatos() {
-		/*if (DataConection.hayConexion(this)) {
-			// Si hay conexi�n, recargar los datos
-			panelCargando.setVisibility(View.VISIBLE);
-			Poi.poisInterface = this;
-			Poi.cargarPoi(app, paramNid);
-
-		} else {
-			OfflinePoi.poisInterface = this;
-			OfflinePoi.cargarPoiOffline(app, paramNid);
-			// Si no hay conexi�n a Internet
-			Util.mostrarMensaje(this,
-					getResources().getString(R.string.mod_global__sin_conexion_a_internet),
-					getResources().getString(R.string.mod_global__no_dispones_de_conexion_a_internet));
-		}*/
 	}
 
 	private void cargaActivityHome() {
@@ -514,14 +451,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 
 			// Poner el t�tulo
 			this.txtTitulo.setText(miPoi.getTitle());
-
-			// Poner la categor�a
-			/*if (this.miPoi.getCategory() != null) {
-				this.lblCategoria.setText(this.miPoi.getCategory().getName());
-
-			} else {
-				this.lblCategoria.setText(getResources().getString(R.string.mod_global__sin_datos));
-			}*/
 
 			// Poner la imagen de categoria
 			if (miPoi.getCat() != -1) {
@@ -648,20 +577,12 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 		panelCargando.setVisibility(View.GONE);
 	}
 
-	public void producidoErrorAlCargarPoi(String error) {
-		Log.d("Milog", "producidoErrorAlCargarPoi: " + error);
-		panelCargando.setVisibility(View.GONE);
-		Util.mostrarMensaje(this, getResources().getString(R.string.mod_global__error), getResources().getString(R.string.mod_global__error));
-		finish();
-	}
-
 	private void ponerPoiEnMapa(Poi poi) {
 		capaGeometrias.getGraphics().clear();
 		GeoPoint gp = poi.getCoordinates();
 		ubicacionPunto = gp;
 
-		//Point puntoProyectado = (Point) GeometryEngine.project(new Point(gp.getLongitude(), gp.getLatitude()), SpatialReferences.getWgs84());
-		Point puntoProyectado = (Point) new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());
+		Point puntoProyectado = new Point(gp.getLongitude(), gp.getLatitude(), SpatialReferences.getWgs84());
 
 		ArrayList<Object> geometrias = new ArrayList<Object>();
 		geometrias.add(puntoProyectado);
@@ -681,7 +602,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 	private void dibujarGeometrias(ArrayList<Object> geometrias, String paramNombre, String paramNombreClase, String paramNid, String paramCat, final String urlIcon) {
 		int polygonFillColor = Color.rgb(55, 132, 218);
 		int polygonBorderColor = Color.rgb(27, 87, 187);
-		// int pointColor = Color.rgb(206, 240, 5);
 
 		if (geometrias != null) {
 			for (int j = 0; j < geometrias.size(); j++) {
@@ -708,7 +628,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 
 					PictureMarkerSymbol sym = null;
 
-					Log.d("ParamCat:", paramCat.toString());
 
                     switch (paramCat) {
                         case "25": //Offices de tourisme
@@ -739,11 +658,6 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 					Graphic gr = new Graphic(point, attrs, sym);
 					capaGeometrias.getGraphics().add(gr);
 
-					// Centrar en el extent de la capa
-					// centrarEnExtentCapa(capaGeometrias);l
-
-					// Centrar en el poi y hacer zoom
-					//mapa.setViewpointAsync(new Point(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude()));
 					mapa.setViewpointAsync(new Viewpoint(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), 5));
 
 				} else if (geomObj != null && geomObj.getClass().getName().equals(Polyline.class.getName())) {
@@ -769,29 +683,20 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 		}
 
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
 
 		// Correcci�n, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
-			Log.d("Milog", "capas no es nulo");
 			if (capas.size() > 0) {
 
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
-					Log.d("Milog",
-							"La clase de la capa base es igual que la clase de la capa0");
 					 if (capaBase.getClass() == ArcGISVectorTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						 ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
 						 ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri().toString();
@@ -800,25 +705,10 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											+ mapa.getMap().getOperationalLayers().size()
-											+ " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase "
-							+ capa0.getClass().getName());
-				} else {// si la capa base seleccionada no es del mismo tipo que
-						// la capa 0
-/*
-					if (capaBase.getClass() == BingMapsLayer.class) {
-						mapa.removeLayer(0);
-					} else if (capaBase.getClass() == ArcGISTiledMapServiceLayer.class) {
-						mapa.removeLayer(0);
-					}*/
 				}
 			}
-			// btnAbrirCapas.setEnabled(true);
 			if (capaBase.getClass() == ArcGISTiledLayer.class) {
 
 				if (capas.size() > 0) {
@@ -827,186 +717,9 @@ public class PoiDetailActivity extends Activity /*implements PoisInterface, Pois
 					mapa.getMap().getOperationalLayers().add((ArcGISTiledLayer) capaBase);
 				}
 
-			} /*else if (capaBase.getClass() == BingMapsLayer.class) {
-
-				if (capas.length > 0) {
-					mapa.addLayer((BingMapsLayer) capaBase, 0);
-				} else {
-					mapa.addLayer((BingMapsLayer) capaBase);
-				}
-
-			}*/ else {
-				// otro tipo de capa
 			}
 
 			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size()
-					+ " capas");
 		}
 	}
-
-	/*@Override
-	public void seCargoListaPois(ArrayList<Poi> pois) {
-
-	}
-
-	@Override
-	public void producidoErrorAlCargarListaPois(String error) {
-
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		// TODO Auto-generated method stub
-			if (location == null)
-				return;
-
-			else if(location != null){									
-					// Ha localizado ya por red, cambiar ahora al gps
-					locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, PoiDetailActivity.this);
-					
-					
-					Log.d("Milog", "Entra en onLocationChanged y la coordenada recibida no es nula");
-					double locy = location.getLatitude();
-					double locx = location.getLongitude();
-					
-					Log.d("Milog", "1");
-					
-					Point wgspoint = new Point(locx, locy);
-				//Point mapPoint = (Point) GeometryEngine.project(wgspoint, mapa.getSpatialReference());
-				Point mapPoint = new Point(locx, locy, SpatialReferences.getWgs84());
-					
-					Log.d("Milog", "2");
-					
-					
-					// Hacer el extent entre nuestra ubicacion y el punto de checkin
-					Envelope env ;
-					Log.d("Milog", "2.1");
-					Envelope NewEnv = capaGeometrias.getExtent();
-					Log.d("Milog", "2.2");
-					if(capaGeometrias.getGraphics() != null){
-						for (int i=0 ; i<capaGeometrias.getGraphics().size(); i++){
-							Log.d("Milog", "2.3");
-					    	Point p = (Point) capaGeometrias.getGraphics().get(i).getGeometry();
-					    	Log.d("Milog", "2.4");
-					    	env = p.getExtent();
-							// p.queryEnvelope(env);
-					    	Log.d("Milog", "2.5");
-					    	//NewEnv.merge(env);
-							NewEnv.createFromInternal(env.getInternal());
-					    	Log.d("Milog", "2.6");
-						}
-					}
-					
-					
-					Log.d("Milog", "3");
-				    env = mapPoint.getExtent();
-					//mapPoint.queryEnvelope(env);
-					//NewEnv.merge(env);
-					NewEnv.createFromInternal(env.getInternal());
-					//mapa.setExtent(NewEnv, 50);
-					mapa.setViewpointGeometryAsync(NewEnv, 50);
-					
-					Log.d("Milog", "Recibida coordenada: " + location.getLatitude() + "  ,  " + location.getLongitude());
-
-				Point punto = (Point) new Point(location.getLongitude(), location.getLatitude(), SpatialReferences.getWgs84());
-				//Point punto = (Point) GeometryEngine.project(new Point(location.getLongitude(), location.getLatitude()), SpatialReference.create(102100));
-
-			  		ultimaUbicacion = new GeoPoint();
-			  		//ultimaUbicacion.setLatitude(location.getLatitude());
-			  		//ultimaUbicacion.setLongitude(location.getLongitude());
-
-			  		// Hacer el extent entre nuestra ubicacion y el punto de checkin
-					Envelope env1 ;
-					Envelope NewEnv1 = capaGeometrias.getExtent();
-					if(capaGeometrias.getGraphics() != null){
-						for (int i=0 ; i<capaGeometrias.getGraphics().size(); i++){
-					    	Point p = (Point)capaGeometrias.getGraphics().get(i).getGeometry();
-							env1 = p.getExtent();
-					    	//p.queryEnvelope(env1);
-							NewEnv1.createFromInternal(env1.getInternal());
-					    	//NewEnv1.merge(env1);
-						}
-					}
-				env1 = punto.getExtent();
-					//punto.queryEnvelope(env1);
-				NewEnv1.createFromInternal(env1.getInternal());
-				//NewEnv1.merge(env1);
-					mapa.setViewpointGeometryAsync(NewEnv1, 100);
-					//mapa.setExtent(NewEnv1, 100);
-			}
-
-		mapa.setViewpointCenterAsync(new Point(miPoi.getCoordinates().getLongitude(), miPoi.getCoordinates().getLatitude(), SpatialReferences.getWgs84()), 10000);
-		//mapa.centerAndZoom(miPoi.getCoordinates().getLatitude(), miPoi.getCoordinates().getLongitude(), 0.000005F);
-		
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void seCargoListaPoisOffline(ArrayList<Poi> pois) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void producidoErrorAlCargarListaPoisOffline(String error) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void seCargoPoiOffline(Poi poi) {
-		// TODO Auto-generated method stub
-		seCargoPoi(poi);
-		panelCargando.setVisibility(View.GONE);
-		
-	}
-
-	@Override
-	public void producidoErrorAlCargarPoiOffline(String error) {
-		// TODO Auto-generated method stub
-		panelCargando.setVisibility(View.GONE);
-		
-	}
-
-	@Override
-	public void seCompletoDescarga() {
-		// TODO Auto-generated method stub
-		panelCargandoPoi.setVisibility(View.GONE);
-		Util.mostrarMensaje(PoiDetailActivity.this, getResources().getString(R.string.mod_discover__telecarga_completada_titulo),
-				getResources().getString(R.string.mod_discover__telecarga_completada_info));
-	}
-
-	@Override
-	public void setProgresoDescarga(int progress) {
-		// TODO Auto-generated method stub
-		//ProgressBar pb = (ProgressBar) panelCargandoMapas.getChildAt(0);
-		PoiDetailActivity.this.pb.setProgress(progress);
-	}
-
-	@Override
-	public void inicioDescarga() {
-		// TODO Auto-generated method stub
-		PoiDetailActivity.this.panelCargandoPoi.setVisibility(View.VISIBLE);
-		
-	}*/
-
-
 }

@@ -1,7 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_global;
 
-import java.util.ArrayList;
-
 import android.app.Application;
 import android.util.Log;
 
@@ -13,10 +11,10 @@ import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 
-import  eu.randomobile.pnrlorraine.MainApp;
+import java.util.ArrayList;
 
+import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
-import eu.randomobile.pnrlorraine.mod_global.model.Poi;
 
 public class WKTUtil {
 
@@ -236,7 +234,6 @@ public class WKTUtil {
 	
 	
 	public static Polyline getPolylineFromWKTLineStringField(Application application, String wktLineString){
-		Log.d("Milog", "Inicio de parseo de wkt a coordenadas");
 		MainApp app = (MainApp)application;
 		
 		// Quitar la palabra LINESTRING
@@ -293,30 +290,20 @@ public class WKTUtil {
 				}
 			}
 		}
-		
-		Log.d("Milog", "Fin de parseo de wkt a coordenadas");
-		
-		Log.d("Milog", "Inicio de proyeccion en polyline");
-		
+
+
 		if(puntosPolyline != null){
-			Log.d("Milog", "Puntos polyline no es nulo y tiene estos elementos: " + puntosPolyline.size());
 
 			ArrayList<Point> points = new ArrayList<>();
 			for(int i=0; i<puntosPolyline.size(); i++){
 				GeoPoint punto = puntosPolyline.get(i);
 				//Point puntoProyectado = (Point) GeometryEngine.project(new Point(punto.getLongitude(), punto.getLatitude()), SpatialReference.create(102100));
 				Point puntoProyectado = new Point(punto.getLongitude(), punto.getLatitude());
-				Log.d("Milog", "Voy a anadir el siguiente punto al polyline: " + punto.getLatitude() + "  " + punto.getLongitude());
-				Log.d("Pierre Log", "Point polyline: " + puntoProyectado.getX() + "  " + puntoProyectado.getY());
 				points.add(puntoProyectado);
 			}
 			polyline = new Polyline(new PointCollection(points,SpatialReferences.getWgs84()), SpatialReferences.getWgs84());
-		}else{
-			Log.d("Milog", "Puntos polyline es nulo");
 		}
-		
-		Log.d("Milog", "Fin de proyeccion en polyline");
-		
+
 		return polyline;
 	}
 	
@@ -388,8 +375,8 @@ public class WKTUtil {
 	    double y = mercatorY_lat;
 	    double num3 = x / 6378137.0;
 	    double num4 = num3 * 57.295779513082323;
-	    double num5 = Math.floor((double)((num4 + 180.0) / 360.0));
-	    double num6 = num4 - (num5 * 360.0);
+		double num5 = Math.floor((num4 + 180.0) / 360.0);
+		double num6 = num4 - (num5 * 360.0);
 	    double num7 = 1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)));
 	    mercatorX_lon = num6;
 	    mercatorY_lat = num7 * 57.295779513082323;

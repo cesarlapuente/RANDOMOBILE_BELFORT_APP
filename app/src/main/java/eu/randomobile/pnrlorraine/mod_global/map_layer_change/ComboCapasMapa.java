@@ -193,8 +193,8 @@ public class ComboCapasMapa {
 	}
 
 
-	public static interface ComboCapasMapaInterface {
-		public void seCerroComboCapas(Basemap basemap);
+	public interface ComboCapasMapaInterface {
+		void seCerroComboCapas(Basemap basemap);
 	}
 
 }

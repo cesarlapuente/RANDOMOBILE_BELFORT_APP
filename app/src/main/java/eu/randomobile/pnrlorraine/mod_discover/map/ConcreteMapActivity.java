@@ -8,7 +8,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -118,7 +117,6 @@ public class ConcreteMapActivity extends Activity implements
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		Log.d("Milog", "Cambio la configuracion");
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -177,7 +175,6 @@ public class ConcreteMapActivity extends Activity implements
 						// Recuperamos los gr‡ficos
 						try {
 							if (graphicsIDS != null && graphicsIDS.get().size() > 0) {
-                                Log.d("Milog", "Hay graficos en la zona pulsada");
                                 List lr = null;
                                 lr = graphicsIDS.get();
 
@@ -200,7 +197,6 @@ public class ConcreteMapActivity extends Activity implements
                                     callout.show();
                                 }
                             } else {
-                                Log.d("Milog", "No hay graficos en la zona pulsada");
                                 if (callout != null && callout.isShowing()) {
                                     callout.dismiss();
                                 }
@@ -259,15 +255,12 @@ public class ConcreteMapActivity extends Activity implements
 	}
 
 	public void seCerroComboCapas(Basemap basemap) {
-		Log.d("Milog", "Antes de poner capa base");
 		ponerCapaBase();
-		Log.d("Milog", "Despues de poner capa base");
 	}
 
 	private void representarGeometrias() {
 
 		if (DataConection.hayConexion(this)) {
-			Log.d("Milog", "Voy a cargar los datos");
 
 			if(paramType != null){
 				if(paramType.equals(app.DRUPAL_TYPE_POI)){
@@ -352,7 +345,6 @@ public class ConcreteMapActivity extends Activity implements
 
 		// Ponerle las propiedades necesarias
 		if (clase.equals(Poi.class.getName())) {
-			Log.d("Milog", "El objeto pulsado lleva un poi");
 			// Poner las propiedades en el layout
 			lblNombre.setText(nombre);
 			lblCategoria.setText("Punto de interŽs");
@@ -423,12 +415,10 @@ public class ConcreteMapActivity extends Activity implements
 						
 						// Ejecucion pesada
 						protected Integer doInBackground(Integer... params) {
-							Log.d("Milog", "URL Icono: " + urlIcon);
 							if(urlIcon != null){
 								try {
 									sym = new PictureMarkerSymbol(urlIcon);
 								} catch (Exception e) {
-									Log.d("Milog", "Excepcion al cargar icono: " + e.toString());
 									sym = new PictureMarkerSymbol((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher));
 								}
 							}else{
@@ -484,8 +474,8 @@ public class ConcreteMapActivity extends Activity implements
 			Geometry geom = capa.getGraphics().get(i).getGeometry();
 			env = geom.getExtent();
 			//geom.queryEnvelope(env);
-			NewEnv.createFromInternal(env.getInternal());
-			//NewEnv.merge(env);
+            Envelope.createFromInternal(env.getInternal());
+            //NewEnv.merge(env);
 		}
 
 		this.mapa.setViewpointGeometryAsync(NewEnv, 100);
@@ -493,27 +483,19 @@ public class ConcreteMapActivity extends Activity implements
 
 	public void ponerCapaBase() {
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
 
 		// Corrección, para que no cambie la capa base cuando la seleccionada es
 		// la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if (capas != null) {
-			Log.d("Milog", "capas no es nulo");
 			if (capas.size() > 0) {
 
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				// si la capa base seleccionada es del mismo tipo que la capa 0
 				if (capaBase.getClass().getName()
 						.equals(capa0.getClass().getName())) {
-					Log.d("Milog",
-							"La clase de la capa base es igual que la clase de la capa0");
 					/*if (capaBase.getClass() == BingMapsLayer.class) {
 						Log.d("Milog", "capaBase es de tipo BING");
 						BingMapsLayer capaBaseCasted = (BingMapsLayer) capaBase;
@@ -530,7 +512,6 @@ public class ConcreteMapActivity extends Activity implements
 											+ " capas");
 						}
 					} else */if (capaBase.getClass() == ArcGISTiledLayer.class) {
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						ArcGISTiledLayer capaBaseCasted = (ArcGISTiledLayer) capaBase;
 						ArcGISTiledLayer capa0Casted = (ArcGISTiledLayer) capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri()
@@ -541,14 +522,8 @@ public class ConcreteMapActivity extends Activity implements
 							return;
 						} else {
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog",
-									"PUNTO INTERMEDIO TILED: el mapa tiene "
-											//+ mapa.getLayers().length
-											+ " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase "
-							+ capa0.getClass().getName());
 				} else {// si la capa base seleccionada no es del mismo tipo que
 						// la capa 0
 

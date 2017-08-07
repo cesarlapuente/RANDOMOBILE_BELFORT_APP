@@ -1,12 +1,12 @@
 package eu.randomobile.pnrlorraine.mod_offline;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.app.Application;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.mod_global.environment.GPS;
@@ -14,16 +14,6 @@ import eu.randomobile.pnrlorraine.mod_global.model.Route;
 
 public class OfflineRoute {
     public static RoutesModeOfflineInterface routesInterface;
-
-    public static interface RoutesModeOfflineInterface {
-        public void seCargoListaRoutesOffline(ArrayList<Route> routes);
-
-        public void producidoErrorAlCargarListaRoutesOffline(String error);
-
-        public void seCargoRouteOffline(Route route);
-
-        public void producidoErrorAlCargarRouteOffline(String error);
-    }
 
     public static void fillRoutesTable(Application application) {
         final MainApp app = (MainApp) application;
@@ -34,8 +24,6 @@ public class OfflineRoute {
 
         app.clienteDrupal.customMethodCallPost("route/get_list_distance", new AsyncHttpResponseHandler() {
                     public void onSuccess(String response) {
-
-                        Log.d("Milog", "Respuesta de cargar rutas distance: " + response);
 
                         if (response != null && !response.equals("")) {
                             Offline.insertJsonList(app, app.DRUPAL_TYPE_ROUTE, response);
@@ -122,6 +110,16 @@ public class OfflineRoute {
                         .producidoErrorAlCargarRouteOffline("cargarRouteOffline: nid= " + nid);
             }
         }
+    }
+
+    public interface RoutesModeOfflineInterface {
+        void seCargoListaRoutesOffline(ArrayList<Route> routes);
+
+        void producidoErrorAlCargarListaRoutesOffline(String error);
+
+        void seCargoRouteOffline(Route route);
+
+        void producidoErrorAlCargarRouteOffline(String error);
     }
 
 }

@@ -1,5 +1,19 @@
 package eu.randomobile.pnrlorraine.mod_global.environment;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,32 +21,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import eu.randomobile.pnrlorraine.MainApp;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 public class Drupal7RESTClient {
-	public HttpGet mSERVERGET;
+    public static String mDOMAIN;
+    public static Long mSESSION_LIFETIME;
+    private final String mPREFS_AUTH;
+    public HttpGet mSERVERGET;
 	public HttpPost mSERVERPOST;
 	public String url;
-	public static String mDOMAIN;
 	AsyncHttpClient client;
-	private Context mCtx;
-	private final String mPREFS_AUTH;
-	public static Long mSESSION_LIFETIME;
-	
-	MainApp app;
+    MainApp app;
+    private Context mCtx;
 	
 	/* Constructor */
 	public Drupal7RESTClient(Application application, String _prefs_auth, String _server,	String _domain, Long _session_lifetime) {
@@ -74,25 +74,18 @@ public class Drupal7RESTClient {
 	
 	/* Llamada a services a trav�s de POST */
 	private void callPost(final AsyncHttpResponseHandler responseHandler, final String uri, final RequestParams parametros){
-		Log.d("JmLog","URL POST :"+uri+" parametros"+parametros);
-		Log.d("Milog", "Entra en callPost");
 		final String sessid = this.getSessionID();
 
 		Long timestamp = app.preferencias.getLong(app.COOKIE_KEY_TIMESTAMP_SESSID, 0);
 		
 		Long currenttime = new Date().getTime() / 100;
 		
-		Log.d("Milog", "currenttime = " + currenttime + "  timestamp = " + timestamp + " mSESSION_LIFETIME = " + mSESSION_LIFETIME);
-		
-		Log.d("Milog", "" + (currenttime - timestamp) + " // " + mSESSION_LIFETIME);
 
 		if (sessid == null || (currenttime - timestamp) >= mSESSION_LIFETIME) {
-			
-			Log.d("Milog", "Sessid == null || (currenttime - timestamp) >= mSession_LIFETIME");
-			
-			systemConnect(new AsyncHttpResponseHandler(){
+
+
+            systemConnect(new AsyncHttpResponseHandler(){
 				public void onSuccess(String response) {
-					Log.d("JmLog","system connect ! ");
 					JSONObject resObj;
 					try {
 						resObj = new JSONObject(response);
@@ -125,7 +118,6 @@ public class Drupal7RESTClient {
 			
 		} else{
 			
-			Log.d("Milog", "El sessid est� relleno, y tiene de valor = " + sessid);
 
 			final String time = timestamp.toString();
 			parametros.put("domain_time_stamp", time);
@@ -191,8 +183,8 @@ public class Drupal7RESTClient {
 		Iterator<Entry<String, String>> iterator = user.entrySet().iterator();
 		Map.Entry<String,String> item;
 		while (iterator.hasNext()) {
-			item = (Map.Entry<String,String>)iterator.next();
-			rm.put(item.getKey(), item.getValue());
+            item = iterator.next();
+            rm.put(item.getKey(), item.getValue());
 		}
 
 		callPost(responseHandler, uri, rm);
@@ -217,8 +209,8 @@ public class Drupal7RESTClient {
 		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
 		Map.Entry<String,String> item;
 		while (iterator.hasNext()) {
-			item = (Map.Entry<String,String>)iterator.next();
-			rm.put(item.getKey(), item.getValue());
+            item = iterator.next();
+            rm.put(item.getKey(), item.getValue());
 		}
 		
 		callPost(responseHandler, uri, rm);
@@ -269,8 +261,8 @@ public class Drupal7RESTClient {
 			Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
 			Map.Entry<String, String> item;
 			while (iterator.hasNext()) {
-				item = (Map.Entry<String, String>)iterator.next();
-				rm.put(item.getKey(), item.getValue());
+                item = iterator.next();
+                rm.put(item.getKey(), item.getValue());
 			}
 		}
 		
@@ -284,8 +276,8 @@ public class Drupal7RESTClient {
 			Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
 			Map.Entry<String, String> item;
 			while (iterator.hasNext()) {
-				item = (Map.Entry<String, String>)iterator.next();
-				uri = uri + "?" + item.getKey() + "=" + item.getValue();
+                item = iterator.next();
+                uri = uri + "?" + item.getKey() + "=" + item.getValue();
 			}
 		}
 		callGet(responseHandler, uri);

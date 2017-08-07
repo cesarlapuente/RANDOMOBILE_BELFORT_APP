@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,12 +91,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             if (bundle.get("Filtrar por especie") != null) {
                 // Si es asi y este no está vacio, lo guardamos.
                 filtroPois = Integer.parseInt(bundle.get("Filtrar por especie").toString());
-
-                if (filtroPois != 0) {
-                    Log.d("Filtrar Rutas: ", " SI");
-                } else {
-                    Log.d("Filtrar Rutas: ", " NO");
-                }
             }
         }
 
@@ -147,7 +139,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         // Obtener la app
         this.app = (MainApp) getApplication();
 
-        //arrayRoutes = app.getRoutesList();
 
         arrayRoutes = routeDAO.getAllRoute();
         for (Route r : arrayRoutes) {
@@ -155,7 +146,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             r.setVote(voteDAO.getVote(r.getNid()));
         }
 
-//        Log.d("JmLOg","Array ROutas ::::::: !!!!! "+arrayRoutes.size());
 
 
         mImageMap = (ImageMap) findViewById(R.id.map_routeList);
@@ -168,7 +158,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         inicializarForm();
         recargarForm();
 
-        //app.setRoutesList(arrayRoutes);
         panelCargando.setVisibility(View.GONE);
     }
 
@@ -366,14 +355,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
 
                     routePulsado = routeAdaptador.getItem(index);
 
-                /*if (arrayFilteredRoutes != null)
-                    routePulsado = arrayFilteredRoutes.get(index);
-
-                else
-                    routePulsado = arrayRoutes.get(index);*/
-
-                    //app.setRoutesList(arrayRoutes);
-
                     Intent intent = new Intent(RoutesListActivity.this, RouteDetailActivity.class);
 
                     intent.putExtra(RouteDetailActivity.PARAM_KEY_NID, routePulsado.getNid());
@@ -416,7 +397,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             // Si la �ltima posici�n existe, ya ha localizado alguna vez.
             // Recargar los datos
             panelCargando.setVisibility(View.VISIBLE);
-            this.recargarDatos();
         }
 
         ArrayList<Route> arrayRoutes_2 = new ArrayList<Route>();
@@ -437,30 +417,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         escucharEventos();
     }
 
-    private void recargarDatos() {
-        /*
-        if (DataConection.hayConexion(this)) {
-            // Si hay conexi�n, recargar los datos
-            panelCargando.setVisibility(View.VISIBLE);
-
-            Route.routesInterface = this;
-
-            Route.cargarListaRutasOrdenadosDistancia(getApplication(), // Aplicacion
-                    gps.getLastLocation().getLatitude(), // Latitud
-                    gps.getLastLocation().getLongitude(), // Longitud
-                    0, // Radio en Kms
-                    0, // N�mero de elementos por p�gina
-                    0, // P�gina
-                    null, // Tid de la categor�a que queremos filtrar
-                    null, // Dificultad
-                    null // Texto a buscar
-            );
-        } else {
-
-        }
-        */
-    }
-
     public void onLocationChanged(Location location) {
         if (this.gps.getLastLocation() != null) {
 
@@ -478,31 +434,29 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             editor.commit();
 
             // Recargar los datos
-            this.recargarDatos();
         }
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        // TODO Auto-generated method stub
+        // nothing
 
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        // TODO Auto-generated method stub
+        // nothing
 
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO Auto-generated method stub
+        // nothing
 
     }
 
     @Override
     public void seCargoListaRoutes(ArrayList<Route> routes) {
-        Log.d("<--PRUEBA-->", " <----------------------seCargoListaRoutes---------------------->");
 
         if (routes != null) {
             this.arrayRoutes = applyPoisFilter(routes);
@@ -510,58 +464,41 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             listaRoutes.setAdapter(routeAdaptador);
         }
         panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaRoutes");
     }
 
     @Override
     public void producidoErrorAlCargarListaRoutes(String error) {
-        Log.d("Milog", "producidoErrorAlCargarListaRoutes: " + error);
         panelCargando.setVisibility(View.GONE);
     }
 
     public void seCerroComboDificultadesRutas(String tidSeleccionado, String nombreSeleccionado) {
-        Log.d("Milog", "Se ha cerrado combo de dificultades de rutas. Seleccionado: "
-                + tidSeleccionado + " Nombre dif: " + nombreSeleccionado);
         // Guardar el filtro de cateogor�a
         SharedPreferences.Editor editor = app.preferencias.edit();
         editor.putString(app.FILTER_KEY_ROUTE_DIFFICULTY_TID, tidSeleccionado);
         editor.commit();
-        // Lo guardamos tambi�n a nivel de clase
-//		difficultyTid = tidSeleccionado;
-//
-//		difficultyName = nombreSeleccionado;
-//		this.btnDificultades.setText(difficultyName);
     }
 
     public void seCerroComboCategoriasRutas(String tidSeleccionado, String nombreSeleccionado) {
-        Log.d("Milog", "Se ha cerrado combo de categorias de rutas. Seleccionado: "
-                + tidSeleccionado + " Nombre cat: " + nombreSeleccionado);
         // Guardar el filtro de cateogor�a
         SharedPreferences.Editor editor = app.preferencias.edit();
         editor.putString(app.FILTER_KEY_ROUTE_CATEGORY_TID, tidSeleccionado);
         editor.commit();
-        // Lo guardamos tambi�n a nivel de clase
-//		categoryTid = tidSeleccionado;
-//
-//		categoryName = nombreSeleccionado;
-//		this.btnCategorias.setText(categoryName);
     }
 
     @Override
     public void seCargoRoute(Route route) {
-        // TODO Auto-generated method stub
+        // nothing
 
     }
 
     @Override
     public void producidoErrorAlCargarRoute(String error) {
-        // TODO Auto-generated method stub
+        // nothing
 
     }
 
     @Override
     public void seCargoListaRoutesOffline(ArrayList<Route> routes) {
-        Log.d("<--PRUEBA-->", " <----------------------seCargoListaRoutesOffline---------------------->");
 
         if (routes != null) {
             this.arrayRoutes = applyPoisFilter(routes);
@@ -569,89 +506,57 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             listaRoutes.setAdapter(routeAdaptador);
         }
         panelCargando.setVisibility(View.GONE);
-        Log.d("Milog", "seCargoListaRoutesOffline");
 
     }
 
     @Override
     public void producidoErrorAlCargarListaRoutesOffline(String error) {
-        // TODO Auto-generated method stub
-        Log.d("Milog", "producidoErrorAlCargarListaRoutes: " + error);
         panelCargando.setVisibility(View.GONE);
     }
 
     @Override
     public void seCargoRouteOffline(Route item) {
-        // TODO Auto-generated method stub
-
+        //nothing
     }
 
     @Override
     public void producidoErrorAlCargarRouteOffline(String error) {
-        // TODO Auto-generated method stub
-
+        // nothing
     }
 
     private ArrayList<Route> applyPoisFilter(ArrayList<Route> routes) {
         ArrayList<Route> routesFiltred = new ArrayList<Route>();
         int[] poisFilter = app.getPoisOfEspecie();
 
-        Log.d("####################", " ##################################################");
-        Log.d("FiltroPois", " " + String.valueOf(filtroPois));
-        Log.d("####################", " ##################################################");
-
-
         if (filtroPois == 1) {
-            Log.d("####################", " Entrada en if() detectada");
 
-            ArrayList<String> routesAded = new ArrayList<>();
 
             // Recorremos el listado de rutas
             for (int z = 0; z < routes.size(); z++) {
 
                 // Miramos si, cada una de las rutas, tiene POIS.
                 if (routes.get(z).getPois() != null) {
-                    Log.d("####################", " Ruta con POIs");
-
                     if (routes.get(z).getPois().size() > 0) {
-                        Log.d("####################", " Ruta con POIs mayor a 0 | Size = " + routes.get(z).getPois().size());
-
-                        for(int l = 0; l < routes.get(z).getPois().size(); l++) {
-                            Log.d("####################", " " +  routes.get(z).getPois().get(l).getNid());
-                        }
 
                         // Si tiene pois, los recorremos.
                         for (int i = 0; i < routes.get(z).getPois().size(); i++) {
-                            Log.d("######## Ruta: " + routes.get(z).getNid(), " POI Ruta: " + routes.get(z).getPois().get(i).getNid());
 
                             // Por cada POI de la ruta, comparamos su NID con el de cada uno de los POIS en los que aparece una determinada especie.
                             for (int j = 0; j < poisFilter.length; j++) {
-                                Log.d("######## Ruta: " + routes.get(z).getNid(), " POI Ruta: " + routes.get(z).getPois().get(i).getNid() + ", POI Especie: " + poisFilter[j]);
 
                                 // Si ambos NID coinciden, es que la especie aparece en la ruta.
                                 if (routes.get(z).getPois().get(i).getNid() == poisFilter[j]) {
-                                    Log.d("######## Ruta filtrada:", " " + routes.get(z).getTitle());
 
                                     routesFiltred.add(routes.get(z));
                                     j = poisFilter.length;
                                     i = routes.get(z).getPois().size();
 
-                                } else {
-                                    Log.d("########", " No hay coincidencia");
                                 }
                             }
                         }
-                    } else {
-                        Log.d("####################", " Ruta sin POIs mayor a 0");
                     }
 
-                } else {
-                    Log.d("####################", " Ruta sin POIs");
                 }
-
-                Log.d("####################", "");
-                Log.d("####################", "");
-                Log.d("####################", "");
             }
 
             return routesFiltred;
@@ -666,10 +571,10 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
         private Context ctx;
         private ArrayList<Route> listaItems;
 
-        public ListRoutesAdapter(Context _ctx, ArrayList<Route> _items) {
-            this.listaItems = _items;
-            this.ctx = _ctx;
-            mInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        public ListRoutesAdapter(Context ctx, ArrayList<Route> items) {
+            this.listaItems = items;
+            this.ctx = ctx;
+            mInflater = (LayoutInflater) this.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         public int getCount() {
@@ -713,21 +618,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
                 holder.imgViewAccessoryArrow = (ImageView) convertView.findViewById(R.id.accesory);
                 holder.imgViewValoracion = (ImageView) convertView.findViewById(R.id.imgViewValoracion);
 
-                // Poner fuentes
-                Typeface tfBentonMedium = Util.fontBenton_Medium(ctx);
-                Typeface tfBentonBoo = Util.fontBenton_Boo(ctx);
-                Typeface tfBentonBold = Util.fontBenton_Bold(ctx);
-                Typeface tfScalaBold = Util.fontScala_Bold(ctx);
-                /*
-                holder.lblTitulo.setTypeface(tfScalaBold);
-				holder.lblDetalle.setTypeface(tfBentonBoo);
-				holder.lblDistancia.setTypeface(tfBentonBoo);
-				holder.lblDistanciaNum.setTypeface(tfScalaBold);
-				holder.lblDuracion.setTypeface(tfBentonBoo);
-				holder.lblValDuracion.setTypeface(tfScalaBold);
-				holder.lblValoracion.setTypeface(tfBentonBoo);
-				*/
-
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -748,14 +638,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
                 holder.lblDetalle.setText(strVacio);
             }
 
-            // Distancia
-//			if (item.getDistanceMeters() < 1000) {
-//				int roundedDistMeters = (int) item.getDistanceMeters();
-//				holder.lblDistanciaNum.setText(roundedDistMeters + " m.");
-//			} else {
-//				int roundedDistKms = (int) (item.getDistanceMeters() / 1000);
-//				holder.lblDistanciaNum.setText(roundedDistKms + " Km.");
-//			}
             holder.lblDistanciaNum.setText(Util.formatDistanciaRoute(item.getRouteLengthMeters()));
             holder.lblValDuracion.setText(Util.formatDuracion(item.getEstimatedTime()));
             // Imagen
@@ -784,10 +666,8 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             // Poner la imagen de categoria
             if (item.getCategory().getName().equals("GR")) {
                 holder.imgViewCategory.setBackgroundResource(R.drawable.categoria_gr);
-                //holder.imgViewFrame.setBackgroundResource(R.drawable.frame_gr);
             } else if (item.getCategory().getName().equals("PR")) {
                 holder.imgViewCategory.setBackgroundResource(R.drawable.categoria_pr);
-                //holder.imgViewFrame.setBackgroundResource(R.drawable.frame_pr);
             }
 
             // Poner la flechita de la derecha en funci�n de si la celda es par
@@ -843,7 +723,6 @@ public class RoutesListActivity extends Activity implements RoutesInterface, Rou
             ImageView imgViewCategory;
             TextView lblTitulo;
             TextView lblDetalle;
-            //			LinearLayout panelPequenio;
             TextView lblDistancia;
             TextView lblDistanciaNum;
             TextView lblDuracion;

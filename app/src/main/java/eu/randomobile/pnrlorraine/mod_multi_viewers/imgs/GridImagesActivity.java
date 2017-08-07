@@ -1,7 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_multi_viewers.imgs;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +14,11 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
-import eu.randomobile.pnrlorraine.mod_global.Util;
 import eu.randomobile.pnrlorraine.mod_global.libraries.bitmap_manager.BitmapManager;
 import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
 import eu.randomobile.pnrlorraine.mod_home.MainActivity;
@@ -78,7 +78,6 @@ public class GridImagesActivity extends Activity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		Log.d("Milog", "Cambio la configuracion");
 	}
 
 	private void cargaActivityHome() {
@@ -98,7 +97,6 @@ public class GridImagesActivity extends Activity {
 
 		if (paramRecursos != null) {
 
-			Log.d("Milog", "Numero de im�genes: " + paramRecursos.size());
 
 			adapter = new GridImageAdapter();
 			gridView.setAdapter(adapter);
@@ -185,7 +183,6 @@ public class GridImagesActivity extends Activity {
 			final ResourceFile rec = paramRecursos.get(position);
 
 			if (rec != null) {
-				Log.d("Milog", "Imagen: " + rec.getFileUrl());
 				BitmapManager.INSTANCE.loadBitmap(rec.getFileUrl(),
 						holder.imageview, 100, 70);
 			}

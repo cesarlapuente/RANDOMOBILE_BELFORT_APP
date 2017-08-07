@@ -102,14 +102,12 @@ public class Poi {
 			params.put("search", searchTxt);
 		}
 
-		Log.d("Milog", "Parametros enviados a poi/get_list_distance: " + params.toString());
 
 		MainApp app = (MainApp)application;
 
 		app.clienteDrupal.customMethodCallPost("poi/get_list_distance", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
 
-				Log.d("Milog", "Respuesta de cargar pois distance: " + response);
 
 				ArrayList<Poi> listaPois = null;
 
@@ -594,14 +592,14 @@ public class Poi {
 	}
 
 
-	public static interface PoisInterface {
-		public void seCargoListaPois(ArrayList<Poi> pois);
+    public interface PoisInterface {
+        void seCargoListaPois(ArrayList<Poi> pois);
 
-		public void producidoErrorAlCargarListaPois(String error);
+        void producidoErrorAlCargarListaPois(String error);
 
-		public void seCargoPoi(Poi poi);
+        void seCargoPoi(Poi poi);
 
-		public void producidoErrorAlCargarPoi(String error);
-	}
+        void producidoErrorAlCargarPoi(String error);
+    }
 
 }

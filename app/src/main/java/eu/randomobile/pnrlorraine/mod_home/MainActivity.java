@@ -20,11 +20,8 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
@@ -50,7 +47,6 @@ import eu.randomobile.pnrlorraine.mod_discover.list.PoisListActivity;
 import eu.randomobile.pnrlorraine.mod_discover.list.RoutesListActivity;
 import eu.randomobile.pnrlorraine.mod_discover.map.RoutesGeneralMapActivity;
 import eu.randomobile.pnrlorraine.mod_global.Util;
-import eu.randomobile.pnrlorraine.mod_global.data_access.DBHandler;
 import eu.randomobile.pnrlorraine.mod_global.model.Page;
 import eu.randomobile.pnrlorraine.mod_grtgaz.GRTGazActivity;
 import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
@@ -59,12 +55,12 @@ import eu.randomobile.pnrlorraine.mod_notification.NotificationService;
 import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
 
 public class MainActivity extends Activity {
-    private Dialog dialogPoi = null;
+    static private boolean firstTime = true;
     ImageMap mImageMap;
     MainApp app;
     ImageView imgMainPhoto;
-    static private boolean firstTime = true;
     ImageView imgBaliza1;
+    private Dialog dialogPoi = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -323,12 +319,7 @@ public class MainActivity extends Activity {
         try {
             InetAddress ipAddr = InetAddress.getByName("google.com");
 
-            if (ipAddr.equals("")) {
-                return false;
-
-            } else {
-                return true;
-            }
+            return !ipAddr.equals("");
 
         } catch (Exception e) {
             return false;

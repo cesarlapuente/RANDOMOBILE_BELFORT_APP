@@ -1,25 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_checkin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import eu.randomobile.pnrlorraine.R;
-import eu.randomobile.pnrlorraine.MainApp;
-import eu.randomobile.pnrlorraine.mod_global.Util;
-import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
-import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
-import eu.randomobile.pnrlorraine.mod_global.model.Checkin;
-import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
-import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
-import eu.randomobile.pnrlorraine.mod_global.model.Checkin.CheckinInterface;
-import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile.ResourceFileInterface;
-import eu.randomobile.pnrlorraine.mod_home.MainActivity;
-import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
-import eu.randomobile.pnrlorraine.mod_options.OptionsActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -49,10 +29,7 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
-import com.esri.arcgisruntime.layers.ArcGISTiledSublayer;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
-import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
@@ -60,20 +37,43 @@ import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import eu.randomobile.pnrlorraine.MainApp;
+import eu.randomobile.pnrlorraine.R;
+import eu.randomobile.pnrlorraine.mod_global.Util;
+import eu.randomobile.pnrlorraine.mod_global.environment.DataConection;
+import eu.randomobile.pnrlorraine.mod_global.map_layer_change.CapaBase;
+import eu.randomobile.pnrlorraine.mod_global.model.Checkin;
+import eu.randomobile.pnrlorraine.mod_global.model.Checkin.CheckinInterface;
+import eu.randomobile.pnrlorraine.mod_global.model.GeoPoint;
+import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile;
+import eu.randomobile.pnrlorraine.mod_global.model.ResourceFile.ResourceFileInterface;
+import eu.randomobile.pnrlorraine.mod_home.MainActivity;
+import eu.randomobile.pnrlorraine.mod_imgmapping.ImageMap;
+
 
 public class CheckinActivity extends Activity implements CheckinInterface, ResourceFileInterface, LocationListener {
 
 	public static final String PARAM_KEY_NID_ITEM_A_HACER_CHECKIN =	"nid_item_a_hacer_checkin";
 	public static final String PARAM_KEY_TITLE_ITEM_A_HACER_CHECKIN =	"title_item_a_hacer_checkin";
 	public static final String PARAM_KEY_COORDINATES_ITEM_A_HACER_CHECKIN =	"coords_item_a_hacer_checkin";
+	private static final int TAKE_PHOTO_CODE = 1;
+	// The minimum time between updates in milliseconds
+	private static final long MIN_TIME_BW_UPDATES = 0 /*50 * 1000*/; // 300 seconds (5 min)
+	private static String RUTA_GUARDO_FOTO = "";
+	private static String ESTADO_ESPERANDO_AL_GPS = "Esperando al GPS para ubicarte";
+	private static String ESTADO_CERCA = "Perfecto, te encuentras cerca del lugar";
+	private static String ESTADO_LEJOS = "Acércate más al lugar para hacer checkin";
 	ImageMap mImageMap;
-	
 	String paramNidItem;
 	String paramTitleItem;
 	GeoPoint paramCoordinatesItemAHacerCheckin;
-
 	LocationManager locationManager;
-	
 	TextView lblTituloPunto;
 	TextView lblPonAquiComentario;
 	EditText tbComentario;
@@ -84,21 +84,8 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 	Button btnCheckinsDeUsuarioEnEstePunto;
 	Button btnHacerFoto;
 	RelativeLayout panelCargando;
-	
 	GeoPoint ultimaUbicacion;
 	GeoPoint ubicacionPunto;
-	
-	private static final int TAKE_PHOTO_CODE = 1;
-	private static String RUTA_GUARDO_FOTO = "";
-
-	private static String ESTADO_ESPERANDO_AL_GPS = "Esperando al GPS para ubicarte";
-	private static String ESTADO_CERCA = "Perfecto, te encuentras cerca del lugar";
-	private static String ESTADO_LEJOS = "Acércate más al lugar para hacer checkin";
-	
-	// The minimum time between updates in milliseconds
-	private static final long MIN_TIME_BW_UPDATES = 0 /*50 * 1000*/; // 300 seconds (5 min)
-	
-
 	GraphicsOverlay capaGeometrias;
 
 	MainApp app;
@@ -113,17 +100,14 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
         
         // Reinicializar la ruta en la que guardar la foto
 	    RUTA_GUARDO_FOTO = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + app.CARPETA_SD + "/fotoCheckin" + Util.getCurrentTimeStampFormatoUNIX() + ".png";
-	    
-        
-        Log.d("Milog", "1");
-        
-        ESTADO_ESPERANDO_AL_GPS = getResources().getString(R.string.mod_geocaching__esperando_al_gps_para_ubicarte);
+
+
+		ESTADO_ESPERANDO_AL_GPS = getResources().getString(R.string.mod_geocaching__esperando_al_gps_para_ubicarte);
         ESTADO_CERCA = getResources().getString(R.string.mod_geocaching__te_encuentras_cerca_del_lugar);
         ESTADO_LEJOS = getResources().getString(R.string.mod_geocaching__acercate_mas_al_lugar);
-        
-        Log.d("Milog", "2");
-        
-        Bundle b = getIntent().getExtras();
+
+
+		Bundle b = getIntent().getExtras();
         if(b != null){
         	paramNidItem = b.getString(PARAM_KEY_NID_ITEM_A_HACER_CHECKIN);
         	paramTitleItem = b.getString(PARAM_KEY_TITLE_ITEM_A_HACER_CHECKIN);
@@ -260,7 +244,6 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 		      case TAKE_PHOTO_CODE:
 		        final File file = getTempFile(this);
 		        try {
-		        	Log.d("Milog", "Antes de recoger el bitmap");
 		        	
 		        	BitmapFactory.Options o = new BitmapFactory.Options();
 		        	o.inSampleSize = 2;
@@ -269,16 +252,11 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 		        	
 		        	
 		        	//Bitmap captureBmp = Media.getBitmap(getContentResolver(), Uri.fromFile(file) );
-		        	Log.d("Milog", "Antes de redimensionar el bitmap");
 		        	Bitmap resizedBmp = getResizedBitmap(captureBmp, 320, 480);
-		        	
-		        	Log.d("Milog", "Antes de crear el FileOutputStream");
+
 		        	FileOutputStream out = new FileOutputStream(new File(RUTA_GUARDO_FOTO));
-		        	Log.d("Milog", "Antes de comprimir el Bitmap al FileOutputStream");
-		        	resizedBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-		        	Log.d("Milog", "Antes de hacer el flush()");
-		            out.flush();
-		            Log.d("Milog", "Antes de hacer el close");
+					resizedBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+					out.flush();
 		            out.close();
 
 		        	
@@ -452,9 +430,7 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 
 	
 	private void recalcularDistancia(){
-		
-		Log.d("Milog", "Ub punto: " + ubicacionPunto + "  Ub usuario: " + ultimaUbicacion);
-		
+
 		if(ultimaUbicacion != null){
 			
 			
@@ -463,7 +439,6 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 			if(ubicacionPunto != null && ultimaUbicacion != null){
 				
 				float distance = GeoPoint.calculateDistance(ubicacionPunto, ultimaUbicacion);
-				Log.d("Milog", "Distancia: " + distance);
 				if(distance <= app.MAX_DISTANCE_MAKE_CHECKIN_METERS){
 					cerca = true;
 				}
@@ -499,28 +474,18 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
     
     private void ponerCapaBase(){
 		CapaBase capaSeleccionada = app.capaBaseSeleccionada;
-		Log.d("Milog", "Identificador: " + capaSeleccionada.getIdentificador());
-		Log.d("Milog", "Etiqueta: " + capaSeleccionada.getEtiqueta());
 
-		
-		
 		Object capaBase = capaSeleccionada.getMapLayer();
-		Log.d("Milog", "Object capaBase");
-		
+
 		//CorrecciÛn, para que no cambie la capa base cuando la seleccionada es la misma que ya estaba (ahorra datos)
 		LayerList capas = mapa.getMap().getOperationalLayers();
 		if(capas != null){
-			Log.d("Milog", "capas no es nulo");
 			if(capas.size() > 0){
 				
-				Log.d("Milog", "Hay alguna capa");
 				Object capa0 = capas.get(0);
-				Log.d("Milog", "Tenemos capa0");
 				//si la capa base seleccionada es del mismo tipo que la capa 0
 				if(capaBase.getClass().getName().equals(capa0.getClass().getName())){
-					Log.d("Milog", "La clase de la capa base es igual que la clase de la capa0");
 					if(capaBase.getClass() == ArcGISVectorTiledLayer.class){
-						Log.d("Milog", "capaBase es de tipo BING");
 						ArcGISVectorTiledLayer capaBaseCasted = (ArcGISVectorTiledLayer)capaBase;
 						ArcGISVectorTiledLayer capa0Casted = (ArcGISVectorTiledLayer)capa0;
 							
@@ -528,10 +493,8 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 							return;
 						}else{
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog", "PUNTO INTERMEDIO BING: el mapa tiene " + mapa.getMap().getOperationalLayers().size() + " capas");
 						}
 					}else if(capaBase.getClass() == ArcGISVectorTiledLayer.class){
-						Log.d("Milog", "capaBase es de tipo TiledMap");
 						ArcGISVectorTiledLayer capaBaseCasted = (ArcGISVectorTiledLayer)capaBase;
 						ArcGISVectorTiledLayer capa0Casted = (ArcGISVectorTiledLayer)capa0;
 						String strUrlCapaBaseCasted = capaBaseCasted.getUri().toString();
@@ -540,10 +503,8 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 							return;
 						}else{
 							mapa.getMap().getOperationalLayers().remove(0);
-							Log.d("Milog", "PUNTO INTERMEDIO TILED: el mapa tiene " + mapa.getMap().getOperationalLayers().size() + " capas");
 						}
 					}
-					Log.d("Milog", "La capa 0 es de clase " + capa0.getClass().getName());
 				}else{//si la capa base seleccionada no es del mismo tipo que la capa 0
 
 					mapa.getMap().getOperationalLayers().remove(0);
@@ -563,7 +524,6 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 			}
 			
 			app.capaBaseSeleccionada = capaSeleccionada;
-			Log.d("Milog", "El mapa tiene " + mapa.getMap().getOperationalLayers().size() + " capas");
 		}
 	}
 
@@ -655,44 +615,33 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, CheckinActivity.this);
 			
 			
-			Log.d("Milog", "Entra en onLocationChanged y la coordenada recibida no es nula");
 			double locy = location.getLatitude();
 			double locx = location.getLongitude();
-			
-			Log.d("Milog", "1");
-			
+
+
 			Point wgspoint = new Point(locx, locy);
 			Point mapPoint = (Point) GeometryEngine.project(wgspoint, mapa.getSpatialReference());
 			
-			Log.d("Milog", "2");
 
 			// Hacer el extent entre nuestra ubicacion y el punto de checkin
 			Envelope env ;
-			Log.d("Milog", "2.1");
 			Envelope NewEnv = capaGeometrias.getExtent();
-			Log.d("Milog", "2.2");
 			if(capaGeometrias.getGraphics() != null){
 				for (int i=0 ;i<capaGeometrias.getGraphics().size(); i++){
-					Log.d("Milog", "2.3");
 			    	Point p = (Point) capaGeometrias.getGraphics().get(i).getGeometry();
-			    	Log.d("Milog", "2.4");
 			    	//p.queryEnvelope(env);
 					env = p.getExtent();
-			    	Log.d("Milog", "2.5");
 			    	//NewEnv.merge(env);
-					NewEnv.createFromInternal(env.getInternal());
-			    	Log.d("Milog", "2.6");
+					Envelope.createFromInternal(env.getInternal());
 				}
 			}
 
-			Log.d("Milog", "3");
 			//mapPoint.queryEnvelope(env);
 			env = mapPoint.getExtent();
-			NewEnv.createFromInternal(env.getInternal());
+			Envelope.createFromInternal(env.getInternal());
 			//NewEnv.merge(env);
 			mapa.locationToScreen(NewEnv.getCenter());
 
-			Log.d("Milog", "Recibida coordenada: " + location.getLatitude() + "  ,  " + location.getLongitude());
 		   	Point punto = (Point) GeometryEngine.project(new Point(location.getLongitude(),
 		   			location.getLatitude()), SpatialReference.create(102100));
 
@@ -708,14 +657,14 @@ public class CheckinActivity extends Activity implements CheckinInterface, Resou
 			    	Point p = (Point)capaGeometrias.getGraphics().get(i).getGeometry();
 					env1 = p.getExtent();
 			    	//p.queryEnvelope(env1);
-					env1.createFromInternal(NewEnv1.getInternal()) ;
+					Envelope.createFromInternal(NewEnv1.getInternal());
 					//NewEnv1.merge(env1);
 				}
 			}
 			
 			env1 = punto.getExtent();
 			//punto.queryEnvelope(env1);
-			env1.createFromInternal(NewEnv1.getInternal());
+			Envelope.createFromInternal(NewEnv1.getInternal());
 			//NewEnv1.merge(env1);
 			//mapa.setExtent(NewEnv1, 50);
 	  		mapa.locationToScreen(NewEnv1.getCenter());

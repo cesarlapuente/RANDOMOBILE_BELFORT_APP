@@ -14,7 +14,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -341,7 +340,6 @@ public class PoisListActivity extends Activity implements LocationListener {
 
             if (convertView == null) {
                 holder = new ViewHolder();
-                Log.d("Milog", "1");
                 convertView = mInflater.inflate(
                         R.layout.mod_discover__layout_item_lista_pois, null);
                 holder.layoutFondo = (RelativeLayout) convertView

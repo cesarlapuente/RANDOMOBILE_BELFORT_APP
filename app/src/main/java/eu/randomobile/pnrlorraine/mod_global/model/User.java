@@ -1,11 +1,5 @@
 package eu.randomobile.pnrlorraine.mod_global.model;
 
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,50 +10,33 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 import eu.randomobile.pnrlorraine.MainApp;
 import eu.randomobile.pnrlorraine.R;
 import eu.randomobile.pnrlorraine.mod_global.libraries.rot13.Rot13;
 import eu.randomobile.pnrlorraine.mod_login.LoginActivity;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 public class User {
 
-	private static int puntuacion;
-	
-	
-	
+    // Interface para comunicarse con las llamadas as�ncronas del objeto Usuario
+    public static UsuarioInterface usuarioInterface;
+    // Interface para comunicarse con las llamadas as�ncronas del objeto Usuario
+    public static ResetPasswordInterface resetPasswordInterface;
+    private static int puntuacion;
+
 	public static int getPuntuacion() {
 		return puntuacion;
 	}
 
 	public static void setPuntuacion(int puntuacion) {
 		User.puntuacion = puntuacion;
-	}
-
-
-	// Interface para comunicarse con las llamadas as�ncronas del objeto Usuario
-	public static UsuarioInterface usuarioInterface;
-	public static interface UsuarioInterface {
-		public void seHizoLoginConExito();
-		public void producidoErrorAlHacerLogin(String error);
-		
-		public void seHizoLogoutConExito();
-		public void producidoErrorAlHacerLogout(String error);
-			
-		public void seRegistroUsuarioConExito();
-		public void producidoErrorAlRegistrarUsuario(String error);
-	}
-	
-	
-	// Interface para comunicarse con las llamadas as�ncronas del objeto Usuario
-	public static ResetPasswordInterface resetPasswordInterface;
-		public static interface ResetPasswordInterface {
-			public void seEnvioEmail(boolean success, int errorCode, String code);
-			public void producidoErrorAlEnviarEmail(String error);
-			
-			public void seReseteoPassword(boolean success, int errorCode);
-			public void producidoErrorAlResetearPassword(String error);
 	}
 	
 	public static void login(Application application, String mail, String password){
@@ -70,7 +47,7 @@ public class User {
 		String passB64ReverseRot13 = Rot13.cipher(passB64Reverse);
 
 		final MainApp app = (MainApp)application;
-		
+
 		app.clienteDrupal.basicLogin(new AsyncHttpResponseHandler() {
 
 			public void onSuccess(String response) {
@@ -203,39 +180,38 @@ public class User {
 		}, mail, passB64ReverseRot13);
 	}
 
-
 	public static void logout(final Application application){
-		
+
 		MainApp app = (MainApp)application;
-		
+
 		String sessId = app.preferencias.getString(app.COOKIE_KEY_ID_SESION_USUARIO_LOGUEADO, null);
-		
+
 		if(sessId == null){
 			if(User.usuarioInterface != null){
 				User.usuarioInterface.seHizoLogoutConExito();
 			}
 			return;
 		}
-		
-		
-		app.clienteDrupal.userLogout(new AsyncHttpResponseHandler(){
+
+
+        app.clienteDrupal.userLogout(new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
-				
-				Log.d("Milog", "Respuesta: " + response);
+
+                Log.d("Milog", "Respuesta: " + response);
 				MainApp app = (MainApp)application;
 				SharedPreferences.Editor editor = app.preferencias.edit();
     			editor.putString(app.COOKIE_KEY_ID_USUARIO_LOGUEADO, null);
     			editor.putString(app.COOKIE_KEY_NICK_USUARIO_LOGUEADO, null);
     			editor.putString(app.COOKIE_KEY_ID_USUARIO_LOGUEADO, null);
     			editor.commit();
-				
-				if(User.usuarioInterface != null){
+
+                if(User.usuarioInterface != null){
 					User.usuarioInterface.seHizoLogoutConExito();
 				}
 
 			}
-			
-			public void onFailure(Throwable error) {
+
+                                         public void onFailure(Throwable error) {
 				Log.d("JmLog","OnFAILURE ->"+ error.getMessage());
 				if (error.getMessage().contains("User is not logged in")) {
 					Log.d("JmLog","OnFAILURE Contains not logged");
@@ -252,24 +228,22 @@ public class User {
 		, sessId);
 	}
 	
-	
-	
 	public static void registro(Application application, final HashMap<String, String> user){
 		final MainApp app = (MainApp)application;
-		
-		app.clienteDrupal.userRegister(new AsyncHttpResponseHandler(){
+
+        app.clienteDrupal.userRegister(new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
 				Log.d("Milog", "Respuesta: " + response);
-				
-				boolean exitoEnRegistro = false;
-				
-				if(response != null){
-					
-					try {
+
+                boolean exitoEnRegistro = false;
+
+                if(response != null){
+
+                    try {
 						JSONObject resObj = new JSONObject(response);
 						String uidStr = resObj.getString("uid");
 						String name = user.get("name");
-						
+
 						/*Object field_nombre = resObj.get("field_first_name");
                 		Object field_apellidos = resObj.get("field_last_name");
                 		Object field_country = resObj.get("field_country");
@@ -281,16 +255,16 @@ public class User {
             			editor.commit();
 
 						exitoEnRegistro = true;
-						
-					} catch (JSONException e) {
+
+                    } catch (JSONException e) {
 						Log.d("Milog", "Excepcion al parsear el JSON de crear usuario. " + e.toString());
 					} catch (Exception e){
 						Log.d("Milog", "Excepcion al crear usuario. " + e.toString());
 					}
 				}
 
-				
-				if(exitoEnRegistro){
+
+                if(exitoEnRegistro){
 					if(User.usuarioInterface != null){
 						User.usuarioInterface.seRegistroUsuarioConExito();
 					}
@@ -300,12 +274,12 @@ public class User {
 					}
 				}
 			}
-			
-			public void onFailure(Throwable error) {
+
+                                           public void onFailure(Throwable error) {
 				if(User.usuarioInterface != null){
 					Log.d("Milog", "Error: " + error.toString());
-					
-					String strError = error.toString();
+
+                    String strError = error.toString();
 					String errorDevolverUsuario = "";
 					if( strError.contains("The name") && strError.contains("The e-mail") ){
 						// Error en el name y en el mail (ya existen ambos)
@@ -319,25 +293,18 @@ public class User {
 					}else {
 						errorDevolverUsuario = app.getString(R.string.mod_register__email_ya_existe);
 					}
-					
-					User.usuarioInterface.producidoErrorAlRegistrarUsuario(errorDevolverUsuario);
+
+                    User.usuarioInterface.producidoErrorAlRegistrarUsuario(errorDevolverUsuario);
 				}
 			}
 		}
 		, user);
 	}
 
-	
-	
-	
-	
-	
-
-	
 	// Enviar un email para recuperar la contrase�a
 	public static void sendEmailToRecoverPassword(Application application, String email){
-		
-		MainApp app = (MainApp)application;
+
+        MainApp app = (MainApp)application;
 
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("mail", email);
@@ -346,20 +313,20 @@ public class User {
 
 		app.clienteDrupal.customMethodCallPost("basic/reset", new AsyncHttpResponseHandler(){
 			public void onSuccess(String response) {
-				
-				Log.d("Milog", "Respuesta de usuario/reset: " + response);
+
+                Log.d("Milog", "Respuesta de usuario/reset: " + response);
 				if(response != null && !response.equals("")){
-					
-					try {
+
+                    try {
 	                	JSONObject dicRes = new JSONObject(response);
 	                	if(dicRes != null){
-	                		
-	                		boolean success = dicRes.getBoolean("success");
+
+                            boolean success = dicRes.getBoolean("success");
 	                		int error = dicRes.getInt("error");
-	                		
-	                		String code = null /*dicRes.getString("code")*/;
-	                		
-	                		if(User.resetPasswordInterface != null){
+
+                            String code = null /*dicRes.getString("code")*/;
+
+                            if(User.resetPasswordInterface != null){
 	                			User.resetPasswordInterface.seEnvioEmail(success, error, code);
 	                			return;
 	                		}
@@ -369,36 +336,34 @@ public class User {
 						Log.d("Milog", "Excepcion usuario/reset: " + e.toString());
 					}
 				}
-				
-				// Informar al delegate
+
+                // Informar al delegate
 	    		if(User.resetPasswordInterface != null){
 	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			User.resetPasswordInterface.producidoErrorAlEnviarEmail("Error al recoger respuesta");
 	    		}
-				
-				
-				
-			}
-			
-			public void onFailure(Throwable error) {
+
+
+            }
+
+                    public void onFailure(Throwable error) {
 				// Informar al delegate
 				if(User.resetPasswordInterface != null){
 	    			Log.d("Milog", "Antes de informar al delegate de un error");
 	    			User.resetPasswordInterface.producidoErrorAlEnviarEmail(error.toString());
 	    		}
 			}
-		}, 
-		params);
-		
-	}
-	
+                },
+                params);
+
+    }
 	
 	// Cambiar la contrase�a
 	public static void setNewPassword(Application application, String email, String newPass){
 
 		MainApp app = (MainApp)application;
-		
-			HashMap<String, String> params = new HashMap<String, String>();
+
+        HashMap<String, String> params = new HashMap<String, String>();
 			params.put("mail", email);
 			String randomKeyCrypt = app.drupalSecurity.getCryptedRandomKey();
 			params.put("key", randomKeyCrypt);
@@ -407,18 +372,18 @@ public class User {
 
 			app.clienteDrupal.customMethodCallPost("basic/chgPass", new AsyncHttpResponseHandler(){
 				public void onSuccess(String response) {
-					
-					Log.d("Milog", "Respuesta de usuario/chgPass: " + response);
+
+                    Log.d("Milog", "Respuesta de usuario/chgPass: " + response);
 					if(response != null && !response.equals("")){
-						
-						try {
+
+                        try {
 		                	JSONObject dicRes = new JSONObject(response);
 		                	if(dicRes != null){
-		                		
-		                		boolean success = dicRes.getBoolean("success");
+
+                                boolean success = dicRes.getBoolean("success");
 		                		int error = dicRes.getInt("error");
-		                		
-		                		if(User.resetPasswordInterface != null){
+
+                                if(User.resetPasswordInterface != null){
 		                			User.resetPasswordInterface.seReseteoPassword(success, error);
 		                			return;
 		                		}
@@ -428,35 +393,29 @@ public class User {
 							Log.d("Milog", "Excepcion usuario/chgPass: " + e.toString());
 						}
 					}
-					
-					// Informar al delegate
+
+                    // Informar al delegate
 		    		if(User.resetPasswordInterface != null){
 		    			Log.d("Milog", "Antes de informar al delegate de un error");
 		    			User.resetPasswordInterface.producidoErrorAlResetearPassword("Error al recoger respuesta");
 		    		}
-					
-					
-					
-				}
-				
-				public void onFailure(Throwable error) {
+
+
+                }
+
+                        public void onFailure(Throwable error) {
 					// Informar al delegate
 					if(User.resetPasswordInterface != null){
 		    			Log.d("Milog", "Antes de informar al delegate de un error");
 		    			User.resetPasswordInterface.producidoErrorAlResetearPassword(error.toString());
 		    		}
 				}
-			}, 
-			params);
-			
-		}
-	
-	
-	
-	
-	
-	
-	// Pregunta si quiere iniciar sesi�n en el momento que se llame a la funci�n
+                    },
+                    params);
+
+    }
+
+    // Pregunta si quiere iniciar sesi�n en el momento que se llame a la funci�n
 	public static void askForloginHere(final Context context){
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -481,35 +440,57 @@ public class User {
 
 
 		/*
-		AlertDialog.Builder dialogo = new AlertDialog.Builder(ctx);
+        AlertDialog.Builder dialogo = new AlertDialog.Builder(ctx);
 		String iniSes = ctx.getString(R.string.mod_login__iniciar_sesion);
 		String msg = ctx.getString(R.string.mod_login__es_necesario_iniciar_sesion);
 		String cancelar = ctx.getString(R.string.mod_global__cancelar);
 		dialogo.setTitle(iniSes);
 		dialogo.setMessage(msg);
 
-		
+
 		dialogo.setPositiveButton(iniSes, new AlertDialog.OnClickListener() {
 			public void onClick(AlertDialog arg0, int arg1) {
 				Intent intent = new Intent(ctx, LoginActivity.class);
 				ctx.startActivity(inisLoggedIntent);
 			}
 		});
-		
+
 		dialogo.show();
 		*/
 	}
-	
 	
 	// Devuelve un booleano indicando si el usuario est� logueado o no
 	public static boolean isLoggedIn(Application application){
 		MainApp app = (MainApp)application;
 		String idUsuario = app.preferencias.getString(app.COOKIE_KEY_ID_USUARIO_LOGUEADO, null);
-		if(idUsuario != null){
-			return true;
-		}
-		return false;
-	}
+        return idUsuario != null;
+    }
+
+
+    public interface UsuarioInterface {
+        void seHizoLoginConExito();
+
+        void producidoErrorAlHacerLogin(String error);
+
+        void seHizoLogoutConExito();
+
+        void producidoErrorAlHacerLogout(String error);
+
+        void seRegistroUsuarioConExito();
+
+        void producidoErrorAlRegistrarUsuario(String error);
+    }
+
+
+    public interface ResetPasswordInterface {
+        void seEnvioEmail(boolean success, int errorCode, String code);
+
+        void producidoErrorAlEnviarEmail(String error);
+
+        void seReseteoPassword(boolean success, int errorCode);
+
+        void producidoErrorAlResetearPassword(String error);
+    }
 	
 	
 }

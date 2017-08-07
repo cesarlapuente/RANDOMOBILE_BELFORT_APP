@@ -1,21 +1,14 @@
 package eu.randomobile.pnrlorraine.mod_global.map_layer_change;
 
 import android.app.Application;
-import android.util.Log;
+
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 
 import eu.randomobile.pnrlorraine.MainApp;
 
 
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
-
-
 public class CapaBase {
 
-	private String identificador;
-	private String etiqueta;
-	private Class<?> claseCapaBase;
-	private boolean seleccionada;
-	
 	public static String CAPA_BASE_TIPO_BING_AERIAL = "bingAerial";
 	public static String CAPA_BASE_TIPO_BING_AERIAL_WITH_LABELS = "bingAerialWithLabels";
 	public static String CAPA_BASE_TIPO_BING_ROAD = "bingRoad";
@@ -25,54 +18,51 @@ public class CapaBase {
 	public static String CAPA_BASE_TIPO_WORLD_STREET_MAP = "worldStreetMap";
 	public static String CAPA_BASE_TIPO_WORLD_TERRAIN_BASE = "worldTerrainBase";
 	public static String CAPA_BASE_TIPO_WORLD_TOPO = "worldTopo";
-	
 	MainApp app;
-	
-	public CapaBase(Application application){
-		this.app = (MainApp)application;
-	}
+    private String identificador;
+    private String etiqueta;
+    private Class<?> claseCapaBase;
+    private boolean seleccionada;
 
-	public void setIdentificador(String identificador) {
-		this.identificador = identificador;
+    public CapaBase(Application application){
+		this.app = (MainApp)application;
 	}
 
 	public String getIdentificador() {
 		return identificador;
 	}
 
-	public void setEtiqueta(String etiqueta) {
-		this.etiqueta = etiqueta;
-	}
+    public void setIdentificador(String identificador) {
+        this.identificador = identificador;
+    }
 
 	public String getEtiqueta() {
 		return etiqueta;
 	}
 
-	public void setClaseCapaBase(Class<?> claseCapaBase) {
-		this.claseCapaBase = claseCapaBase;
-	}
+    public void setEtiqueta(String etiqueta) {
+        this.etiqueta = etiqueta;
+    }
 
 	public Class<?> getClaseCapaBase() {
 		return claseCapaBase;
 	}
 
-	public void setSeleccionada(boolean seleccionada) {
-		this.seleccionada = seleccionada;
-	}
+    public void setClaseCapaBase(Class<?> claseCapaBase) {
+        this.claseCapaBase = claseCapaBase;
+    }
 
 	public boolean isSeleccionada() {
 		return seleccionada;
 	}
 
-	
+    public void setSeleccionada(boolean seleccionada) {
+        this.seleccionada = seleccionada;
+    }
+
 	public Object getMapLayer(){
 		Object capaBaseADevolver = null;
-		
-		if(claseCapaBase != null){
-			Log.d("Milog", "En getMapLayer la claseCapaBase no es nula: " + claseCapaBase.getName());
-		}else{
-			Log.d("Milog", "En getMapLayer la claseCapaBase es nula");
-		}
+
 
 		
 		/*if(claseCapaBase == BingMapsLayer.class){
@@ -86,7 +76,6 @@ public class CapaBase {
 			}
 		}else*/
 		if (claseCapaBase == ArcGISTiledLayer.class) {
-			Log.d("Milog", "La capa es de tipo TiledMap");
 			if(identificador.equals(CAPA_BASE_TIPO_WORLD_IMAGERY)){
 				capaBaseADevolver = new ArcGISTiledLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
 			}else if(identificador.equals(CAPA_BASE_TIPO_WORLD_PHISICAL)){
